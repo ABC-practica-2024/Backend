@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: abc2024
+
+
+#datasource configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/abc2024
+    username: abc2024
+    password: abc2024
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+#profiles configuration
+  profiles:
+    active: dev
+#email configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    password: ugxmbycpmmhyjfrl
+    username: catalin.popa.abc@gmail.com
+    properties:
+      debug: true
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          trust:
+            host: smtp.gmail.com
+
+
+
+#jackson configuration
+jackson:
+  serialization:
+    fail-on-empty-beans: false
+
+#logging configuration
+logging:
+  file:
+    name: logs/abc2024-security.log
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web: DEBUG
+
+#Keys for JWT generation
+rsa-key:
+  private-key: classpath:certs/private.pem
+  public-key: classpath:certs/public.pem
+
+api:
+   endpoint:
+    base-url: /api/v1
