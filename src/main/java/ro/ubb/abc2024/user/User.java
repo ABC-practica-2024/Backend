@@ -44,5 +44,6 @@ public class User {
     @Column(unique = true)
     private UUID uniqueKey;
     private boolean isEnabled;
+    private String imagePath;
 
 }
