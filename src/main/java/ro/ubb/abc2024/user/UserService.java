@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.user;
 
+import org.springframework.web.multipart.MultipartFile;
 import ro.ubb.abc2024.utils.dto.ChangePasswordDto;
 import ro.ubb.abc2024.utils.dto.ChangeRoleDto;
 import ro.ubb.abc2024.utils.dto.EnableUserDto;
@@ -8,7 +9,7 @@ import ro.ubb.abc2024.utils.dto.PasswordResetDto;
 import java.util.List;
 
 public interface UserService {
-    User addUser(User user);
+    User addUser(User user, MultipartFile file);
     User updateUser(User user);
     void deleteUser(long id);
     List<User> getUsersByRole(Role role);
