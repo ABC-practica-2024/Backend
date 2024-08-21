@@ -6,6 +6,9 @@
 * poate cere să i se atribuie un rol
    	 
 **ADMIN**
+* autentificare - register, login, password reset
+* poate vizualiza date despre situri și artefacte
+* poate cere să i se atribuie un rol
 * poate crea sau edita situri - CRUD pe situri
 * poate atribui un arheolog principal pentru oricare sit
 * are acces la informații despre toți utilizatorii
