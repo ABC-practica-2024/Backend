@@ -7,5 +7,4 @@ public enum Role {
     BIO_PRIME,
     BIO,
     GUEST
-
 }
