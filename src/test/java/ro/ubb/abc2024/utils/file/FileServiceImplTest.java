@@ -2,6 +2,7 @@ package ro.ubb.abc2024.utils.file;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest
 class FileServiceImplTest {
 
     private FileServiceImpl fileService;
@@ -36,7 +38,7 @@ class FileServiceImplTest {
 
         String result = fileService.saveFile(multipartFile, "user1");
 
-        assertTrue(result.contains("user1/test.txt"));
+        assertTrue(result.contains("user1" + File.separator + "test.txt"));
         assertTrue(new File(result).exists());
     }
 
