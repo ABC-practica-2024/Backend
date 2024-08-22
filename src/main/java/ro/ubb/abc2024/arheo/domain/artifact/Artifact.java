@@ -55,6 +55,6 @@ public class Artifact {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-};
+}
 
 
