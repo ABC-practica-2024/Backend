@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class ArheologicalSiteRequestDto {
     // TODO: validator
     private double geograficCoordinates;
-    private Status status;
     private LocalDateTime createRequestTime;
     private Long arheoId;
 }
