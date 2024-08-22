@@ -1,4 +1,4 @@
-package ro.ubb.abc2024.arheo.domain;
+package ro.ubb.abc2024.arheo.domain.auxiliary;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
