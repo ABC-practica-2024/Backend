@@ -5,9 +5,13 @@ spring:
 
 #datasource configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/abc2024
-    username: abc2024
-    password: abc2024
+#        url: jdbc:postgresql://localhost:5432/abc2024
+    #    username: abc2024
+    #    password: abc2024
+
+    url: jdbc:postgresql://localhost:5433/abc2024
+    username: postgres
+    password: admin
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
