@@ -66,11 +66,26 @@ public class ArtifactServiceImpl implements ArtifactService {
 
     @Override
     public List<Artifact> getUnanalysedArtifacts() {
-        return artifactRepository.findArtifactByLabScanIsNull();
+        return artifactRepository.findArtifactsByLabScanIsNull();
     }
 
     @Override
-    public List<Artifact> getArtifactByUser(User user) {
-        return artifactRepository.findArtifactByUser(user);
+    public List<Artifact> getArtifactsByUser(User user) {
+        return artifactRepository.findArtifactsByUser(user);
+    }
+
+    @Override
+    public List<Artifact> getArtifactsBySectionId(Long id) {
+        return artifactRepository.findArtifactsBySection_Id(id);
+    }
+
+    @Override
+    public List<Artifact> getArtifactsBySiteId(Long id) {
+        return artifactRepository.findArtifactsBySection_Site_Id(id);
+    }
+
+    @Override
+    public List<Artifact> getArtifactsBySiteIdAndArcheologistId(Long siteId, Long archeologistId) {
+        return artifactRepository.getArtifactsBySiteIdAndArchaeologistId(siteId, archeologistId);
     }
 }
