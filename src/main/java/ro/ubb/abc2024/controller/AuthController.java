@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ro.ubb.abc2024.security.auth.AuthenticationService;
 import ro.ubb.abc2024.security.recovery.RecoveryService;
 import ro.ubb.abc2024.security.registration.RegistrationService;
@@ -42,9 +43,11 @@ public class AuthController {
             summary = "Registration endpoint. After registering it sends an email with confirmation token."
     )
     @PostMapping("/register")
-    public Result<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
-        this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto));
-        return new Result<>(true, HttpStatus.CREATED.value(), "User created successfully");
+    public Result<?> register(@ModelAttribute RegistrationUserDto registrationUserDto,
+                              @RequestParam("profilePicture")MultipartFile file) {
+            this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto), file);
+//        this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto));
+        return new Result<>(true, HttpStatus.CREATED.value(), "User created successfully", null);
     }
     @Operation(
             description = "ENABLE USER",
@@ -53,7 +56,7 @@ public class AuthController {
     @PutMapping("/enable/{token}")
     public Result<?> enableUser(@PathVariable String token) {
         this.registrationService.enableUser(token);
-        return new Result<>(true, HttpStatus.OK.value(), "User enabled successfully.");
+        return new Result<>(true, HttpStatus.OK.value(), "User enabled successfully.", null);
     }
 
     @Operation(
@@ -63,7 +66,7 @@ public class AuthController {
     @PostMapping("/reset-password")
     public Result<?> resetPasswordRequest(@RequestBody String email) {
         this.recoveryService.recoveryRequest(email);
-        return new Result<>(true, HttpStatus.OK.value(), "Email with token sent. Please check your email.");
+        return new Result<>(true, HttpStatus.OK.value(), "Email with token sent. Please check your email.", null);
     }
     @Operation(
             description = "RESET PASSWORD",
@@ -72,7 +75,7 @@ public class AuthController {
     @PostMapping("/reset-password-email/{token}")
     public Result<?> sendPassword(@PathVariable String token) {
         this.recoveryService.resetPassword(token);
-        return new Result<>(true, HttpStatus.OK.value(), "Password sent to email.");
+        return new Result<>(true, HttpStatus.OK.value(), "Password sent to email.", null);
     }
 
     @Operation(
@@ -82,7 +85,7 @@ public class AuthController {
     @PutMapping("/reset-password")
     public Result<?> resetPassword(@RequestBody PasswordResetDto passwordResetDto) {
         this.recoveryService.resetPassword(passwordResetDto);
-        return new Result<>(true, HttpStatus.OK.value(), "Password reset successfully");
+        return new Result<>(true, HttpStatus.OK.value(), "Password reset successfully", null);
     }
 
 }

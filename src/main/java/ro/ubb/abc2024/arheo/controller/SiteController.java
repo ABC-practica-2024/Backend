@@ -1,6 +1,5 @@
 package ro.ubb.abc2024.arheo.controller;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +15,6 @@ public class SiteController {
     //@GetMapping()
     //public Result<List<Site>> getSites(){
     //}
-
-
 }
+
+
