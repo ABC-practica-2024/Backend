@@ -5,6 +5,4 @@ import ro.ubb.abc2024.arheo.domain.site.Site;
 
 public interface SiteRepository extends JpaRepository<Site, Long> {
 
-public class SiteRepository {
-
 }
