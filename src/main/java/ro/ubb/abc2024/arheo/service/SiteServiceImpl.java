@@ -3,6 +3,7 @@ package ro.ubb.abc2024.arheo.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.site.Site;
