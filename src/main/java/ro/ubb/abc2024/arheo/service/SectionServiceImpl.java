@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
@@ -138,5 +139,21 @@ public class SectionServiceImpl implements SectionService{
         // make string into enum
         SectionStatus sectionStatus = SectionStatus.valueOf(status);
         return this.sectionRepository.getSectionsByStatusIsAndSiteId(sectionStatus, siteId);
+    }
+
+    @Override
+    public List<Artifact> getArtifactsFromSection(long sectionId) {
+        return this.sectionRepository.findById(sectionId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
+                )).getArtifactsList();
+    }
+
+    @Override
+    public List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId) {
+        List<Artifact> artifacts = this.sectionRepository.findById(sectionId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
+                )).getArtifactsList();
+        artifacts.removeIf(artifact -> artifact.getUser().getId() != archaeologistId);
+        return artifacts;
     }
 }

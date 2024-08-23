@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.arheo.service;
 
+import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import java.util.List;
 
@@ -18,5 +19,6 @@ public interface SectionService {
     List<Section> getSections();
     List<Section> getSectionsBySite(long siteId);
     List<Section> getSectionsByStatusIsAndSiteId(String status, long siteId);
-
+    List<Artifact> getArtifactsFromSection(long sectionId);
+    List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId);
 }
