@@ -1,14 +1,11 @@
-package ro.ubb.abc2024.arheo.controller;
+package ro.ubb.abc2024.arheo.controller.section;
 
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.service.SectionService;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
-import ro.ubb.abc2024.user.Role;
 
 import java.util.List;
 import java.util.stream.Collectors;

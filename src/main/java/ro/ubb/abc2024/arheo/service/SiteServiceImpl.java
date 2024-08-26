@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.repository.SiteRepository;
@@ -67,5 +68,7 @@ public class SiteServiceImpl implements SiteService{
 //        }
     }
 
-
+    public List<Section> getSectionsBySiteId(Long siteId){
+        return siteRepository.getSiteById(siteId).getSections();
+    }
 }
