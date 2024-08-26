@@ -2,7 +2,6 @@ package ro.ubb.abc2024.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +35,7 @@ public class FileStorageController {
     @PostMapping("/upload_to_db")
     public Result<String> storeFilesIntoDB(@RequestParam("file") MultipartFile file) throws IOException {
 
-        String response = fileService.storeFileIntoDb(file);
+        this.fileService.storeFileIntoDb(file);
         return new Result<>(true, HttpStatus.OK.value(), "File uploaded to the database successfully");
     }
 
