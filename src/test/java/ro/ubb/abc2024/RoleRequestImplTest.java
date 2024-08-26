@@ -14,7 +14,6 @@ import ro.ubb.abc2024.utils.exception.UserRoleRequestException;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -28,8 +27,6 @@ class RoleRequestImplTest {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-
 
     @BeforeAll
     void setUp() throws Exception {
