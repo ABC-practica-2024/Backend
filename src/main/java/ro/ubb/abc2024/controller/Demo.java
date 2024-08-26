@@ -45,27 +45,9 @@ public class Demo {
 
     @GetMapping("/bio")
     @PreAuthorize("hasAnyAuthority('SCOPE_BIO', 'SCOPE_BIO_PRIME')")
-    public String helloBio(){
+    public String helloBio() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return String.format("Hello %s. You have biology rights.", username);
-    }
-
-    @PostMapping("/upload")
-//    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public Result<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        this.fileService.saveFile(file, "testUser");
-        return new Result<>(true, HttpStatus.OK.value(), "File uploaded.");
-    }
-
-    @GetMapping("/download")
-//    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public ResponseEntity<Resource> downloadFile(@RequestParam("file") String filename) {
-        var downloadedFile = this.fileService.getFile(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentLength(downloadedFile.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new FileSystemResource(downloadedFile));
     }
 
 }
