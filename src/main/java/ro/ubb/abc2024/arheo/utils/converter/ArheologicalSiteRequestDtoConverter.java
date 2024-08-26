@@ -17,7 +17,10 @@ public class ArheologicalSiteRequestDtoConverter implements Converter<CreateArch
     @Override
     public CreateArchaeologicalSiteRequest createFromDto(ArheologicalSiteRequestDto dto) {
         return CreateArchaeologicalSiteRequest.builder()
-                .geograficCoordinates(dto.getGeograficCoordinates())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .centerCoordinates(dto.getCenterCoordinates())
+                .perimeterCoordinates(dto.getPerimeterCoordinates())
                 .status(Status.PENDING)
                 .createRequestTime(dto.getCreateRequestTime())
                 .archeologist(userRepository.getReferenceById(dto.getArheoId()))

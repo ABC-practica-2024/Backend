@@ -6,9 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
+import ro.ubb.abc2024.arheo.domain.site.SiteCoordinate;
 import ro.ubb.abc2024.user.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,12 +25,23 @@ public class CreateArchaeologicalSiteRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Title cannot be null")
+    String title;
+
+    String description;
+
     // TODO: change after Site class appearance
     @NotNull(message = "Coordinates cannot be null")
-    private double geograficCoordinates;
+    @Embedded
+    GeographicPoint centerCoordinates;
+
+    @ElementCollection
+    List<SiteCoordinate> perimeterCoordinates;
+
     @NotNull(message = "Status cannot be null")
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @NotNull(message = "Request time cannot be null")
     private LocalDateTime createRequestTime;
     private LocalDateTime solveRequestTime;

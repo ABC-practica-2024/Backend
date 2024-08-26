@@ -1,9 +1,14 @@
 package ro.ubb.abc2024.arheo.controller;
-
+import jakarta.persistence.EntityNotFoundException;
+import ro.ubb.abc2024.arheo.utils.dto.ArheologicalSiteRequestDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.abc2024.arheo.utils.converter.ArheologicalSiteRequestDtoConverter;
+import ro.ubb.abc2024.arheo.domain.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.service.SiteService;
 import ro.ubb.abc2024.utils.dto.Result;
 
@@ -14,31 +19,62 @@ import ro.ubb.abc2024.utils.dto.Result;
 public class SiteController {
 
     private final SiteService siteService;
+    private final ArheologicalSiteRequestDtoConverter converter;
     //TODO: implement the functions here and in service
-    @PostMapping("/{id}")
+    @PostMapping("/request")
     @PreAuthorize("hasAuthority('SCOPE_ARH')")
-    public Result<?> requestCreateArcheologicalSite(@PathVariable long id) {
-        return null;
+    public Result<?> requestCreateArcheologicalSite(@RequestBody ArheologicalSiteRequestDto requestDto)  {
+
+        CreateArchaeologicalSiteRequest siteRequest = converter.createFromDto(requestDto);
+        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArcheologicalSite(siteRequest);
+        return new Result<>(true, HttpStatus.CREATED.value(),
+                String.format("Archaeological site request created with ID %d", savedRequest.getId()), savedRequest);
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<?> getListCreateSiteRequests() {
-        return null;
+        List<CreateArchaeologicalSiteRequest> siteRequests = siteService.getAllSiteRequests();
+        return new Result<>(true, HttpStatus.OK.value(), "List of all site creation requests", siteRequests);
     }
 
     @GetMapping("/pending")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<?> getListCreateSiteRequestsPending() {
-        return null;
+        List<CreateArchaeologicalSiteRequest> pendingRequests = siteService.getPendingSiteRequests();
+        return new Result<>(true, HttpStatus.OK.value(), "List of pending site creation requests", pendingRequests);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public Result<?> getCreateSiteRequestById(@PathVariable long id) {
-        return null;
+    public Result<CreateArchaeologicalSiteRequest> getCreateSiteRequestById(@PathVariable long id) {
+        var createArchaeologicalSiteRequest = this.siteService.getCreateArchaeologicalSiteRequestById(id);
+        return new Result<>(true, HttpStatus.OK.value(),String.format("Here is the create archaeological site request with id %d", id),createArchaeologicalSiteRequest);
     }
 
-    //TODO: the rest.....
+    @PostMapping("/solve/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public Result<?> solveCreateSiteRequest(@PathVariable long id) {
+        try {
+            CreateArchaeologicalSiteRequest solvedRequest = siteService.solveCreateSiteRequest(id);
+            return new Result<>(true, HttpStatus.OK.value(),
+                    String.format("Create Archaeological Site Request with ID %d has been solved and site created.", id), solvedRequest);
+        } catch (EntityNotFoundException ex) {
+            return new Result<>(false, HttpStatus.NOT_FOUND.value(), ex.getMessage(), null);
+        } catch (IllegalStateException ex) {
+            return new Result<>(false, HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null);
+        } catch (Exception ex) {
+            return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred.", null);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public Result<?> deleteCreateSiteRequest(@PathVariable long id){
+        this.siteService.deleteCreateArchaeologicalSiteRequest(id);
+        return new Result<>(true, HttpStatus.OK.value(),String.format("Request with id %d was deleted",id));
+    }
+
+
 
 }
