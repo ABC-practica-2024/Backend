@@ -53,7 +53,7 @@ public class Site {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
     @NotNull(message = "Main archaelogist cannot be null")
-    User mainArchaelogist;
+    User mainArchaeologist;
 
     @ManyToMany
     @JoinTable(
@@ -61,5 +61,5 @@ public class Site {
             joinColumns = @JoinColumn(name = "site_id"),
             inverseJoinColumns = @JoinColumn(name = "archaelogist_id")
     )
-    List<User> archaelogists;
+    List<User> archaeologists;
 }
