@@ -3,8 +3,10 @@ package ro.ubb.abc2024.arheo.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
@@ -16,25 +18,36 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class SiteServiceImpl implements SiteService{
+
+    @Autowired
+    private SectionService sectionService;
+
     private final SiteRepository siteRepository;
+
     public List<Site> getAll(){
         return siteRepository.findAll();
     }
+
     public List<Site> getAllByStatus(SiteStatus status){
         return siteRepository.getSitesByStatus(status);
     }
+
     public Site getSiteByTitle(String title){
         return siteRepository.getSiteByTitle(title);
     }
+
     public Site addSite(Site site){
         return siteRepository.save(site);
     }
+
     public void deleteSite(Long id){
         siteRepository.deleteById(id);
     }
+
     public Site getSite(Long id){
         return siteRepository.getSiteById(id);
     }
+
     // TODO finish this with dtos
     @Transactional
     public Site updateSite(long siteId, Site newSite){
@@ -53,4 +66,6 @@ public class SiteServiceImpl implements SiteService{
 //            throw new UserServiceException(ex.getMessage());
 //        }
     }
+
+
 }

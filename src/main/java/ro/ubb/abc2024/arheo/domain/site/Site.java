@@ -52,12 +52,12 @@ public class Site {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
-    @NotNull(message = "Main archaeologist cannot be null")
+    @NotNull(message = "Main archaelogist cannot be null")
     User mainArchaeologist;
 
     @ManyToMany
     @JoinTable(
-            name = "site_archaeologist",
+            name = "site_archaelogist",
             joinColumns = @JoinColumn(name = "site_id"),
             inverseJoinColumns = @JoinColumn(name = "archaelogist_id")
     )
