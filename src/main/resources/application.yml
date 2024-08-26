@@ -12,8 +12,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      enable-lazy-load-no-trans: true
     show-sql: true
     open-in-view: false
+
   #profiles configuration
   profiles:
     active: dev

@@ -125,8 +125,11 @@ public class SectionServiceImpl implements SectionService{
     }
 
     @Override
+    @Transactional
     public List<Section> getSections() {
         return this.sectionRepository.findAll();
+        //return this.sectionRepository.getSectionsWithArtifacts();
+
     }
 
     @Override

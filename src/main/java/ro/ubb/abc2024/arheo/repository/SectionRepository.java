@@ -1,6 +1,7 @@
 package ro.ubb.abc2024.arheo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 
@@ -33,4 +34,9 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
 
 
     public Optional<Section> getSectionByNameIs(String testSection);
+
+    @Query(value = "SELECT s FROM Section s JOIN FETCH s.artifactsList")
+    public List<Section> getSectionsWithArtifacts();
+
+
 }
