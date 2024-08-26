@@ -57,7 +57,7 @@ public class Site {
 
     @ManyToMany
     @JoinTable(
-            name = "site_archaelogist",
+            name = "site_archaeologist",
             joinColumns = @JoinColumn(name = "site_id"),
             inverseJoinColumns = @JoinColumn(name = "archaelogist_id")
     )
