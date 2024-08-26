@@ -45,7 +45,7 @@ public class SiteServiceImpl implements SiteService{
         updateSite.setTitle(newSite.getTitle());
         updateSite.setDescription(newSite.getDescription());
         updateSite.setStatus(newSite.getStatus());
-        updateSite.setMainArchaelogist(newSite.getMainArchaelogist());
+        updateSite.setMainArchaeologist(newSite.getMainArchaeologist());
 //        try {
 //            validator.validate(user);
         return this.siteRepository.save(updateSite);

@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ro.ubb.abc2024.utils.dto.ChangePasswordDto;
 import ro.ubb.abc2024.utils.dto.ChangeRoleDto;
 import ro.ubb.abc2024.utils.dto.EnableUserDto;
 import ro.ubb.abc2024.utils.exception.PasswordMissmatchException;
 import ro.ubb.abc2024.utils.exception.UserServiceException;
+import ro.ubb.abc2024.utils.file.FileService;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
 import java.util.List;
@@ -18,12 +20,15 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
+    private final FileService fileService;
     private final GenericValidator<User> validator;
     private final PasswordEncoder passwordEncoder;
     @Override
-    public User addUser(User user) {
+    public User addUser(User user, MultipartFile file) {
         try {
             validator.validate(user);
+            var imagePath = this.fileService.saveFile(file, user.getUsername());
+
             return this.userRepository.save(user);
         } catch (ConstraintViolationException ex){
             throw new UserServiceException(ex.getMessage());

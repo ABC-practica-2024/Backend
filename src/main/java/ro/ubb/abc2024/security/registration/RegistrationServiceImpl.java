@@ -7,10 +7,12 @@ import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ro.ubb.abc2024.utils.email.EmailService;
 import ro.ubb.abc2024.security.token.TokenService;
 import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
+import ro.ubb.abc2024.utils.file.FileService;
 
 
 @RequiredArgsConstructor
@@ -18,13 +20,15 @@ import ro.ubb.abc2024.user.UserRepository;
 public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserRepository userRepository;
+    private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final TokenService tokenService;
 
 
     @Override
-    public void addUser(User user) {
+    @Transactional
+    public void addUser(User user, MultipartFile file) {
         var newUser = this.userRepository.save(User.builder()
                 .username(user.getUsername())
                 .password(passwordEncoder.encode(user.getPassword()))
@@ -34,7 +38,9 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .lastName(user.getLastName())
                 .role(user.getRole())
                 .build());
-
+        var profilePicturePath = this.fileService.saveFile(file, newUser.getUsername());
+        newUser.setImagePath(profilePicturePath);
+        this.userRepository.save(newUser);
         var token = this.tokenService.createToken(newUser, 60);
 
         String htmlContent = "<html>" +

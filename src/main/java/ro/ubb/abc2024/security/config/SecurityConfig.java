@@ -96,7 +96,7 @@ public class SecurityConfig {
                                         this.baseUrl+"/auth/enable/**",
                                         this.baseUrl+"/auth/login",
                                         "/swagger-ui/**",
-                                        "/v3/api-docs/**").permitAll()
+                                        "/v3/api-docs/**", "/api/arheo/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable())
