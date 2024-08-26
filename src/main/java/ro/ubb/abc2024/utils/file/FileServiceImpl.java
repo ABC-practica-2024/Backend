@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.utils.file;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +14,8 @@ import java.util.Objects;
 
 @Service
 public class FileServiceImpl implements FileService{
+    @Autowired
+    private FileRepository fileRepository;
     private static final String DIRECTORY = "files";
     @Override
     public String saveFile(MultipartFile fileToSave, String username) {
@@ -43,7 +46,7 @@ public class FileServiceImpl implements FileService{
             throw new NullPointerException("Filename is null!");
         }
         var fileToDownload = new File(DIRECTORY + File.separator + fileName);
-        if (!Objects.equals(fileToDownload.getParent(), DIRECTORY)){
+        if (!fileToDownload.getParent().startsWith(DIRECTORY)){
             throw new SecurityException("Unsupported filename!");
         }
         System.out.println(fileToDownload.getPath());
@@ -55,5 +58,22 @@ public class FileServiceImpl implements FileService{
             }
         }
         return fileToDownload;
+    }
+
+    @Override
+    public String storeFileIntoDb(MultipartFile fileToSave) throws IOException {
+        DbFile files = DbFile
+                .builder()
+                .name(fileToSave.getOriginalFilename())
+                .type(fileToSave.getContentType())
+                .imageData(fileToSave.getBytes()).build();
+
+        files = fileRepository.save(files);
+
+        if (files.getId() != null) {
+            return "File uploaded successfully into database";
+        }
+
+        return null;
     }
 }
