@@ -2,10 +2,12 @@ package ro.ubb.abc2024.arheo.utils.converter;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteCoordinate;
 import ro.ubb.abc2024.arheo.utils.dto.GeographicPointDto;
 import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
+import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
 import ro.ubb.abc2024.utils.converter.Converter;
 
@@ -25,6 +27,7 @@ public class SiteConverterDto implements Converter<Site, SiteDTO> {
         long mainArheoId= siteDTO.mainArchaeologistID();
         var mainArheo=userRepository.findById(mainArheoId).orElse(null);
         Site site = Site.builder()
+                .id(siteDTO.id())
                 .title(siteDTO.title())
                 .description(siteDTO.description())
                 .centerCoordinates(pointConverter.createFromDto(siteDTO.centralCoordinate()))
@@ -38,12 +41,15 @@ public class SiteConverterDto implements Converter<Site, SiteDTO> {
     @Override
     public SiteDTO createFromEntity(Site site) {
         return new SiteDTO(
+                site.getId(),
                 site.getTitle(),
                 site.getDescription(),
                 new GeographicPointDto(site.getCenterCoordinates().getLatitude(), site.getCenterCoordinates().getLongitude()),
                 site.getPerimeterCoordinates(),
                 site.getStatus(),
-                site.getMainArchaeologist().getId()
+                site.getMainArchaeologist().getId(),
+                site.getSections().stream().map(Section::getId).toList(),
+                site.getArchaeologists().stream().map(User::getId).toList()
         );
     }
 }

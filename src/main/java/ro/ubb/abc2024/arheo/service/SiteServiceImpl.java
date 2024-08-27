@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.section.Section;
+import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.repository.SiteRepository;
+import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
 import ro.ubb.abc2024.utils.exception.UserServiceException;
 
 import java.util.List;
@@ -25,8 +27,9 @@ public class SiteServiceImpl implements SiteService{
 
     private final SiteRepository siteRepository;
 
+    @Transactional
     public List<Site> getAll(){
-        return siteRepository.findAll();
+        return siteRepository.getSitesWithSectionsAndArchaeologists();
     }
 
     public List<Site> getAllByStatus(SiteStatus status){
@@ -49,17 +52,15 @@ public class SiteServiceImpl implements SiteService{
         return siteRepository.getSiteById(id);
     }
 
-    // TODO finish this with dtos
     @Transactional
-    public Site updateSite(long siteId, Site newSite){
+    public Site updateSite(long siteId, SiteDTO newSite){
 
         var updateSite = this.siteRepository.findById(siteId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId)
                 ));
-        updateSite.setTitle(newSite.getTitle());
-        updateSite.setDescription(newSite.getDescription());
-        updateSite.setStatus(newSite.getStatus());
-        updateSite.setMainArchaeologist(newSite.getMainArchaeologist());
+        updateSite.setTitle(newSite.title());
+        updateSite.setDescription(newSite.description());
+        updateSite.setStatus(newSite.status());
 //        try {
 //            validator.validate(user);
         return this.siteRepository.save(updateSite);
@@ -70,5 +71,9 @@ public class SiteServiceImpl implements SiteService{
 
     public List<Section> getSectionsBySiteId(Long siteId){
         return siteRepository.getSiteById(siteId).getSections();
+    }
+
+    public List<Section> getSectionsBySiteIdAndStatus(Long siteId, SectionStatus status){
+        return sectionService.getSectionsByStatusIsAndSiteId(status.name(), siteId);
     }
 }

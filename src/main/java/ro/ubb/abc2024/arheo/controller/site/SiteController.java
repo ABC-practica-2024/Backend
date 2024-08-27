@@ -4,8 +4,8 @@ package ro.ubb.abc2024.arheo.controller.site;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
-import ro.ubb.abc2024.arheo.service.SiteService;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SiteConverterDto;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
@@ -32,6 +32,11 @@ public class SiteController {
         return new Result<>(true, HttpStatus.OK.value(), "Sites returned.", siteService.getAll().stream().map(siteConverterDto::createFromEntity).toList());
     }
 
+    @GetMapping("{id}")
+    public Result<SiteDTO> getSiteById(@PathVariable Long id){
+        return new Result<>(true, HttpStatus.OK.value(), "Sites returned.", siteConverterDto.createFromEntity(siteService.getSite(id)));
+    }
+
     @PostMapping()
     public Result<SiteDTO> createSite(@RequestBody SiteDTO siteDTO){
         Site newSite=siteConverterDto.createFromDto(siteDTO);
@@ -41,10 +46,15 @@ public class SiteController {
 
     @PutMapping()
     public Result<SiteDTO> updateSite(@RequestBody SiteDTO siteDTO){
-        Site updatedSite = siteConverterDto.createFromDto(siteDTO);
-        long id = siteService.getSiteByTitle(siteDTO.title()).getId();
-        siteService.updateSite(id, updatedSite);
+        //Site updatedSite = siteConverterDto.createFromDto(siteDTO);
+        siteService.updateSite(siteDTO.id(), siteDTO);
         return new Result<>(true, HttpStatus.OK.value(), "Site updated successfully.", siteDTO);
+    }
+
+    @DeleteMapping("{id}")
+    public Result<Boolean> deleteSite(@PathVariable Long id){
+        siteService.deleteSite(id);
+        return new Result<>(true, HttpStatus.OK.value(), "Site deleted successfully.", Boolean.TRUE);
     }
 
     @GetMapping("/digging")
@@ -64,13 +74,43 @@ public class SiteController {
 
     @GetMapping("/incomplete")
     public Result<List<SiteDTO>> getIncompleteSites(){
-        return new Result<>(true, HttpStatus.OK.value(), "Returned incomplete sites.", Stream.concat(
-                                                                                siteService.getAllByStatus(SiteStatus.DIGGING).stream().map(siteConverterDto::createFromEntity),
-                                                                                siteService.getAllByStatus(SiteStatus.ANALYSIS).stream().map(siteConverterDto::createFromEntity)).toList());
+        return new Result<>(true,
+                HttpStatus.OK.value(),
+                "Returned incomplete sites.",
+                Stream.concat(
+                        siteService.getAllByStatus(SiteStatus.DIGGING).stream().map(siteConverterDto::createFromEntity),
+                        siteService.getAllByStatus(SiteStatus.ANALYSIS).stream().map(siteConverterDto::createFromEntity))
+                        .toList()
+        );
     }
 
     @GetMapping("/sections/{id}")
     public Result<List<SectionDto>> getSectionsById(@PathVariable long id){
         return new Result<>(true, HttpStatus.OK.value(), "Returned all sections.", siteService.getSectionsBySiteId(id).stream().map(sectionDtoConverter::createFromEntity).toList());
     }
+
+    @GetMapping("sections_incomplete/{id}")
+    public Result<List<SectionDto>> getIncompleteSectionsBySiteId(@PathVariable long id){
+        return new Result<>(true,
+                HttpStatus.OK.value(),
+                "Returned incomplete sections.",
+                Stream.concat(
+                        siteService.getSectionsBySiteIdAndStatus(id, SectionStatus.DIGGING).stream().map(sectionDtoConverter::createFromEntity),
+                        siteService.getSectionsBySiteIdAndStatus(id, SectionStatus.ANALYSIS).stream().map(sectionDtoConverter::createFromEntity))
+                        .toList()
+        );
+    }
+
+    //todo: complete endpoint when done artifacts
+    /*@GetMapping("artifacts/{id}")
+    public Result<List<ArtifactDto>> getArtifactsBySiteId(@PathVariable long id){
+
+    }*/
+
+    //todo: complete endpoint when done artifacts
+    /*@GetMapping("artifacts")
+    public Result<List<SectionDto>> getArtifactsBySiteIdAndArchaeologist(@RequestBody Long siteId,
+                                                                         @RequestBody Long archaeologistId){
+
+    }*/
 }
