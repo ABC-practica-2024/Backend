@@ -6,10 +6,13 @@ import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import java.util.List;
 
 public record SiteDTO(
+    Long id,
     String title,
     String description,
     GeographicPointDto centralCoordinate,
     List<SiteCoordinate> perimeterCoordinates,
     SiteStatus status,
-    long mainArchaeologistID
+    long mainArchaeologistID,
+    List<Long> sectionsIds,
+    List<Long> archaeologistsIds
 ){ }

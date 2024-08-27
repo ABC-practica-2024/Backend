@@ -1,6 +1,5 @@
 package ro.ubb.abc2024.arheo.controller.section;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
 import ro.ubb.abc2024.user.Role;
 import ro.ubb.abc2024.utils.dto.Result;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,6 +93,3 @@ public class SectionController {
                 .collect(Collectors.toList()));
     }
 }
-
-
-
