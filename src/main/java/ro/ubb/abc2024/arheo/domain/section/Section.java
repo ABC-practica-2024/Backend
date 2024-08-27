@@ -1,6 +1,7 @@
 package ro.ubb.abc2024.arheo.domain.section;
 
 
+import com.fasterxml.jackson.core.JsonToken;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -103,6 +104,5 @@ public class Section {
     @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     // join column correctly; artifacts are expected to have a section_id
     private List<Artifact> artifactsList;
-
 
 }

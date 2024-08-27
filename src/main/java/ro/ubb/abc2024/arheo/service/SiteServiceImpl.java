@@ -61,6 +61,7 @@ public class SiteServiceImpl implements SiteService{
         updateSite.setTitle(newSite.title());
         updateSite.setDescription(newSite.description());
         updateSite.setStatus(newSite.status());
+
 //        try {
 //            validator.validate(user);
         return this.siteRepository.save(updateSite);
