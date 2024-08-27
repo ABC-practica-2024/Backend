@@ -87,7 +87,7 @@ public class FileServiceImpl implements FileService{
         DbFile file = DbFile
                 .builder()
                 .name(fileToSave.multipartFile().getOriginalFilename())
-                .path(DIRECTORY + File.separator + fileToSave.folder())
+                .path(DIRECTORY + File.separator + fileToSave.folder() + File.separator + fileToSave.multipartFile().getOriginalFilename())
                 .type(fileToSave.multipartFile().getContentType()).build();
 
         var path = file.getPath();
@@ -100,7 +100,7 @@ public class FileServiceImpl implements FileService{
             throw new RuntimeException(e);
         }
 
-        var targetFile = new File(path + File.separator + savedFile.getId());
+        var targetFile = new File(path);
 
         try {
             Files.copy(fileToSave.multipartFile().getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -109,6 +109,6 @@ public class FileServiceImpl implements FileService{
             throw new RuntimeException(e);
         }
 
-        return String.valueOf(savedFile.getId());
+        return savedFile.getId().toString();
     }
 }

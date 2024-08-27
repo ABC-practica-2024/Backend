@@ -28,10 +28,11 @@ public class FileStorageController {
 
     @PostMapping("/upload")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
-    public Result<String> storeFilesIntoDB(@RequestParam("file") FileDto file){
+    public Result<String> storeFilesIntoDB(@RequestParam("file") MultipartFile file, @RequestParam("folder") String folder){
+        FileDto fileDto = new FileDto(file, folder);
 
-        var savedFileId = this.fileService.storeFileIntoDb(file);
-        return new Result<>(true, HttpStatus.OK.value(),String.format("File with id %s uploaded to the database successfully", savedFileId));
+        String savedFileId = this.fileService.storeFileIntoDb(fileDto);
+        return new Result<>(true, HttpStatus.OK.value(), "File uploaded to the database successfully", savedFileId);
     }
 
     @GetMapping("/download")
