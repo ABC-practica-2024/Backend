@@ -21,7 +21,7 @@ public interface ArtifactRepository extends JpaRepository<Artifact, Long> {
     @Query("SELECT a FROM Artifact a " +
             "JOIN a.section s " +
             "JOIN s.site si " +
-            "JOIN si.archaelogists ar " +
+            "JOIN si.archaeologists ar " +
             "WHERE si.id = :siteId AND ar.id = :archaeologistId")
     List<Artifact> getArtifactsBySiteIdAndArchaeologistId(@Param("siteId") Long siteId, @Param("archaeologistId") Long archaeologistId);
     List<Artifact> findArtifactsByCategory(String category);

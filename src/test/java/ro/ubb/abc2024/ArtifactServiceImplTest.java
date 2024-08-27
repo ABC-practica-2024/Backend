@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.artifact.ArtifactDimension;
 import ro.ubb.abc2024.arheo.domain.artifact.ArtifactPosition;
@@ -30,7 +31,7 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class ArtifactServiceImplTest {
     @Mock
     private ArtifactRepository artifactRepository;
@@ -54,7 +55,7 @@ public class ArtifactServiceImplTest {
         site.setDescription("Description A");
         site.setCenterCoordinates(new GeographicPoint(1.0, 1.0));
         site.setStatus(SiteStatus.DIGGING);
-        site.setMainArchaelogist(user);
+        site.setMainArchaeologist(user);
 
         Section section = new Section();
         section.setName("Section A");
