@@ -1,8 +1,10 @@
 package ro.ubb.abc2024.utils.file;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ro.ubb.abc2024.utils.dto.FileDto;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,10 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class FileServiceImpl implements FileService{
-    @Autowired
     private FileRepository fileRepository;
     private static final String DIRECTORY = "files";
     @Override
@@ -61,12 +63,21 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
-    public String storeFileIntoDb(MultipartFile fileToSave) throws IOException {
+    public File downloadFile(UUID uuid) {
+        DbFile file = fileRepository.findById(uuid).orElseThrow(() ->new EntityNotFoundException(String.format("File with uuid: %s, not found", uuid)));
+
+        var fileToDownload = new File(DIRECTORY + File.separator + file.getPath());
+        return null;
+    }
+
+
+    @Override
+    public String storeFileIntoDb(FileDto fileToSave) throws IOException {
         DbFile files = DbFile
                 .builder()
-                .name(fileToSave.getOriginalFilename())
-                .type(fileToSave.getContentType())
-                .imageData(fileToSave.getBytes()).build();
+                .name(fileToSave.multipartFile().getOriginalFilename())
+                .path(DIRECTORY + File.separator + fileToSave.folder())
+                .type(fileToSave.multipartFile().getContentType()).build();
 
         files = fileRepository.save(files);
 

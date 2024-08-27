@@ -2,7 +2,9 @@ package ro.ubb.abc2024.utils.file;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FileRepository extends JpaRepository<DbFile, Long> {
+import java.util.UUID;
+
+public interface FileRepository extends JpaRepository<DbFile, UUID> {
 
     DbFile findByName(String name);
 }
