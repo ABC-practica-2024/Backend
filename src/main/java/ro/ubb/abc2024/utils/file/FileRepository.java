@@ -6,5 +6,4 @@ import java.util.UUID;
 
 public interface FileRepository extends JpaRepository<DbFile, UUID> {
 
-    DbFile findByName(String name);
 }
