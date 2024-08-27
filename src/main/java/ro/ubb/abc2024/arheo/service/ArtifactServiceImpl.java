@@ -2,11 +2,15 @@ package ro.ubb.abc2024.arheo.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
+import ro.ubb.abc2024.arheo.exception.ArtifactServiceException;
 import ro.ubb.abc2024.arheo.repository.ArtifactRepository;
 import ro.ubb.abc2024.user.User;
+import ro.ubb.abc2024.utils.exception.UserServiceException;
+import ro.ubb.abc2024.utils.validation.GenericValidator;
 
 import java.util.List;
 
@@ -14,6 +18,7 @@ import java.util.List;
 @Service
 public class ArtifactServiceImpl implements ArtifactService {
     private final ArtifactRepository artifactRepository;
+    private final GenericValidator<Artifact> validator;
 
     @Override
     public List<Artifact> getAllArtifacts() {
@@ -22,35 +27,31 @@ public class ArtifactServiceImpl implements ArtifactService {
 
     @Override
     public Artifact getArtifactById(Long id) {
-        return artifactRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new EntityNotFoundException(String.format("Artifact with id: %d, not found", id))
-                );
+        return artifactRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Artifact with id: %d, not found", id)));
     }
 
     @Override
     public Artifact addArtifact(Artifact artifact) {
-        // the issues mentioned the labScan should be null and analysisComplete false
-        artifact.setLabScan(null);
-        artifact.setAnalysisCompleted(false);
-        return artifactRepository.save(artifact);
+        try {
+            validator.validate(artifact);
+            // the issues mentioned the labScan should be null and analysisComplete false
+            artifact.setLabScan(null);
+            artifact.setAnalysisCompleted(false);
+            return artifactRepository.save(artifact);
+        } catch (ConstraintViolationException ex) {
+            throw new ArtifactServiceException(ex.getMessage());
+        }
     }
 
     @Override
-    @Transactional
     public void deleteArtifact(Long id) {
         artifactRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public Artifact updateArtifact(Long id, Artifact artifact) {
-        var updatedArtifact = this.artifactRepository.
-                findById(artifact.getId()).
-                orElseThrow(
-                        () -> new EntityNotFoundException(String.format("Artifact with id %d, does not exist.", artifact.getId())
-                ));
+    public Artifact updateArtifact(Artifact artifact) {
+        var updatedArtifact = this.artifactRepository.findById(artifact.getId()).orElseThrow(() -> new EntityNotFoundException(String.format("Artifact with id %d, does not exist.", artifact.getId())));
         updatedArtifact.setDimension(artifact.getDimension());
         updatedArtifact.setPosition(artifact.getPosition());
         updatedArtifact.setRotation(artifact.getRotation());
@@ -61,7 +62,13 @@ public class ArtifactServiceImpl implements ArtifactService {
         updatedArtifact.setSection(artifact.getSection());
         updatedArtifact.setUser(artifact.getUser());
         updatedArtifact.setLabScan(null); // and here
-        return artifactRepository.save(updatedArtifact);
+        try {
+            validator.validate(artifact);
+            return artifactRepository.save(updatedArtifact);
+        } catch (ConstraintViolationException ex) {
+            throw new ArtifactServiceException(ex.getMessage());
+        }
+
     }
 
     @Override
@@ -87,5 +94,10 @@ public class ArtifactServiceImpl implements ArtifactService {
     @Override
     public List<Artifact> getArtifactsBySiteIdAndArcheologistId(Long siteId, Long archeologistId) {
         return artifactRepository.getArtifactsBySiteIdAndArchaeologistId(siteId, archeologistId);
+    }
+
+    @Override
+    public List<Artifact> getArtifactsByCategory(String category) {
+        return artifactRepository.findArtifactsByCategory(category);
     }
 }

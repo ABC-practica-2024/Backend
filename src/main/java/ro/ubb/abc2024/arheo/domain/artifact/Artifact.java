@@ -24,12 +24,13 @@ public class Artifact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private ArtifactDimension dimension ;
+    private ArtifactDimension dimension;
     private ArtifactPosition position;
     private ArtifactRotation rotation;
     @NotNull(message = "Label cannot be null")
     private String label;
     @NotNull(message = "Category cannot be null")
+    // TODO: change the type to ENUM once we know the exact categories for artifacts
     private String category;
     private boolean analysisCompleted;
     private String thumbnail;

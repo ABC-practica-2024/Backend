@@ -12,10 +12,11 @@ public interface ArtifactService {
     Artifact getArtifactById(Long id);
     Artifact addArtifact(Artifact artifact);
     void deleteArtifact(Long id);
-    Artifact updateArtifact(Long id, Artifact updatedArtifact);
+    Artifact updateArtifact(Artifact updatedArtifact);
     List<Artifact> getUnanalysedArtifacts();
     List<Artifact> getArtifactsByUser(User user);
     List<Artifact> getArtifactsBySectionId(Long id);
     List<Artifact> getArtifactsBySiteId(Long id);
     List<Artifact> getArtifactsBySiteIdAndArcheologistId(Long siteId, Long archeologistId);
+    List<Artifact> getArtifactsByCategory(String category);
 }
