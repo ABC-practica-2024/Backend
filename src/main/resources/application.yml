@@ -2,7 +2,6 @@ spring:
   application:
     name: abc2024
 
-
 #datasource configuration
   datasource:
     url: jdbc:postgresql://localhost:5432/abc2024
