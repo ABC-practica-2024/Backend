@@ -97,7 +97,7 @@ public class SecurityConfig {
                                         this.baseUrl+"/auth/login",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**"
-                                        //,"/api/arheo/**"
+                                        ,"/api/arheo/**"  // comment and uncomment this line to enable or disable the security related to auth
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )
