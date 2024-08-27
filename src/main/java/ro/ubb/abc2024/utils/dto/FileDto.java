@@ -4,6 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record FileDto (
         MultipartFile multipartFile,
-        String username
+        String folder
 ){
 }
