@@ -12,5 +12,5 @@ public interface FileService {
      String saveFile(MultipartFile fileToSave, String username);
      File getFile(String fileName);
      File downloadFile(UUID uuid);
-     String storeFileIntoDb(FileDto fileToSave) throws IOException;
+     String storeFileIntoDb(FileDto fileToSave);
 }

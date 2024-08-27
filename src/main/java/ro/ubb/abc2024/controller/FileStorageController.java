@@ -28,24 +28,18 @@ public class FileStorageController {
 
     @PostMapping("/upload")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
-    public Result<String> uploadFile(@RequestParam("file") FileDto fileDto) {
-        this.fileService.saveFile(fileDto.multipartFile(), fileDto.folder());
-        return new Result<>(true, HttpStatus.OK.value(), "File uploaded.");
-    }
+    public Result<String> storeFilesIntoDB(@RequestParam("file") FileDto file){
 
-    @PostMapping("/upload_to_db")
-    public Result<String> storeFilesIntoDB(@RequestParam("file") FileDto file) throws IOException {
-
-        this.fileService.storeFileIntoDb(file);
-        return new Result<>(true, HttpStatus.OK.value(), "File uploaded to the database successfully");
+        var savedFileId = this.fileService.storeFileIntoDb(file);
+        return new Result<>(true, HttpStatus.OK.value(),String.format("File with id %s uploaded to the database successfully", savedFileId));
     }
 
     @GetMapping("/download")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
     public ResponseEntity<Resource> downloadFile(@RequestParam("file") UUID uuid) {
-        var downloadedFile = this.fileService.getFile(uuid);
+        var downloadedFile = this.fileService.downloadFile(uuid);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadedFile.getName() + "\"")
                 .contentLength(downloadedFile.length())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(new FileSystemResource(downloadedFile));
