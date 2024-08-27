@@ -14,5 +14,4 @@ public class SiteCoordinate {
     private double longitude;
     private int orderIndex;
 
-
 }

@@ -95,13 +95,13 @@ public class Section {
 
     // reference to the site, not null; Site to Section is 1 to many; Site has id
     // site to which the section belongs
-    @ManyToOne(targetEntity = Site.class)
+    @ManyToOne(targetEntity = Site.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", referencedColumnName = "id", nullable = false)
     private Site site;
 
     // list of artifacts, nullable; reference to the artifacts
     // list of artifacts found in the section
-    @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     // join column correctly; artifacts are expected to have a section_id
     private List<Artifact> artifactsList;
 
