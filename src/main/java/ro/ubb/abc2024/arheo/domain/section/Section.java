@@ -1,9 +1,13 @@
 package ro.ubb.abc2024.arheo.domain.section;
 
 
+import com.fasterxml.jackson.core.JsonToken;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
@@ -14,6 +18,9 @@ import java.util.List;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Section {
     // long UID, automatically generated
     @Id
@@ -96,6 +103,5 @@ public class Section {
     @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     // join column correctly; artifacts are expected to have a section_id
     private List<Artifact> artifactsList;
-
 
 }
