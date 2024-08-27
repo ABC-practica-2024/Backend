@@ -74,7 +74,7 @@ public class SectionServiceImpl implements SectionService{
 
     @Override
     public Section getSection(long id) {
-        return this.sectionRepository.findById(id).orElseThrow(
+        return this.sectionRepository.getSectionByIdWithArtifacts(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", id)
                 ));
     }
@@ -125,11 +125,16 @@ public class SectionServiceImpl implements SectionService{
     }
 
     @Override
-    @Transactional
-    public List<Section> getSections() {
-        return this.sectionRepository.findAll();
-        //return this.sectionRepository.getSectionsWithArtifacts();
 
+    public List<Section> getSections() {
+        //return this.sectionRepository.findAll();
+        return this.sectionRepository.getSectionsWithArtifacts();
+
+    }
+
+    @Override
+    public List<Section> getIncompleteSections() {
+        return this.sectionRepository.getSectionsByStatusIsNot(SectionStatus.COMPLETED);
     }
 
     @Override
@@ -146,14 +151,14 @@ public class SectionServiceImpl implements SectionService{
 
     @Override
     public List<Artifact> getArtifactsFromSection(long sectionId) {
-        return this.sectionRepository.findById(sectionId).orElseThrow(
+        return this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
                 )).getArtifactsList();
     }
 
     @Override
     public List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId) {
-        List<Artifact> artifacts = this.sectionRepository.findById(sectionId).orElseThrow(
+        List<Artifact> artifacts = this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
                 )).getArtifactsList();
         artifacts.removeIf(artifact -> artifact.getUser().getId() != archaeologistId);

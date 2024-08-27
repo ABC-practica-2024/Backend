@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.service.SectionService;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
@@ -55,9 +56,44 @@ public class SectionController {
         return new Result<>(true, HttpStatus.OK.value(), "Deleted section", sectionDtoConverter.createFromEntity(sectionService.getSection(sectionId)));
     }
 
-    //@PutMapping
+    @PutMapping
     //@PreAuthorize("hasAnyAuthority('ARH')")
-    // edit/update
+    // edit/update a section; subject to change depending on what fields could be updated
+    // could be improved by adding to SectionService a method that takes the Dto as parameter
+    public Result<SectionDto> updateSection(@RequestBody SectionDto sectionDto) {
+        var section = sectionService.updateSection(sectionDtoConverter.createFromDto(sectionDto));
+        return new Result<>(true, HttpStatus.OK.value(), "Updated section", sectionDtoConverter.createFromEntity(section));
+    }
+
+    @GetMapping("/incomplete")
+    //@PreAuthorize("hasAnyAuthority('ARH')")
+    // get all sections that are incomplete
+    public Result<List<SectionDto>> getIncompleteSections() {
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all incomplete sections", sectionService.getIncompleteSections().stream()
+                .map(sectionDtoConverter::createFromEntity)
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/artefacts/{sectionId}")
+    //@PreAuthorize("hasAnyAuthority('ARH')")
+    // get all artifacts from a section
+    public Result<List<Long>> getArtifactsFromSection(@PathVariable long sectionId) {
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all artifacts from section", sectionService.getArtifactsFromSection(sectionId)
+                .stream()
+                .map(Artifact::getId)
+                .collect(Collectors.toList())
+        );  //todo: return ArtifactDto once it is implemented (or not, depending on what we want)
+    }
+
+    @GetMapping("/artefacts")
+    //@PreAuthorize("hasAnyAuthority('ARH')")
+    // get all artifacts from a section, from a specific archaeologist
+    public Result<List<Long>> getArtifactsFromSectionByArchaeologist(@RequestParam long sectionId, @RequestParam long archaeologistId) {
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all artifacts from section by archaeologist", sectionService.getArtifactsFromSectionByArchaeologist(sectionId, archaeologistId)
+                .stream()
+                .map(Artifact::getId)
+                .collect(Collectors.toList()));
+    }
 }
 
 
