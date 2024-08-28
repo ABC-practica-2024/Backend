@@ -1,8 +1,10 @@
 package ro.ubb.abc2024.biology.domain.Extremities;
 
-import jakarta.persistence.*;
-import lombok.*;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
 
@@ -12,6 +14,7 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Carpals extends Extremities {
+public class Carpals extends Extremity {
+    @Enumerated(EnumType.STRING)
     private EnumsBio.StagesOfDJD stagesOfDJD;
 }

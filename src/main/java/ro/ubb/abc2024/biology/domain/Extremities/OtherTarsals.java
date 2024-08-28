@@ -11,6 +11,7 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class OtherTarsals extends Extremities {
+public class OtherTarsals extends Extremity {
+    @Enumerated(EnumType.STRING)
     private EnumsBio.StagesOfDJD stagesOfDJD;
 }

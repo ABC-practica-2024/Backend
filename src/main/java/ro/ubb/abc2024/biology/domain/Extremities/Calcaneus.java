@@ -3,7 +3,6 @@ package ro.ubb.abc2024.biology.domain.Extremities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
@@ -14,7 +13,7 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Calcaneus extends Extremities {
+public class Calcaneus extends Extremity {
     private double maxLength;
 
     private double middleBreadth;

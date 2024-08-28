@@ -1,9 +1,11 @@
-package ro.ubb.abc2024.biology.domain;
+package ro.ubb.abc2024.biology.domain.Extremities;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import ro.ubb.abc2024.biology.domain.Bone;
+import ro.ubb.abc2024.biology.domain.EnumsBio;
 
 //@Entity
 @Data
@@ -12,19 +14,14 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @MappedSuperclass
-public class Bone extends BioLab {
+public class Extremity extends Bone {
     @Nullable
-    private String boneName;
-
-    @Nullable
-    @Enumerated(EnumType.STRING)
-    private EnumsBio.Side boneSide;
-
+    private int bonesNo;
     @Nullable
     @Enumerated(EnumType.STRING)
-    private EnumsBio.BoneHatch boneHatch;
+    private EnumsBio.InventoryCondition inventoryCondition;
 
     @Enumerated(EnumType.STRING)
-    private EnumsBio.BoneCrematedHatch boneCrematedHatch;
+    private EnumsBio.ExtremityBone boneType;
 
 }

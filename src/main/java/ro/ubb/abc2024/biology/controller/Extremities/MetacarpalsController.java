@@ -1,18 +1,20 @@
 package ro.ubb.abc2024.biology.controller.Extremities;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.abc2024.biology.domain.EnumsBio;
+import ro.ubb.abc2024.biology.domain.Extremities.Metacarpals;
+import ro.ubb.abc2024.biology.domain.Extremities.Metacarpals;
+import ro.ubb.abc2024.biology.domain.Extremities.Extremity;
 import ro.ubb.abc2024.biology.domain.Extremities.Metacarpals;
 import ro.ubb.abc2024.biology.dto.Extremeties.MetacarpalsDto;
-import ro.ubb.abc2024.biology.exception.ResourceNotFoundException;
+import ro.ubb.abc2024.biology.dto.Extremeties.MetacarpalsDto;
+import ro.ubb.abc2024.biology.dto.Extremeties.MetacarpalsDto;
 import ro.ubb.abc2024.biology.mapper.Extremities.MetacarpalsMapper;
-import ro.ubb.abc2024.biology.service.Extremities.Interfaces.IMetacarpalsService;
+import ro.ubb.abc2024.biology.service.Extremities.ExtremityService;
+import ro.ubb.abc2024.utils.dto.Result;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,64 +23,88 @@ import java.util.stream.Collectors;
 @RequestMapping("${api.endpoint.base-url}/")
 public class MetacarpalsController {
 
-
         @Autowired
-        private IMetacarpalsService metacarpalsService;
+        private  ExtremityService extremityService;
 
         @Autowired
         private MetacarpalsMapper metacarpalsMapper;
-
-
-
-        @GetMapping(value="/metacarpals", produces = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<List<MetacarpalsDto>> getAllMetacarpals() {
-                try {
-                        List<Metacarpals> metacarpals = metacarpalsService.getAllMetacarpals();
-                        List<MetacarpalsDto> metacarpalsDto = metacarpals.stream()
-                                .map(metacarpal -> metacarpalsMapper.toDto(metacarpal))
-                                .collect(Collectors.toList());
-                        return ResponseEntity.ok(metacarpalsDto);
-                } catch (ResourceNotFoundException e) {
-                        return ResponseEntity.notFound().build();
+        
+        
+        List<EnumsBio.ExtremityBone> metacarpalsEnums = List.of(
+                EnumsBio.ExtremityBone.METACARPALS,
+                EnumsBio.ExtremityBone.UPPER_SESAMOIDS
+        );
+        @GetMapping(value = "/metacarpals", produces = MediaType.APPLICATION_JSON_VALUE)
+        public Result<List<MetacarpalsDto>> getAllMetacarpals() {
+                List<Extremity> extremities = extremityService.getAll(EnumsBio.ExtremityBone.SCAPHOID);  // Use any metacarpal enum here
+                List<Metacarpals> metacarpals = extremities.stream()
+                        .filter(extremity -> extremity instanceof Metacarpals)
+                        .map(extremity -> (Metacarpals) extremity)
+                        .collect(Collectors.toList());
+                if (metacarpals.isEmpty()) {
+                        return new Result<>(false, HttpStatus.NOT_FOUND.value(), "Metacarpals not found", null);
                 }
+                List<MetacarpalsDto> metacarpalsDto = metacarpals.stream()
+                        .map(metacarpal -> metacarpalsMapper.toDto(metacarpal))
+                        .collect(Collectors.toList());
+                return new Result<>(true, HttpStatus.OK.value(), "Here are the metacarpals", metacarpalsDto);
+        }
+
+        @GetMapping(value="/metacarpals/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+        public Result<?> getExtremityById( @PathVariable Long id) {
+                for (EnumsBio.ExtremityBone bone : metacarpalsEnums) {
+                        try {
+                                Metacarpals metacarpals = (Metacarpals) extremityService.getById(bone, id);
+                                MetacarpalsDto metacarpalsDto = metacarpalsMapper.toDto(metacarpals);
+                                return new Result<>(true, HttpStatus.OK.value(), "Here are the metacarpals", metacarpalsDto);
+                        } catch (RuntimeException e) {
+                        }
+                }
+                return new Result<>(false, HttpStatus.NOT_FOUND.value(), "Metacarpals not found with id: " + id, null);
         }
 
 
-        @GetMapping(value="/metacarpals/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<MetacarpalsDto> getMetacarpalsById(@PathVariable
-                                                               Long id) {
-                try {
-                        Metacarpals metacarpals = metacarpalsService.getMetacarpalsById(id);
-                        MetacarpalsDto metacarpalsDto = metacarpalsMapper.toDto(metacarpals);
-                        return ResponseEntity.ok(metacarpalsDto);
-                } catch (ResourceNotFoundException e) {
-                        return ResponseEntity.notFound().build();
-                }
+        //
+//
+        @PostMapping(value = "/metacarpals", produces = MediaType.APPLICATION_JSON_VALUE)
+        public Result<MetacarpalsDto> saveMetacarpals(@RequestBody MetacarpalsDto metacarpalsDto) {
+                Metacarpals savedMetacarpals = (Metacarpals) extremityService.save(metacarpalsMapper.toEntity(metacarpalsDto));
+                MetacarpalsDto savedMetacarpalsDto = metacarpalsMapper.toDto(savedMetacarpals);
+                return new Result<>(true, HttpStatus.OK.value(), "Metacarpals saved successfully", savedMetacarpalsDto);
         }
 
 
         @PutMapping(value = "/metacarpals/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<MetacarpalsDto> updateMetacarpals(@PathVariable
-                                                              Long id,
-                                                              @RequestBody MetacarpalsDto metacarpalsDto) {
-                try {
-                        Metacarpals updatedMetacarpals = metacarpalsService.updateMetacarpals(id, metacarpalsMapper.toEntity(metacarpalsDto));
-                        MetacarpalsDto updatedMetacarpalsDto = metacarpalsMapper.toDto(updatedMetacarpals);
-                        return ResponseEntity.ok(updatedMetacarpalsDto);
-                } catch (ResourceNotFoundException e) {
-                        return ResponseEntity.notFound().build();
+        public Result<MetacarpalsDto> updateMetacarpals(@PathVariable
+                                                Long id,
+                                                @RequestBody MetacarpalsDto metacarpalsDto) {
+
+                for (EnumsBio.ExtremityBone bone : metacarpalsEnums) {
+                        try {
+                                Metacarpals metacarpals = metacarpalsMapper.toEntity(metacarpalsDto);
+                                metacarpals.setId(id);
+                                metacarpals.setBoneType(bone);
+                                Metacarpals updatedMetacarpals = (Metacarpals) extremityService.update(bone, metacarpals);
+                                MetacarpalsDto updatedMetacarpalsDto = metacarpalsMapper.toDto(updatedMetacarpals);
+                                return new Result<>(true, HttpStatus.OK.value(), "Metacarpals updated successfully", updatedMetacarpalsDto);
+                        } catch (RuntimeException e) {
+                                // Log the error or handle the exception as needed
+                        }
                 }
+                return new Result<>(false, HttpStatus.NOT_FOUND.value(), "Metacarpals not found with id: " + id, null);
         }
 
 
         @DeleteMapping(value = "/metacarpals/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<?> deleteMetacarpals(@PathVariable
-                                                  Long id) {
-                try {
-                        metacarpalsService.deleteMetacarpalsById(id);
-                        return ResponseEntity.noContent().build();
-                } catch (ResourceNotFoundException e) {
-                        return ResponseEntity.notFound().build();
+        public Result<?> deleteMetacarpals(@PathVariable
+                                       Long id) {
+                for (EnumsBio.ExtremityBone bone : metacarpalsEnums) {
+                        try {
+                                extremityService.deleteById(bone, id);
+                                return new Result<>(true, HttpStatus.NO_CONTENT.value(), "Metacarpals deleted successfully");
+                        } catch (RuntimeException e) {
+                        }
                 }
-        }        
+                return new Result<>(false, HttpStatus.NOT_FOUND.value(), "Metacarpals not found with id: " + id, null);
+        }
 }

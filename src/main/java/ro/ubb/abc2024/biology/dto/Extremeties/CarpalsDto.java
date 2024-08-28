@@ -9,6 +9,6 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class CarpalsDto {
+public class CarpalsDto extends ExtremityDto {
     EnumsBio.StagesOfDJD stagesOfDJD;
 }

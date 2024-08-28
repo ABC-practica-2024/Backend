@@ -12,9 +12,10 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class BioLab {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @Nullable
     private UUID designationID; // artefactId

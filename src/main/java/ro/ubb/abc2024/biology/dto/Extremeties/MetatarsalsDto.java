@@ -9,7 +9,7 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class MetatarsalsDto {
+public class MetatarsalsDto extends ExtremityDto{
     int proximalJuvenileStageOfUnion;
     int distalJuvenileStageOfUnion;
     EnumsBio.StagesOfDJD stagesOfDJD;

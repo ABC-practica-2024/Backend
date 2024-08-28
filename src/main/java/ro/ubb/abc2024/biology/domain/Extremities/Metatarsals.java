@@ -12,7 +12,7 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Metatarsals extends Extremities {
+public class Metatarsals extends Extremity {
     @Range(min=0, max=2) //verifica sa includa si valoarea min si max
     private int proximalJuvenileStageOfUnion;
     @Range(min=0, max=2) //verifica sa includa si valoarea min si max
