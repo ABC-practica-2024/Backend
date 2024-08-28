@@ -57,7 +57,6 @@ public class Site {
     @NotNull(message = "Main archaelogist cannot be null")
     User mainArchaeologist;
 
-    //todo: change at some point if needed from eager to lazy, not possible 2 left join fetches in the query from site repo
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "site_archaeologist",
