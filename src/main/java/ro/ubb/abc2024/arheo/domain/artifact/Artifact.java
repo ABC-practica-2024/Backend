@@ -24,24 +24,25 @@ public class Artifact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private ArtifactDimension dimension ;
+    private ArtifactDimension dimension;
     private ArtifactPosition position;
     private ArtifactRotation rotation;
     @NotNull(message = "Label cannot be null")
     private String label;
     @NotNull(message = "Category cannot be null")
+    // TODO: change the type to ENUM once we know the exact categories for artifacts
     private String category;
     private boolean analysisCompleted;
     private String thumbnail;
 
     // many to one relationship with Section
-    @ManyToOne(targetEntity = Section.class)
-    @JoinColumn(name = "section_id", referencedColumnName = "id")
+    @ManyToOne(targetEntity = Section.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id", referencedColumnName = "id", nullable = false)
     private Section section;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "archeologist_id", referencedColumnName = "id", nullable = false)
+    private User archeologist;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "artifact")
     @JoinColumn(name = "lab_scan_id", referencedColumnName = "id")
@@ -49,12 +50,14 @@ public class Artifact {
     // and maybe make sure the OneToMany relationship is correct and what we want
 
     @CreationTimestamp
-    @Column(updatable = false) // prevent updates to this field after creation
+    @Column(nullable = false, name = "created_at", updatable = false) // prevent updates to this field after creation
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(nullable = true, name = "updated_at")
     private LocalDateTime updatedAt;
 
-};
+
+}
 
 
