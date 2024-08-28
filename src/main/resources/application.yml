@@ -17,7 +17,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-#profiles configuration
+    open-in-view: false
+    #properties:
+    #  hibernate.enable_lazy_load_no_trans: true
+    #  using either this, or `open-in-view: true`
+
+  #profiles configuration
   profiles:
     active: dev
 #email configuration
@@ -63,3 +68,4 @@ rsa-key:
 api:
    endpoint:
     base-url: /api/v1
+    arheo: /api/arheo
