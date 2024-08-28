@@ -2,8 +2,10 @@ package ro.ubb.abc2024;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.artifact.ArtifactDimension;
@@ -28,7 +30,7 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class ArtifactServiceImplTest {
     @Mock
     private ArtifactRepository artifactRepository;
@@ -190,7 +192,7 @@ public class ArtifactServiceImplTest {
         Long siteId = artifact1.getSection().getSite().getId();
         Long archaeologistId = artifact1.getArcheologist().getId();
 
-        when(artifactRepository.getArtifactsBySiteIdAndArchaeologistId(siteId, archaeologistId)).thenReturn(Arrays.asList(artifact1, artifact2));
+        when(artifactRepository.findArtifactsBySection_Site_IdAndArcheologist_Id(siteId, archaeologistId)).thenReturn(Arrays.asList(artifact1, artifact2));
 
         List<Artifact> artifacts = artifactService.getArtifactsBySiteIdAndArcheologistId(siteId, archaeologistId);
 
