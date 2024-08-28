@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
-import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.exception.SectionServiceException;
 import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
@@ -161,7 +160,7 @@ public class SectionServiceImpl implements SectionService{
         List<Artifact> artifacts = this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
                 )).getArtifactsList();
-        artifacts.removeIf(artifact -> artifact.getUser().getId() != archaeologistId);
+        artifacts.removeIf(artifact -> artifact.getArcheologist().getId() != archaeologistId);
         return artifacts;
     }
 }
