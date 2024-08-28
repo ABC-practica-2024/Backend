@@ -2,11 +2,8 @@ package ro.ubb.abc2024;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.artifact.ArtifactDimension;
@@ -76,7 +73,7 @@ public class ArtifactServiceImplTest {
                 .analysisCompleted(false)
                 .thumbnail("thumbnail1.jpg")
                 .section(section)
-                .user(user)
+                .archeologist(user)
                 .build();
 
         artifact2 = Artifact.builder()
@@ -89,7 +86,7 @@ public class ArtifactServiceImplTest {
                 .analysisCompleted(false)
                 .thumbnail("thumbnail2.jpg")
                 .section(section)
-                .user(user)
+                .archeologist(user)
                 .build();
     }
 
@@ -151,15 +148,15 @@ public class ArtifactServiceImplTest {
 
     @Test
     void getArtifactsByUser_ShouldReturnArtifactsOfUser() {
-        User user = artifact1.getUser();
+        User user = artifact1.getArcheologist();
 
-        when(artifactRepository.findArtifactsByUser(user)).thenReturn(Arrays.asList(artifact1, artifact2));
+        when(artifactRepository.findArtifactsByArcheologist_Id(user.getId())).thenReturn(Arrays.asList(artifact1, artifact2));
 
-        List<Artifact> artifacts = artifactService.getArtifactsByUser(user);
+        List<Artifact> artifacts = artifactService.getArtifactsByArcheologistId(user.getId());
 
         assertEquals(2, artifacts.size());
-        assertEquals(user, artifacts.get(0).getUser());
-        assertEquals(user, artifacts.get(1).getUser());
+        assertEquals(user, artifacts.get(0).getArcheologist());
+        assertEquals(user, artifacts.get(1).getArcheologist());
     }
 
     @Test
@@ -191,7 +188,7 @@ public class ArtifactServiceImplTest {
     @Test
     void getArtifactsBySiteIdAndArcheologistId_ShouldReturnArtifactsForSiteAndArcheologist() {
         Long siteId = artifact1.getSection().getSite().getId();
-        Long archaeologistId = artifact1.getUser().getId();
+        Long archaeologistId = artifact1.getArcheologist().getId();
 
         when(artifactRepository.getArtifactsBySiteIdAndArchaeologistId(siteId, archaeologistId)).thenReturn(Arrays.asList(artifact1, artifact2));
 

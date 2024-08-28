@@ -36,13 +36,13 @@ public class Artifact {
     private String thumbnail;
 
     // many to one relationship with Section
-    @ManyToOne(targetEntity = Section.class)
-    @JoinColumn(name = "section_id", referencedColumnName = "id")
+    @ManyToOne(targetEntity = Section.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id", referencedColumnName = "id", nullable = false)
     private Section section;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "archeologist_id", referencedColumnName = "id", nullable = false)
+    private User archeologist;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "artifact")
     @JoinColumn(name = "lab_scan_id", referencedColumnName = "id")
@@ -50,11 +50,13 @@ public class Artifact {
     // and maybe make sure the OneToMany relationship is correct and what we want
 
     @CreationTimestamp
-    @Column(updatable = false) // prevent updates to this field after creation
+    @Column(nullable = false, name = "created_at", updatable = false) // prevent updates to this field after creation
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(nullable = true, name = "updated_at")
     private LocalDateTime updatedAt;
+
 
 }
 
