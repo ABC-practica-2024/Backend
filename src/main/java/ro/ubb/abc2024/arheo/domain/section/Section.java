@@ -1,19 +1,27 @@
 package ro.ubb.abc2024.arheo.domain.section;
 
 
+import com.fasterxml.jackson.core.JsonToken;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Section {
     // long UID, automatically generated
     @Id
@@ -76,26 +84,25 @@ public class Section {
     // the date when the section was created
     @CreationTimestamp
     @Column(nullable = false, name = "created_at", updatable = false)
-    private long createdAt;
+    private LocalDateTime createdAt;
 
     // timestamp, nullable
     // the date when the section was last modified - stage changed
 
     @UpdateTimestamp
     @Column(nullable = true, name = "updated_at")
-    private long updatedAt;
+    private LocalDateTime updatedAt;
 
     // reference to the site, not null; Site to Section is 1 to many; Site has id
     // site to which the section belongs
-    @ManyToOne(targetEntity = Site.class)
+    @ManyToOne(targetEntity = Site.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", referencedColumnName = "id", nullable = false)
     private Site site;
 
     // list of artifacts, nullable; reference to the artifacts
     // list of artifacts found in the section
-    @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     // join column correctly; artifacts are expected to have a section_id
     private List<Artifact> artifactsList;
-
 
 }
