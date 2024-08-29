@@ -1,6 +1,7 @@
 package ro.ubb.abc2024.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.endpoint.base-url}/admin")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Admin")
 public class AdminController {
     private final UserService userService;
     private final UserAdminDtoConverter userAdminDtoConverter;

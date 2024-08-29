@@ -1,6 +1,8 @@
 package ro.ubb.abc2024.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -25,23 +27,36 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("${api.endpoint.base-url}/users")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "User Management")
 public class UserController {
     private final UserService userService;
     private final UserDtoConverter userDtoConverter;
 
+    @Operation(
+            description = "Get user endpoint",
+            summary = "Retrieves details about the current user, based on the JWT token."
+    )
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
     public Result<UserDto> getUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var user = userDtoConverter.createFromEntity(this.userService.getUser(username));
         return new Result<>(true, HttpStatus.OK.value(), "Details about user served.", user);
     }
 
+    @Operation(
+            description = "Get profile picture endpoint; returns an image",
+            summary = "Retrieves the profile picture of the current user, based on the JWT token; returns the image itself."
+    )
     @GetMapping("/profile_picture")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
-    public ResponseEntity<Resource> getUserProfilePicture() throws IOException {
+    public ResponseEntity<?> getUserProfilePicture() throws IOException {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var user = this.userService.getUser(username);
+
+        if(user.getImagePath() == null)
+            return ResponseEntity.noContent().build();
+
         Path imagePath = Paths.get(user.getImagePath());
         Resource resource = new FileSystemResource(imagePath.toFile());
         String contentType = Files.probeContentType(imagePath);
@@ -52,14 +67,14 @@ public class UserController {
     }
 
     @PutMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
     public Result<UserDto> modifyUser(@RequestBody UserDto userDto){
         var user = this.userDtoConverter.createFromEntity(this.userService.updateUser(this.userDtoConverter.createFromDto(userDto)));
         return new Result<>(true, HttpStatus.OK.value(), "User updated successfully.", user);
     }
 
     @PutMapping("/password")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
     public Result<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
         this.userService.changePassword(changePasswordDto);
         return new Result<>(true, HttpStatus.OK.value(), "Password changed.");
