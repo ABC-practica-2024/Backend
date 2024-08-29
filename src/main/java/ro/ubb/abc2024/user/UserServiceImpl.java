@@ -23,12 +23,11 @@ public class UserServiceImpl implements UserService{
     private final FileService fileService;
     private final GenericValidator<User> validator;
     private final PasswordEncoder passwordEncoder;
+
     @Override
-    public User addUser(User user, MultipartFile file) {
+    public User addUser(User user) {
         try {
             validator.validate(user);
-            var imagePath = this.fileService.saveFile(file, user.getUsername());
-
             return this.userRepository.save(user);
         } catch (ConstraintViolationException ex){
             throw new UserServiceException(ex.getMessage());
