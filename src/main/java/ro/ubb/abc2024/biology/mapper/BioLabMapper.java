@@ -2,7 +2,7 @@ package ro.ubb.abc2024.biology.mapper;
 
 import org.mapstruct.Mapper;
 import ro.ubb.abc2024.biology.domain.BioLab;
-import ro.ubb.abc2024.biology.dto.teeth.BioLabDto;
+import ro.ubb.abc2024.biology.dto.BioLabDto;
 
 @Mapper(componentModel = "spring")
 public interface BioLabMapper {

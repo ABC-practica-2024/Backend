@@ -1,4 +1,4 @@
-package ro.ubb.abc2024.biology.dto.teeth;
+package ro.ubb.abc2024.biology.dto;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EnumType;
