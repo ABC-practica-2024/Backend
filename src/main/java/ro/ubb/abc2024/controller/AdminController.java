@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,10 @@ public class AdminController {
     private final UserService userService;
     private final UserAdminDtoConverter userAdminDtoConverter;
 
+    @Operation(
+            summary = "Endpoint for all users",
+            description = "Returns a list of all users."
+    )
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<List<UserAdminDto>> getAllUsers() {
@@ -32,6 +37,10 @@ public class AdminController {
         return new Result<>(true, HttpStatus.OK.value(), "Here is a list of all the users.", users);
     }
 
+    @Operation(
+            summary = "Get user endpoint",
+            description = "Returns a user, based on the given id."
+    )
     @GetMapping("/users/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<UserAdminDto> getUser(@PathVariable long id) {
@@ -39,6 +48,10 @@ public class AdminController {
         return new Result<>(true, HttpStatus.OK.value(), String.format("Here is the user with id: %d", id), user);
     }
 
+    @Operation(
+            summary = "Change user's role endpoint",
+            description = "Changes the role of a given user to a new role, based on username."
+    )
     @PutMapping("/users/role")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<?> changeRole(@RequestBody ChangeRoleDto changeRoleDto) {
@@ -46,6 +59,10 @@ public class AdminController {
         return new Result<>(true, HttpStatus.OK.value(), String.format("Role for the user %s changed.", changeRoleDto.username()));
     }
 
+    @Operation(
+            summary = "Enable user endpoint",
+            description = "Updates a given user's account status, based on username."
+    )
     @PutMapping("/users/enable")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<?> enableUser(@RequestBody EnableUserDto enableUserDto) {

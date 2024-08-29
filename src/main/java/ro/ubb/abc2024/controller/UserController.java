@@ -33,8 +33,8 @@ public class UserController {
     private final UserDtoConverter userDtoConverter;
 
     @Operation(
-            description = "Get user endpoint",
-            summary = "Retrieves details about the current user, based on the JWT token."
+            summary = "Get user endpoint",
+            description = "Retrieves details about the current user, based on the JWT token."
     )
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
@@ -45,8 +45,8 @@ public class UserController {
     }
 
     @Operation(
-            description = "Get profile picture endpoint; returns an image",
-            summary = "Retrieves the profile picture of the current user, based on the JWT token; returns the image itself."
+            summary = "Get profile picture endpoint; returns an image",
+            description = "Retrieves the profile picture of the current user, based on the JWT token; returns the image itself."
     )
     @GetMapping("/profile_picture")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
@@ -66,6 +66,10 @@ public class UserController {
                         .body(resource);
     }
 
+    @Operation(
+            summary = "Modify user endpoint; returns the user",
+            description = "Updates a given user's fields (first/last name and email) based on the username; returns the updated user."
+    )
     @PutMapping()
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
     public Result<UserDto> modifyUser(@RequestBody UserDto userDto){
@@ -73,6 +77,10 @@ public class UserController {
         return new Result<>(true, HttpStatus.OK.value(), "User updated successfully.", user);
     }
 
+    @Operation(
+            summary = "Change user password endpoint; returns message",
+            description = "Updates a given user's password based on the username; requires old password for security and new password."
+    )
     @PutMapping("/password")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
     public Result<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {

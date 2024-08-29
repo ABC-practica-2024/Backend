@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public User updateUser(User user) {
         var updatedUser = this.userRepository.findByUsername(user.getUsername()).orElseThrow(
-                () -> new EntityNotFoundException(String.format("User with id %d, does not exist.", user.getId())
+                () -> new EntityNotFoundException(String.format("User with username %s, does not exist.", user.getUsername())
                 ));
         updatedUser.setEmail(user.getEmail());
         updatedUser.setFirstName(user.getFirstName());
