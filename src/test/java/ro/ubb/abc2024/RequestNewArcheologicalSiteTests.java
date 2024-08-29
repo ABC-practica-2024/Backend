@@ -1,11 +1,9 @@
 package ro.ubb.abc2024;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ro.ubb.abc2024.arheo.domain.CreateArchaeologicalSiteRequest;
-import ro.ubb.abc2024.arheo.domain.Status;
+import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
@@ -15,6 +13,7 @@ import ro.ubb.abc2024.arheo.service.SiteService;
 import ro.ubb.abc2024.user.Role;
 import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
+import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -76,18 +75,18 @@ public class RequestNewArcheologicalSiteTests {
         request.setDescription("A description for the test site.");
         request.setCenterCoordinates(new GeographicPoint(10.0, 20.0)); // Ensure this matches your constructor
         request.setPerimeterCoordinates(Collections.emptyList());
-        request.setStatus(Status.PENDING);
+        request.setStatus(RequestStatus.PENDING);
         request.setCreateRequestTime(LocalDateTime.now());
         request.setArcheologist(userArheo);
 
 
-        CreateArchaeologicalSiteRequest result = siteService.requestCreateArcheologicalSite(request);
+        CreateArchaeologicalSiteRequest result = siteService.requestCreateArchaeologicalSite(request);
 
 
         assertNotNull(result, "The result should not be null");
         assertEquals(request.getTitle(), result.getTitle(), "The title should match");
         assertEquals(request.getDescription(), result.getDescription(), "The description should match");
-        assertEquals(Status.PENDING, result.getStatus(), "The status should be PENDING");
+        assertEquals(RequestStatus.PENDING, result.getStatus(), "The status should be PENDING");
         assertNotNull(result.getId(), "The ID should be generated");
     }
 
@@ -99,14 +98,14 @@ public class RequestNewArcheologicalSiteTests {
         request.setDescription("A description for the test site.");
         request.setCenterCoordinates(new GeographicPoint(10.0, 20.0));
         request.setPerimeterCoordinates(Collections.emptyList());
-        request.setStatus(Status.PENDING);
+        request.setStatus(RequestStatus.PENDING);
         request.setCreateRequestTime(LocalDateTime.now());
         request.setArcheologist(userArheo);
 
-        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArcheologicalSite(request);
+        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArchaeologicalSite(request);
 
 
-        CreateArchaeologicalSiteRequest result = siteService.getCreateArchaeologicalSiteRequestById(savedRequest.getId());
+        CreateArchaeologicalSiteRequest result = siteService.getCreateArchaeologicalSiteRequest(savedRequest.getId());
 
 
         assertNotNull(result, "The result should not be null");
@@ -122,11 +121,11 @@ public class RequestNewArcheologicalSiteTests {
         request.setDescription("A description for the test site.");
         request.setCenterCoordinates(new GeographicPoint(10.0, 20.0));
         request.setPerimeterCoordinates(Collections.emptyList());
-        request.setStatus(Status.PENDING);
+        request.setStatus(RequestStatus.PENDING);
         request.setCreateRequestTime(LocalDateTime.now());
         request.setArcheologist(userArheo);
 
-        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArcheologicalSite(request);
+        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArchaeologicalSite(request);
 
         // Act
         siteService.deleteCreateArchaeologicalSiteRequest(savedRequest.getId());
@@ -144,7 +143,7 @@ public class RequestNewArcheologicalSiteTests {
         request1.setDescription("Description 1");
         request1.setCenterCoordinates(new GeographicPoint(10.0, 20.0));
         request1.setPerimeterCoordinates(Collections.emptyList());
-        request1.setStatus(Status.PENDING);
+        request1.setStatus(RequestStatus.PENDING);
         request1.setCreateRequestTime(LocalDateTime.now());
         request1.setArcheologist(userArheo);
 
@@ -153,12 +152,12 @@ public class RequestNewArcheologicalSiteTests {
         request2.setDescription("Description 2");
         request2.setCenterCoordinates(new GeographicPoint(15.0, 25.0));
         request2.setPerimeterCoordinates(Collections.emptyList());
-        request2.setStatus(Status.PENDING);
+        request2.setStatus(RequestStatus.PENDING);
         request2.setCreateRequestTime(LocalDateTime.now());
         request2.setArcheologist(userArheo);
 
-        siteService.requestCreateArcheologicalSite(request1);
-        siteService.requestCreateArcheologicalSite(request2);
+        siteService.requestCreateArchaeologicalSite(request1);
+        siteService.requestCreateArchaeologicalSite(request2);
 
         // Act
         List<CreateArchaeologicalSiteRequest> requests = siteService.getAllSiteRequests();
@@ -175,7 +174,7 @@ public class RequestNewArcheologicalSiteTests {
         request1.setDescription("Pending Description");
         request1.setCenterCoordinates(new GeographicPoint(10.0, 20.0));
         request1.setPerimeterCoordinates(Collections.emptyList());
-        request1.setStatus(Status.PENDING);
+        request1.setStatus(RequestStatus.PENDING);
         request1.setCreateRequestTime(LocalDateTime.now());
         request1.setArcheologist(userArheo);
 
@@ -184,12 +183,12 @@ public class RequestNewArcheologicalSiteTests {
         request2.setDescription("Accepted Description");
         request2.setCenterCoordinates(new GeographicPoint(15.0, 25.0));
         request2.setPerimeterCoordinates(Collections.emptyList());
-        request2.setStatus(Status.ACCEPTED);
+        request2.setStatus(RequestStatus.ACCEPTED);
         request2.setCreateRequestTime(LocalDateTime.now());
         request2.setArcheologist(userArheo);
 
-        siteService.requestCreateArcheologicalSite(request1);
-        siteService.requestCreateArcheologicalSite(request2);
+        siteService.requestCreateArchaeologicalSite(request1);
+        siteService.requestCreateArchaeologicalSite(request2);
 
         // Act
         List<CreateArchaeologicalSiteRequest> pendingRequests = siteService.getPendingSiteRequests();
@@ -207,17 +206,17 @@ public class RequestNewArcheologicalSiteTests {
         request.setDescription("Description for the test site to solve");
         request.setCenterCoordinates(new GeographicPoint(10.0, 20.0));
         request.setPerimeterCoordinates(Collections.emptyList());
-        request.setStatus(Status.PENDING);
+        request.setStatus(RequestStatus.PENDING);
         request.setCreateRequestTime(LocalDateTime.now());
         request.setArcheologist(userArheo);
 
-        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArcheologicalSite(request);
+        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArchaeologicalSite(request);
 
         // Act
         CreateArchaeologicalSiteRequest solvedRequest = siteService.solveCreateSiteRequest(savedRequest.getId());
 
         // Assert
-        assertEquals(Status.ACCEPTED, solvedRequest.getStatus(), "The request status should be ACCEPTED");
+        assertEquals(RequestStatus.ACCEPTED, solvedRequest.getStatus(), "The request status should be ACCEPTED");
         assertNotNull(solvedRequest.getSolveRequestTime(), "The solveRequestTime should be set");
 
         // Verify that a Site was created

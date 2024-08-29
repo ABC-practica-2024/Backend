@@ -1,4 +1,4 @@
-package ro.ubb.abc2024.arheo.domain;
+package ro.ubb.abc2024.arheo.domain.site;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
-import ro.ubb.abc2024.arheo.domain.site.SiteCoordinate;
 import ro.ubb.abc2024.user.User;
+import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,7 +40,7 @@ public class CreateArchaeologicalSiteRequest {
 
     @NotNull(message = "Status cannot be null")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private RequestStatus status;
 
     @NotNull(message = "Request time cannot be null")
     private LocalDateTime createRequestTime;

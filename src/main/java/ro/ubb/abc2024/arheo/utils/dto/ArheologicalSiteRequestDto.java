@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ro.ubb.abc2024.arheo.domain.Status;
 import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.arheo.domain.site.SiteCoordinate;
 

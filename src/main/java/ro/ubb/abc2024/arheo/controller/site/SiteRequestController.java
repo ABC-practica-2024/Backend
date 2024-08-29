@@ -1,4 +1,4 @@
-package ro.ubb.abc2024.arheo.controller;
+package ro.ubb.abc2024.arheo.controller.site;
 import jakarta.persistence.EntityNotFoundException;
 import ro.ubb.abc2024.arheo.utils.dto.ArheologicalSiteRequestDto;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.utils.converter.ArheologicalSiteRequestDtoConverter;
-import ro.ubb.abc2024.arheo.domain.CreateArchaeologicalSiteRequest;
+import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.service.SiteService;
 import ro.ubb.abc2024.utils.dto.Result;
 
@@ -16,17 +16,17 @@ import ro.ubb.abc2024.utils.dto.Result;
 @RestController
 @RequestMapping("${api.endpoint.base-url}/request_site")
 @SecurityRequirement(name = "bearerAuth")
-public class SiteController {
+public class SiteRequestController {
 
     private final SiteService siteService;
     private final ArheologicalSiteRequestDtoConverter converter;
     //TODO: implement the functions here and in service
     @PostMapping("/request")
     @PreAuthorize("hasAuthority('SCOPE_ARH')")
-    public Result<?> requestCreateArcheologicalSite(@RequestBody ArheologicalSiteRequestDto requestDto)  {
+    public Result<?> requestCreateArchaeologicalSite(@RequestBody ArheologicalSiteRequestDto requestDto)  {
 
         CreateArchaeologicalSiteRequest siteRequest = converter.createFromDto(requestDto);
-        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArcheologicalSite(siteRequest);
+        CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArchaeologicalSite(siteRequest);
         return new Result<>(true, HttpStatus.CREATED.value(),
                 String.format("Archaeological site request created with ID %d", savedRequest.getId()), savedRequest);
     }
@@ -48,7 +48,7 @@ public class SiteController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<CreateArchaeologicalSiteRequest> getCreateSiteRequestById(@PathVariable long id) {
-        var createArchaeologicalSiteRequest = this.siteService.getCreateArchaeologicalSiteRequestById(id);
+        var createArchaeologicalSiteRequest = this.siteService.getCreateArchaeologicalSiteRequest(id);
         return new Result<>(true, HttpStatus.OK.value(),String.format("Here is the create archaeological site request with id %d", id),createArchaeologicalSiteRequest);
     }
 
