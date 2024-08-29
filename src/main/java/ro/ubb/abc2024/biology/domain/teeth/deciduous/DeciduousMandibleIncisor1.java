@@ -16,7 +16,7 @@ public class DeciduousMandibleIncisor1 extends DeciduousIncisor {
 
     @Nullable
     @Enumerated(EnumType.STRING)
-    private EnumsBio.DentalMorpho dAR;
+    private EnumsBio.DentalMorpho dar;
 
     @Nullable
     @Enumerated(EnumType.STRING)

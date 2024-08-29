@@ -1,10 +1,9 @@
 package ro.ubb.abc2024.utils.converter;
 
 import org.springframework.stereotype.Component;
-import ro.ubb.abc2024.utils.dto.RegistrationUserDto;
 import ro.ubb.abc2024.user.Role;
 import ro.ubb.abc2024.user.User;
-
+import ro.ubb.abc2024.utils.dto.RegistrationUserDto;
 
 import java.util.UUID;
 

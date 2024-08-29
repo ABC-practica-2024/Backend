@@ -9,15 +9,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Range;
-import ro.ubb.abc2024.biology.domain.BioLab;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
+import ro.ubb.abc2024.biology.dto.TeethDto;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class ToothDto extends BioLab {
+public class ToothDto extends TeethDto {
 
     @Nullable
     @Enumerated(EnumType.STRING)

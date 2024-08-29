@@ -1,45 +1,40 @@
 package ro.ubb.abc2024.biology.service.teeth.permanent;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMandibleMolar1;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMandibleMolar1Dto;
-import ro.ubb.abc2024.biology.repository.teeth.permanent.PermanentMandibleMolar1Repository;
-import ro.ubb.abc2024.biology.service.teeth.ToothServiceImpl;
+import ro.ubb.abc2024.biology.mapper.teeth.permanent.PermanentMandibleMolar1Mapper;
+import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
+import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
 
 @Service
-public class PermanentMandibleMolar1ServiceImpl extends ToothServiceImpl<PermanentMandibleMolar1, PermanentMandibleMolar1Dto> {
+public class PermanentMandibleMolar1ServiceImpl
+        extends GenericServiceImpl<PermanentMandibleMolar1, PermanentMandibleMolar1Dto>
+        implements SpecificToothService<PermanentMandibleMolar1, PermanentMandibleMolar1Dto> {
 
-    private  final PermanentMandibleMolar1Repository specificRepository;
+    private final PermanentMandibleMolar1Mapper mapper;
 
     @Autowired
-    public PermanentMandibleMolar1ServiceImpl(JpaRepository<PermanentMandibleMolar1, Long> repository, PermanentMandibleMolar1Repository specificRepository) {
+    public PermanentMandibleMolar1ServiceImpl(JpaRepository<PermanentMandibleMolar1, Long> repository,
+                                              PermanentMandibleMolar1Mapper mapper) {
         super(repository);
-        this.specificRepository = specificRepository;
+        this.mapper = mapper;
     }
 
+    @Transactional
     @Override
-    public PermanentMandibleMolar1 update(Long id, PermanentMandibleMolar1Dto dto){
-        PermanentMandibleMolar1 updatedEntity = super.update(id, dto);
-
-        // PermanentMolar fields
-        updatedEntity.setCusp5(dto.getCusp5() == null ? updatedEntity.getCusp5() : dto.getCusp5());
-        updatedEntity.setEnamelExt(dto.getEnamelExt() == null ? updatedEntity.getEnamelExt() : dto.getEnamelExt());
-        updatedEntity.setRootNumber(dto.getRootNumber() == null ? updatedEntity.getRootNumber() : dto.getRootNumber());
-        updatedEntity.setRadicalNumber(dto.getRadicalNumber() == null ? updatedEntity.getRadicalNumber() : dto.getRadicalNumber());
-        // PermanentMandibleMolar1 fields
-        updatedEntity.setAntFovea(dto.getAntFovea() == null ? updatedEntity.getAntFovea() : dto.getAntFovea());
-        updatedEntity.setGroovePattern(dto.getGroovePattern() == null ? updatedEntity.getGroovePattern() : dto.getGroovePattern());
-        updatedEntity.setCuspNumber(dto.getCuspNumber() == null ? updatedEntity.getCuspNumber() : dto.getCuspNumber());
-        updatedEntity.setDeflectingWrinkle(dto.getDeflectingWrinkle() == null ? updatedEntity.getDeflectingWrinkle() : dto.getDeflectingWrinkle());
-        updatedEntity.setMidTrigonidCrest(dto.getMidTrigonidCrest() == null ? updatedEntity.getMidTrigonidCrest() : dto.getMidTrigonidCrest());
-        updatedEntity.setDistalTrigonidCrest(dto.getDistalTrigonidCrest() == null ? updatedEntity.getDistalTrigonidCrest() : dto.getDistalTrigonidCrest());
-        updatedEntity.setProtstylid(dto.getProtstylid() == null ? updatedEntity.getProtstylid() : dto.getProtstylid());
-        updatedEntity.setCusp6(dto.getCusp6() == null ? updatedEntity.getCusp6() : dto.getCusp6());
-        updatedEntity.setCusp7(dto.getCusp7() == null ? updatedEntity.getCusp7() : dto.getCusp7());
-
-        return specificRepository.save(updatedEntity);
+    public PermanentMandibleMolar1 save(PermanentMandibleMolar1Dto dto) {
+        return repository.save(mapper.toEntity(dto));
     }
 
+    @Transactional
+    @Override
+    public PermanentMandibleMolar1 update(Long id, PermanentMandibleMolar1Dto dto) {
+        PermanentMandibleMolar1 existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
+    }
 }

@@ -1,37 +1,40 @@
 package ro.ubb.abc2024.biology.service.teeth.permanent;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMandibleIncisor1;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMandibleIncisor1Dto;
-import ro.ubb.abc2024.biology.repository.teeth.permanent.PermanentMandibleIncisor1Repository;
-import ro.ubb.abc2024.biology.service.teeth.ToothServiceImpl;
+import ro.ubb.abc2024.biology.mapper.teeth.permanent.PermanentMandibleIncisor1Mapper;
+import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
+import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
 
 @Service
-public class PermanentMandibleIncisor1ServiceImpl extends ToothServiceImpl<PermanentMandibleIncisor1, PermanentMandibleIncisor1Dto> {
+public class PermanentMandibleIncisor1ServiceImpl
+        extends GenericServiceImpl<PermanentMandibleIncisor1, PermanentMandibleIncisor1Dto>
+        implements SpecificToothService<PermanentMandibleIncisor1, PermanentMandibleIncisor1Dto> {
 
-    private final PermanentMandibleIncisor1Repository specificRepository;
+    private final PermanentMandibleIncisor1Mapper mapper;
 
     @Autowired
     public PermanentMandibleIncisor1ServiceImpl(JpaRepository<PermanentMandibleIncisor1, Long> repository,
-                                                PermanentMandibleIncisor1Repository specificRepository) {
+                                                PermanentMandibleIncisor1Mapper mapper) {
         super(repository);
-        this.specificRepository = specificRepository;
+        this.mapper = mapper;
     }
 
+    @Transactional
     @Override
-    public PermanentMandibleIncisor1 update(Long id, PermanentMandibleIncisor1Dto dto){
-        PermanentMandibleIncisor1 updatedEntity = super.update(id, dto);
+    public PermanentMandibleIncisor1 save(PermanentMandibleIncisor1Dto dto) {
+        return repository.save(mapper.toEntity(dto));
+    }
 
-        // PermanentIncisor fields
-        updatedEntity.setShovel(dto.getShovel() == null ? updatedEntity.getShovel() : dto.getShovel());
-        updatedEntity.setDoubleShovel(dto.getDoubleShovel() == null ? updatedEntity.getDoubleShovel() : dto.getDoubleShovel());
-        updatedEntity.setRootNumber(dto.getRootNumber() == null ? updatedEntity.getRootNumber() : dto.getRootNumber());
-        updatedEntity.setRadicalNumber(dto.getRadicalNumber() == null ? updatedEntity.getRadicalNumber() : dto.getRadicalNumber());
-        // PermanentMandibleIncisor1 fields
-        updatedEntity.setCongAbsence(dto.getCongAbsence() == null ? updatedEntity.getCongAbsence() : dto.getCongAbsence());
-
-        return specificRepository.save(updatedEntity);
+    @Transactional
+    @Override
+    public PermanentMandibleIncisor1 update(Long id, PermanentMandibleIncisor1Dto dto) {
+        PermanentMandibleIncisor1 existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
     }
 }

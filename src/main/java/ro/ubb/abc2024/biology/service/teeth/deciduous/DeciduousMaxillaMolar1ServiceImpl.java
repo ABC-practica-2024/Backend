@@ -1,36 +1,40 @@
 package ro.ubb.abc2024.biology.service.teeth.deciduous;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMaxillaMolar1;
 import ro.ubb.abc2024.biology.dto.teeth.deciduous.DeciduousMaxillaMolar1Dto;
-import ro.ubb.abc2024.biology.repository.teeth.deciduous.DeciduousMaxillaMolar1Repository;
-import ro.ubb.abc2024.biology.service.teeth.ToothServiceImpl;
+import ro.ubb.abc2024.biology.mapper.teeth.deciduous.DeciduousMaxillaMolar1Mapper;
+import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
+import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
 
 @Service
-public class DeciduousMaxillaMolar1ServiceImpl extends ToothServiceImpl<DeciduousMaxillaMolar1, DeciduousMaxillaMolar1Dto> {
+public class DeciduousMaxillaMolar1ServiceImpl
+        extends GenericServiceImpl<DeciduousMaxillaMolar1, DeciduousMaxillaMolar1Dto>
+        implements SpecificToothService<DeciduousMaxillaMolar1, DeciduousMaxillaMolar1Dto> {
 
-    private final DeciduousMaxillaMolar1Repository specificRepository;
+    private final DeciduousMaxillaMolar1Mapper mapper;
 
     @Autowired
-    public DeciduousMaxillaMolar1ServiceImpl(@Qualifier("deciduousMaxillaMolar1Repository")
-                                                 JpaRepository<DeciduousMaxillaMolar1, Long> repository,
-                                             DeciduousMaxillaMolar1Repository specificRepository) {
+    public DeciduousMaxillaMolar1ServiceImpl(JpaRepository<DeciduousMaxillaMolar1, Long> repository,
+                                             DeciduousMaxillaMolar1Mapper mapper) {
         super(repository);
-        this.specificRepository = specificRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public DeciduousMaxillaMolar1 update(Long id, DeciduousMaxillaMolar1Dto dto){
-        DeciduousMaxillaMolar1 updatedEntity = super.update(id, dto);
+    @Transactional
+    public DeciduousMaxillaMolar1 save(DeciduousMaxillaMolar1Dto dto) {
+        return repository.save(mapper.toEntity(dto));
+    }
 
-        // DeciduousMaxillaMolar1 fields
-        updatedEntity.setC2Parastyle(dto.getC2Parastyle() == null ? updatedEntity.getC2Parastyle() : dto.getC2Parastyle());
-        updatedEntity.setRootSheathGroove(dto.getRootSheathGroove() == null ? updatedEntity.getRootSheathGroove() : dto.getRootSheathGroove());
-        updatedEntity.setRootNumber(dto.getRootNumber() == null ? updatedEntity.getRootNumber() : dto.getRootNumber());
-
-        return specificRepository.save(updatedEntity);
+    @Override
+    @Transactional
+    public DeciduousMaxillaMolar1 update(Long id, DeciduousMaxillaMolar1Dto dto) {
+        DeciduousMaxillaMolar1 existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
     }
 }

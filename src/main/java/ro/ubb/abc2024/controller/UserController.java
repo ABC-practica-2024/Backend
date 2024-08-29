@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserService;
 import ro.ubb.abc2024.utils.converter.UserDtoConverter;
 import ro.ubb.abc2024.utils.dto.ChangePasswordDto;

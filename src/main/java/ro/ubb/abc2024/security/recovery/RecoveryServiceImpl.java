@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.ubb.abc2024.utils.dto.PasswordResetDto;
-import ro.ubb.abc2024.utils.email.EmailService;
 import ro.ubb.abc2024.security.token.TokenService;
 import ro.ubb.abc2024.user.UserRepository;
+import ro.ubb.abc2024.utils.dto.PasswordResetDto;
+import ro.ubb.abc2024.utils.email.EmailService;
 
 import java.security.SecureRandom;
 import java.util.regex.Pattern;

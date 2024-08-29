@@ -24,5 +24,5 @@ public class DeciduousMandibleCanineDto extends ToothDto {
 
     @Nullable
     @Enumerated(EnumType.STRING)
-    private EnumsBio.DentalMorpho dAR;
+    private EnumsBio.DentalMorpho dar;
 }

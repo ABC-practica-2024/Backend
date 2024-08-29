@@ -19,7 +19,7 @@ public class DeciduousMandibleIncisor1Dto extends DeciduousIncisorDto {
 
     @Nullable
     @Enumerated(EnumType.STRING)
-    private EnumsBio.DentalMorpho dAR;
+    private EnumsBio.DentalMorpho dar;
 
     @Nullable
     @Enumerated(EnumType.STRING)

@@ -1,41 +1,40 @@
 package ro.ubb.abc2024.biology.service.teeth.permanent;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMandiblePremolar1;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMandiblePremolar1Dto;
-import ro.ubb.abc2024.biology.repository.teeth.permanent.PermanentMandiblePremolar1Repository;
-import ro.ubb.abc2024.biology.service.teeth.ToothServiceImpl;
+import ro.ubb.abc2024.biology.mapper.teeth.permanent.PermanentMandiblePremolar1Mapper;
+import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
+import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
 
 @Service
-public class PermanentMandiblePremolar1ServiceImpl extends ToothServiceImpl<PermanentMandiblePremolar1,
-        PermanentMandiblePremolar1Dto> {
+public class PermanentMandiblePremolar1ServiceImpl
+        extends GenericServiceImpl<PermanentMandiblePremolar1, PermanentMandiblePremolar1Dto>
+        implements SpecificToothService<PermanentMandiblePremolar1, PermanentMandiblePremolar1Dto> {
 
-    private final PermanentMandiblePremolar1Repository specificRepository;
+    private final PermanentMandiblePremolar1Mapper mapper;
 
     @Autowired
-    public PermanentMandiblePremolar1ServiceImpl(@Qualifier("permanentMandiblePremolar1Repository")
-                                                     JpaRepository<PermanentMandiblePremolar1, Long> repository,
-                                                 PermanentMandiblePremolar1Repository specificRepository) {
+    public PermanentMandiblePremolar1ServiceImpl(JpaRepository<PermanentMandiblePremolar1, Long> repository,
+                                                 PermanentMandiblePremolar1Mapper mapper) {
         super(repository);
-        this.specificRepository = specificRepository;
+        this.mapper = mapper;
     }
 
+    @Transactional
     @Override
-    public PermanentMandiblePremolar1 update(Long id, PermanentMandiblePremolar1Dto dto){
-        PermanentMandiblePremolar1 updatedEntity = super.update(id, dto);
+    public PermanentMandiblePremolar1 save(PermanentMandiblePremolar1Dto dto) {
+        return repository.save(mapper.toEntity(dto));
+    }
 
-        // PermanentPremolar fields
-        updatedEntity.setOdontome(dto.getOdontome() == null ? updatedEntity.getOdontome() : dto.getOdontome());
-        updatedEntity.setEnamelExt(dto.getEnamelExt() == null ? updatedEntity.getEnamelExt() : dto.getEnamelExt());
-        updatedEntity.setRootNumber(dto.getRootNumber() == null ? updatedEntity.getRootNumber() : dto.getRootNumber());
-        updatedEntity.setRadicalNumber(dto.getRadicalNumber() == null ? updatedEntity.getRadicalNumber() : dto.getRadicalNumber());
-        // PermanentMandiblePremolar1 fields
-        updatedEntity.setLingualCusps(dto.getLingualCusps() == null ? updatedEntity.getLingualCusps() : dto.getLingualCusps());
-        updatedEntity.setCusp7(dto.getCusp7() == null ? updatedEntity.getCusp7() : dto.getCusp7());
-
-        return specificRepository.save(updatedEntity);
+    @Transactional
+    @Override
+    public PermanentMandiblePremolar1 update(Long id, PermanentMandiblePremolar1Dto dto) {
+        PermanentMandiblePremolar1 existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
     }
 }

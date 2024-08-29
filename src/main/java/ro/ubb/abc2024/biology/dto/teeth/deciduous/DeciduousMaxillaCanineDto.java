@@ -44,5 +44,5 @@ public class DeciduousMaxillaCanineDto extends ToothDto {
 
     @Nullable
     @Enumerated(EnumType.STRING)
-    private EnumsBio.DentalMorpho dAR;
+    private EnumsBio.DentalMorpho dar;
 }

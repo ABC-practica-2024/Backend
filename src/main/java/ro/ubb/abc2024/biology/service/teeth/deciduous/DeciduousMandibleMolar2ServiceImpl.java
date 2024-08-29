@@ -1,38 +1,40 @@
 package ro.ubb.abc2024.biology.service.teeth.deciduous;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMandibleMolar2;
 import ro.ubb.abc2024.biology.dto.teeth.deciduous.DeciduousMandibleMolar2Dto;
-import ro.ubb.abc2024.biology.repository.teeth.deciduous.DeciduousMandibleMolar2Repository;
-import ro.ubb.abc2024.biology.service.teeth.ToothServiceImpl;
+import ro.ubb.abc2024.biology.mapper.teeth.deciduous.DeciduousMandibleMolar2Mapper;
+import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
+import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
 
 @Service
-public class DeciduousMandibleMolar2ServiceImpl extends ToothServiceImpl<DeciduousMandibleMolar2, DeciduousMandibleMolar2Dto> {
+public class DeciduousMandibleMolar2ServiceImpl
+        extends GenericServiceImpl<DeciduousMandibleMolar2, DeciduousMandibleMolar2Dto>
+        implements SpecificToothService<DeciduousMandibleMolar2, DeciduousMandibleMolar2Dto> {
 
-    private final DeciduousMandibleMolar2Repository specificRepository;
+    private final DeciduousMandibleMolar2Mapper mapper;
 
     @Autowired
     public DeciduousMandibleMolar2ServiceImpl(JpaRepository<DeciduousMandibleMolar2, Long> repository,
-                                              DeciduousMandibleMolar2Repository specificRepository) {
+                                              DeciduousMandibleMolar2Mapper mapper) {
         super(repository);
-        this.specificRepository = specificRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public DeciduousMandibleMolar2 update(Long id, DeciduousMandibleMolar2Dto dto){
-        DeciduousMandibleMolar2 updatedEntity = super.update(id, dto);
+    @Transactional
+    public DeciduousMandibleMolar2 save(DeciduousMandibleMolar2Dto dto) {
+        return repository.save(mapper.toEntity(dto));
+    }
 
-        // DeciduousMandibleMolar2 fields
-        updatedEntity.setGroovePattern(dto.getGroovePattern() == null ? updatedEntity.getGroovePattern() : dto.getGroovePattern());
-        updatedEntity.setCuspNumber(dto.getCuspNumber() == null ? updatedEntity.getCuspNumber() : dto.getCuspNumber());
-        updatedEntity.setDeflectingWrinkle(dto.getDeflectingWrinkle() == null ? updatedEntity.getDeflectingWrinkle() : dto.getDeflectingWrinkle());
-        updatedEntity.setDistalTrigonCrest(dto.getDistalTrigonCrest() == null ? updatedEntity.getDistalTrigonCrest() : dto.getDistalTrigonCrest());
-        updatedEntity.setProtostylid(dto.getProtostylid() == null ? updatedEntity.getProtostylid() : dto.getProtostylid());
-        updatedEntity.setCusp5(dto.getCusp5() == null ? updatedEntity.getCusp5() : dto.getCusp5());
-        updatedEntity.setRootNumber(dto.getRootNumber() == null ? updatedEntity.getRootNumber() : dto.getRootNumber());
-
-        return specificRepository.save(updatedEntity);
+    @Override
+    @Transactional
+    public DeciduousMandibleMolar2 update(Long id, DeciduousMandibleMolar2Dto dto) {
+        DeciduousMandibleMolar2 existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
     }
 }

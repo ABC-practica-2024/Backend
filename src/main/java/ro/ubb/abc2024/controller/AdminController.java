@@ -7,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.user.UserService;
 import ro.ubb.abc2024.utils.converter.UserAdminDtoConverter;
-import ro.ubb.abc2024.utils.converter.UserDtoConverter;
 import ro.ubb.abc2024.utils.dto.ChangeRoleDto;
 import ro.ubb.abc2024.utils.dto.EnableUserDto;
 import ro.ubb.abc2024.utils.dto.Result;

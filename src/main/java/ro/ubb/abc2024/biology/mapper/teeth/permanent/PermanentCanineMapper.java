@@ -1,15 +1,18 @@
 package ro.ubb.abc2024.biology.mapper.teeth.permanent;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentCanine;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentCanineDto;
-import ro.ubb.abc2024.biology.mapper.teeth.ToothMapper;
 
-@Mapper(componentModel = "spring")
-public interface PermanentCanineMapper extends ToothMapper {
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface PermanentCanineMapper {
 
     PermanentCanineDto toDto(PermanentCanine entity);
 
     PermanentCanine toEntity(PermanentCanineDto dto);
+
+    void updateEntityFromDto(PermanentCanineDto dto, @MappingTarget PermanentCanine entity);
 
 }

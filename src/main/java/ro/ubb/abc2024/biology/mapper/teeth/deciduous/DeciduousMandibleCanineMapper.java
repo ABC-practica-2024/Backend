@@ -1,14 +1,18 @@
 package ro.ubb.abc2024.biology.mapper.teeth.deciduous;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMandibleCanine;
 import ro.ubb.abc2024.biology.dto.teeth.deciduous.DeciduousMandibleCanineDto;
-import ro.ubb.abc2024.biology.mapper.teeth.ToothMapper;
 
-@Mapper(componentModel = "spring")
-public interface DeciduousMandibleCanineMapper extends ToothMapper {
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface DeciduousMandibleCanineMapper {
 
     DeciduousMandibleCanineDto toDto(DeciduousMandibleCanine entity);
 
     DeciduousMandibleCanine toEntity(DeciduousMandibleCanineDto dto);
+
+    void updateEntityFromDto(DeciduousMandibleCanineDto dto, @MappingTarget DeciduousMandibleCanine entity);
+
 }

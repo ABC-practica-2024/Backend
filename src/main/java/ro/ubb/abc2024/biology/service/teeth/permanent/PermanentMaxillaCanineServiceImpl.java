@@ -1,39 +1,40 @@
 package ro.ubb.abc2024.biology.service.teeth.permanent;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMaxillaCanine;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMaxillaCanineDto;
-import ro.ubb.abc2024.biology.repository.teeth.permanent.PermanentMaxillaCanineRepository;
-import ro.ubb.abc2024.biology.service.teeth.ToothServiceImpl;
+import ro.ubb.abc2024.biology.mapper.teeth.permanent.PermanentMaxillaCanineMapper;
+import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
+import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
 
 @Service
-public class PermanentMaxillaCanineServiceImpl extends ToothServiceImpl<PermanentMaxillaCanine, PermanentMaxillaCanineDto> {
+public class PermanentMaxillaCanineServiceImpl
+        extends GenericServiceImpl<PermanentMaxillaCanine, PermanentMaxillaCanineDto>
+        implements SpecificToothService<PermanentMaxillaCanine, PermanentMaxillaCanineDto> {
 
-    private final PermanentMaxillaCanineRepository specificRepository;
+    private final PermanentMaxillaCanineMapper mapper;
 
     @Autowired
     public PermanentMaxillaCanineServiceImpl(JpaRepository<PermanentMaxillaCanine, Long> repository,
-                                             PermanentMaxillaCanineRepository specificRepository) {
+                                             PermanentMaxillaCanineMapper mapper) {
         super(repository);
-        this.specificRepository = specificRepository;
+        this.mapper = mapper;
     }
 
+    @Transactional
     @Override
-    public PermanentMaxillaCanine update(Long id, PermanentMaxillaCanineDto dto){
-        PermanentMaxillaCanine updatedEntity = super.update(id, dto);
+    public PermanentMaxillaCanine save(PermanentMaxillaCanineDto dto) {
+        return repository.save(mapper.toEntity(dto));
+    }
 
-        // PermanentCanine fields
-        updatedEntity.setRootNumber(dto.getRootNumber() == null ? updatedEntity.getRootNumber() : dto.getRootNumber());
-        updatedEntity.setRadicalNumber(dto.getRadicalNumber() == null ? updatedEntity.getRadicalNumber() : dto.getRadicalNumber());
-        // PermanentMaxillaCanine fields
-        updatedEntity.setShovel(dto.getShovel() == null ? updatedEntity.getShovel() : dto.getShovel() );
-        updatedEntity.setDoubleShovel(dto.getDoubleShovel() == null ? updatedEntity.getDoubleShovel() : dto.getDoubleShovel());
-        updatedEntity.setTuberculumDentale(dto.getTuberculumDentale() == null ? updatedEntity.getTuberculumDentale() : dto.getTuberculumDentale());
-        updatedEntity.setAccessCusps(dto.getAccessCusps() == null ? updatedEntity.getAccessCusps() : dto.getAccessCusps());
-        updatedEntity.setAccessRidges(dto.getAccessRidges() == null ? updatedEntity.getAccessRidges() : dto.getAccessRidges());
-
-        return specificRepository.save(updatedEntity);
+    @Transactional
+    @Override
+    public PermanentMaxillaCanine update(Long id, PermanentMaxillaCanineDto dto) {
+        PermanentMaxillaCanine existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
     }
 }

@@ -2,15 +2,14 @@ package ro.ubb.abc2024.security.registration;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.ubb.abc2024.utils.email.EmailService;
 import ro.ubb.abc2024.security.token.TokenService;
 import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
+import ro.ubb.abc2024.utils.email.EmailService;
 
 
 @RequiredArgsConstructor

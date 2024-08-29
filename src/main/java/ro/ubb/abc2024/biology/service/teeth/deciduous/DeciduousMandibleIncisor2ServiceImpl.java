@@ -1,37 +1,41 @@
 package ro.ubb.abc2024.biology.service.teeth.deciduous;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMandibleIncisor2;
 import ro.ubb.abc2024.biology.dto.teeth.deciduous.DeciduousMandibleIncisor2Dto;
-import ro.ubb.abc2024.biology.repository.teeth.deciduous.DeciduousMandibleIncisor2Repository;
-import ro.ubb.abc2024.biology.service.teeth.ToothServiceImpl;
+import ro.ubb.abc2024.biology.mapper.teeth.deciduous.DeciduousMandibleIncisor2Mapper;
+import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
+import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
 
 @Service
-public class DeciduousMandibleIncisor2ServiceImpl extends ToothServiceImpl<DeciduousMandibleIncisor2, DeciduousMandibleIncisor2Dto> {
+public class DeciduousMandibleIncisor2ServiceImpl
+        extends GenericServiceImpl<DeciduousMandibleIncisor2, DeciduousMandibleIncisor2Dto>
+        implements SpecificToothService<DeciduousMandibleIncisor2, DeciduousMandibleIncisor2Dto> {
 
-    private final DeciduousMandibleIncisor2Repository specificRepository;
+    private final DeciduousMandibleIncisor2Mapper mapper;
 
     @Autowired
     public DeciduousMandibleIncisor2ServiceImpl(JpaRepository<DeciduousMandibleIncisor2, Long> repository,
-                                                DeciduousMandibleIncisor2Repository specificRepository) {
+                                                DeciduousMandibleIncisor2Mapper mapper) {
         super(repository);
-        this.specificRepository = specificRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public DeciduousMandibleIncisor2 update(Long id, DeciduousMandibleIncisor2Dto dto){
-        DeciduousMandibleIncisor2 updatedEntity = super.update(id, dto);
+    @Transactional
+    public DeciduousMandibleIncisor2 save(DeciduousMandibleIncisor2Dto dto) {
+        return repository.save(mapper.toEntity(dto));
 
-        // DeciduousIncisor fields
-        updatedEntity.setShovel(dto.getShovel() == null ? updatedEntity.getShovel() : dto.getShovel());
-        updatedEntity.setLabialDefect(dto.getLabialDefect() == null ? updatedEntity.getLabialDefect() : dto.getLabialDefect());
-        updatedEntity.setDoubleTeeth(dto.getDoubleTeeth() == null ? updatedEntity.getDoubleTeeth() : dto.getDoubleTeeth());
-        // DeciduousMandibleIncisor2 fields
-        updatedEntity.setDAR(dto.getDAR() == null ? updatedEntity.getDAR() : dto.getDAR());
-        updatedEntity.setRootGroove(dto.getRootGroove() == null ? updatedEntity.getRootGroove() : dto.getRootGroove());
+    }
 
-        return specificRepository.save(updatedEntity);
+    @Override
+    @Transactional
+    public DeciduousMandibleIncisor2 update(Long id, DeciduousMandibleIncisor2Dto dto) {
+        DeciduousMandibleIncisor2 existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
     }
 }

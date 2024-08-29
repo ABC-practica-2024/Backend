@@ -3,7 +3,6 @@ package ro.ubb.abc2024.user;
 import ro.ubb.abc2024.utils.dto.ChangePasswordDto;
 import ro.ubb.abc2024.utils.dto.ChangeRoleDto;
 import ro.ubb.abc2024.utils.dto.EnableUserDto;
-import ro.ubb.abc2024.utils.dto.PasswordResetDto;
 
 import java.util.List;
 
