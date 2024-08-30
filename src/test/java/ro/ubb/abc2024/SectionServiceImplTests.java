@@ -86,7 +86,7 @@ public class SectionServiceImplTests {
 
     @Test
     public void SectionServiceImpl_AddSection_AssertTrue() {
-        // stub
+        // Stub
         when(sectionRepository.save(diggingSection)).thenReturn(diggingSection);
 
         // Act
@@ -98,6 +98,7 @@ public class SectionServiceImplTests {
 
     @Test
     public void SectionServiceImpl_UpdateSection_AssertTrue() {
+        // Stub
         when(sectionRepository.findById(1L)).thenReturn(Optional.of(diggingSection));
         when(sectionRepository.save(ArgumentMatchers.any(Section.class))).thenReturn(completedSection);
 
@@ -110,6 +111,7 @@ public class SectionServiceImplTests {
 
     @Test
     public void SectionServiceImpl_UpdateSection_ThrowsException() {
+        // Assert
         try {
             sectionService.updateSection(diggingSection);
         } catch (Exception e) {
@@ -130,16 +132,19 @@ public class SectionServiceImplTests {
 
     @Test
     public void SectionServiceImpl_GetSectionByName_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionsByNameIs(diggingSection.getName())).thenReturn(Optional.of(diggingSection));
 
         // Act
         Section result = sectionService.getSection(diggingSection.getName());
 
+        // Assert
         assertEquals(result, diggingSection);
     }
 
     @Test
     public void SectionServiceImpl_GetSectionByName_ThrowsException() {
+        // Assert
         try {
             sectionService.getSection("Random name");
         } catch (Exception e) {
@@ -150,16 +155,19 @@ public class SectionServiceImplTests {
 
     @Test
     public void SectionServiceImpl_GetSectionById_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionByIdWithArtifacts(diggingSection.getId())).thenReturn(Optional.of(diggingSection));
 
         // Act
         Section result = sectionService.getSection(diggingSection.getId());
 
+        // Assert
         assertEquals(result, diggingSection);
     }
 
     @Test
     public void SectionServiceImpl_GetSectionById_ThrowsException() {
+        // Assert
         try {
             sectionService.getSection(22L);
         } catch (Exception e) {
@@ -170,121 +178,155 @@ public class SectionServiceImplTests {
 
     @Test
     public void SectionServiceImpl_GetSectionsAroundPoint_AssertTrue() {
+        // Stub
         when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
                 completedSection)));
 
+        // Act
         List<Section> result = sectionService.getSectionsAroundPoint(circleLatitude, circleLongitude, circleRadius);
 
+        // Assert
         assertEquals(result, List.of(diggingSection));
     }
 
     @Test
     public void SectionServiceImpl_GetSectionsNorthOf_AssertTrue() {
+        // Stub
         when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
                 completedSection)));
 
+        // Act
         List<Section> result = sectionService.getSectionsNorthOf(-1.0);
 
+        // Assert
         assertEquals(result, List.of(diggingSection, completedSection));
     }
 
     @Test
     public void SectionServiceImpl_GetSectionsSouthOf_AssertTrue() {
+        // Stub
         when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
                 completedSection)));
 
+        // Act
         List<Section> result = sectionService.getSectionsSouthOf(-1.0);
 
+        // Assert
         assertEquals(result, List.of());
     }
 
     @Test
     public void SectionServiceImpl_GetSectionsWestOf_AssertTrue() {
+        // Stub
         when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
                 completedSection)));
 
+        // Act
         List<Section> result = sectionService.getSectionsWestOf(-1.0);
 
+        // Assert
         assertEquals(result, List.of());
     }
 
     @Test
     public void SectionServiceImpl_GetSectionsEastOf_AssertTrue() {
+        // Stub
         when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
                 completedSection)));
 
+        // Act
         List<Section> result = sectionService.getSectionsEastOf(-1.0);
 
+        // Assert
         assertEquals(result, List.of(diggingSection, completedSection));
     }
 
     @Test
     public void SectionServiceImpl_GetSectionsWithArtifacts_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionsWithArtifacts()).thenReturn(List.of(diggingSection));
 
+        // Act
         List<Section> result = sectionService.getSections();
 
+        // Assert
         assertEquals(result, List.of(diggingSection));
     }
 
     @Test
     public void SectionServiceImpl_GetIncompleteSections_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionsByStatusIsNot(SectionStatus.COMPLETED)).thenReturn(List.of(diggingSection));
 
+        // Act
         List<Section> result = sectionService.getIncompleteSections();
 
+        // Assert
         assertEquals(result, List.of(diggingSection));
     }
 
     @Test
     public void SectionServiceImpl_GetSectionsBySiteId_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionsBySiteId(1L)).thenReturn(List.of(diggingSection, completedSection));
 
+        // Act
         List<Section> result = sectionService.getSectionsBySite(1L);
 
+        // Assert
         assertEquals(result, List.of(diggingSection, completedSection));
     }
 
     @Test
     public void SectionServiceImpl_GetSectionsByStatusIsAndSiteId_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionsByStatusIsAndSiteId(SectionStatus.DIGGING, 1L)).thenReturn(List.of(diggingSection));
 
+        // Act
         List<Section> result = sectionService.getSectionsByStatusIsAndSiteId(SectionStatus.DIGGING.name(), 1L);
 
+        // Assert
         assertEquals(result, List.of(diggingSection));
     }
 
     @Test
     public void SectionServiceImpl_GetArtifactsFromSection_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionByIdWithArtifacts(1L)).thenReturn(Optional.ofNullable(diggingSection));
 
+        // Act
         List<Artifact> result = sectionService.getArtifactsFromSection(1L);
 
+        // Assert
         assertEquals(result, List.of(firstArtifact, secondArtifact));
     }
 
     @Test
     public void SectionServiceImpl_GetArtifactsFromSection_ThrowsException() {
+        // Assert
         try {
             sectionService.getArtifactsFromSection(10L);
         } catch (Exception e) {
             assertTrue(e instanceof EntityNotFoundException);
             assertEquals(e.getMessage(), "Section with id 10, does not exist.");
-
         }
     }
 
     @Test
     public void SectionServiceImpl_GetArtifactsFromSectionByArchaeologist_AssertTrue() {
+        // Stub
         when(sectionRepository.getSectionByIdWithArtifacts(1L)).thenReturn(Optional.ofNullable(diggingSection));
 
+        // Act
         List<Artifact> result = sectionService.getArtifactsFromSectionByArchaeologist(1L, 1L);
 
+        // Assert
         assertEquals(result, List.of(firstArtifact, secondArtifact));
     }
 
     @Test
     public void SectionServiceImpl_GetArtifactsFromSectionByArchaeologist_ThrowsException() {
+        // Assert
         try {
             sectionService.getArtifactsFromSectionByArchaeologist(10L, 1L);
         } catch (Exception e) {
