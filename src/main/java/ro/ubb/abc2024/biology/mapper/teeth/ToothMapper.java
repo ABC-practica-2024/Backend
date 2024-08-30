@@ -9,6 +9,7 @@ import ro.ubb.abc2024.biology.mapper.TeethMapper;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToothMapper extends TeethMapper {
+
     ToothDto toDto(Tooth entity);
 
     Tooth toEntity(ToothDto dto);
