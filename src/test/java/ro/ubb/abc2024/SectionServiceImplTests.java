@@ -274,7 +274,6 @@ public class SectionServiceImplTests {
         }
     }
 
-    /*
     @Test
     public void SectionServiceImpl_GetArtifactsFromSectionByArchaeologist_AssertTrue() {
         when(sectionRepository.getSectionByIdWithArtifacts(1L)).thenReturn(Optional.ofNullable(diggingSection));
@@ -283,5 +282,14 @@ public class SectionServiceImplTests {
 
         assertEquals(result, List.of(firstArtifact, secondArtifact));
     }
-     */
+
+    @Test
+    public void SectionServiceImpl_GetArtifactsFromSectionByArchaeologist_ThrowsException() {
+        try {
+            sectionService.getArtifactsFromSectionByArchaeologist(10L, 1L);
+        } catch (Exception e) {
+            assertTrue(e instanceof EntityNotFoundException);
+            assertEquals(e.getMessage(), "Section with id 10, does not exist.");
+        }
+    }
 }

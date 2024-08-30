@@ -12,11 +12,12 @@ import ro.ubb.abc2024.arheo.exception.SectionServiceException;
 import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class SectionServiceImpl implements SectionService{
+public class SectionServiceImpl implements SectionService {
 
     private final SectionRepository sectionRepository;
     private final GenericValidator<Section> validator;
@@ -26,7 +27,7 @@ public class SectionServiceImpl implements SectionService{
         try {
             validator.validate(section);
             return this.sectionRepository.save(section);
-        } catch (ConstraintViolationException ex){
+        } catch (ConstraintViolationException ex) {
             throw new RuntimeException(ex.getMessage());
         }
     }
@@ -50,7 +51,7 @@ public class SectionServiceImpl implements SectionService{
         try {
             validator.validate(section);
             return this.sectionRepository.save(updatedSection);
-        } catch (ConstraintViolationException ex){
+        } catch (ConstraintViolationException ex) {
             throw new SectionServiceException(ex.getMessage());
         }
     }
@@ -59,7 +60,7 @@ public class SectionServiceImpl implements SectionService{
     public void deleteSection(long id) {
         try {
             this.sectionRepository.deleteById(id);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new SectionServiceException(ex.getMessage());
         }
     }
@@ -157,9 +158,10 @@ public class SectionServiceImpl implements SectionService{
 
     @Override
     public List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId) {
-        List<Artifact> artifacts = this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
-                )).getArtifactsList();
+        List<Artifact> artifacts =
+                new LinkedList<>(this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
+                        () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
+                        )).getArtifactsList());
         artifacts.removeIf(artifact -> artifact.getArcheologist().getId() != archaeologistId);
         return artifacts;
     }
