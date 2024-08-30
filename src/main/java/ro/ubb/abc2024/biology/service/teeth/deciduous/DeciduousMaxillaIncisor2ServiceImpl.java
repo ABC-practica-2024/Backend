@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMaxillaIncisor1;
 import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMaxillaIncisor2;
 import ro.ubb.abc2024.biology.dto.teeth.deciduous.DeciduousMaxillaIncisor2Dto;
 import ro.ubb.abc2024.biology.mapper.teeth.deciduous.DeciduousMaxillaIncisor2Mapper;
@@ -27,12 +28,14 @@ public class DeciduousMaxillaIncisor2ServiceImpl
     @Override
     @Transactional
     public DeciduousMaxillaIncisor2 save(DeciduousMaxillaIncisor2Dto dto) {
-        return null;
+        return repository.save(mapper.toEntity(dto));
     }
 
     @Override
     @Transactional
     public DeciduousMaxillaIncisor2 update(Long id, DeciduousMaxillaIncisor2Dto dto) {
-        return null;
+        DeciduousMaxillaIncisor2 existingEntity = getById(id);
+        mapper.updateEntityFromDto(dto, existingEntity);
+        return repository.save(existingEntity);
     }
 }
