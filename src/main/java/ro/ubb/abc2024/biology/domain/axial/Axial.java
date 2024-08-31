@@ -26,6 +26,4 @@ public class Axial extends Bone {
     @Enumerated(EnumType.STRING)
     private EnumsBio.AxialBoneType axialBoneType;
 
-    Boolean isWorking;
-
 }

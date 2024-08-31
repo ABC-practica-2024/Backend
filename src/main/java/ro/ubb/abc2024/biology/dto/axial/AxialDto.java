@@ -3,8 +3,6 @@ package ro.ubb.abc2024.biology.dto.axial;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,5 +36,4 @@ public class AxialDto extends BoneDto {
     @Nullable
     private EnumsBio.AxialBoneType axialBoneType;
 
-    Boolean isWorking;
 }
