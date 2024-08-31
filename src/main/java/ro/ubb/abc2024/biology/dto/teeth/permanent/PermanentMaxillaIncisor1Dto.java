@@ -1,8 +1,6 @@
 package ro.ubb.abc2024.biology.dto.teeth.permanent;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,19 +16,15 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 public class PermanentMaxillaIncisor1Dto extends PermanentIncisorDto {
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho winging;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho labialCurve;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho interruptGroove;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho tuberculumDentale;
 
 }

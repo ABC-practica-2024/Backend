@@ -1,8 +1,6 @@
 package ro.ubb.abc2024.biology.dto.teeth.permanent;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,19 +16,15 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 public class PermanentMaxillaMolar2Dto extends PermanentMolarDto {
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho metacone;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho hypocone;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho carabelli;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho c2Parastyle;
 
 }

@@ -1,8 +1,6 @@
 package ro.ubb.abc2024.biology.dto.teeth.permanent;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,10 +17,8 @@ import ro.ubb.abc2024.biology.dto.teeth.ToothDto;
 public class PermanentCanineDto extends ToothDto {
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho rootNumber;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
     private EnumsBio.DentalMorpho radicalNumber;
 }
