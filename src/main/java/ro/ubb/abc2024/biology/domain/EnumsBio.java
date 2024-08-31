@@ -96,6 +96,49 @@ public class EnumsBio {
         }
     }
 
+
+    public enum AxialBoneType {
+        COCCYX("Coccyx"),
+        RIBS("Ribs"),
+        SACRUM("Sacrum"),
+        STERNUM("Sternum"),
+        VERTEBRAE("Vertebrae");
+
+        private final String description;
+
+        AxialBoneType(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+
+
+    public enum VertebraeType {
+        C_ONE("Cervical1"),
+        C_TWO("Cervical2"),
+        C_THREE("Cervical 3 to 6"),
+        C_SEVEN("Cervical 7"),
+        T_ONE("Thoracic 1 to 9"),
+        T_TEN("Thoracic 10"),
+        T_ELEVEN("Thoracic 11"),
+        T_TWELVE("Thoracic 12"),
+        L_ONE("Lumbar 1 to 4"),
+        L_FIVE("Lumbar 5");
+
+        private final String description;
+
+        VertebraeType(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+
     public enum AppendicularType {
         HUMERUS("Humerus"),
         RADIUS("Radius"),
