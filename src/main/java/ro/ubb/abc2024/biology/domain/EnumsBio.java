@@ -139,17 +139,24 @@ public class EnumsBio {
         }
     }
 
-    public enum AppendicularType {
-        HUMERUS("Humerus"),
-        RADIUS("Radius"),
-        ULNA("Ulna"),
+    public enum AppendicularBoneType {
+        CLAVICLE("Clavicle"),
         FEMUR("Femur"),
+        FIBULA("Fibula"),
+        HUMERUS("Humerus"),
+        ILIUM("Ilium"),
+        OSCOXA("Innominate Os Coxa Hip Bone"),
+        ISCHIUM("Ischium"),
+        PATELLA("Patella"),
+        PUBIS("Pubis"),
+        RADIUS("Radius"),
+        SCAPULA("Scapula"),
         TIBIA("Tibia"),
-        FIBULA("Fibula");
+        ULNA("Ulna");
 
         private final String description;
 
-        AppendicularType(String description) {
+        AppendicularBoneType(String description) {
             this.description = description;
         }
 
@@ -157,6 +164,25 @@ public class EnumsBio {
             return description;
         }
     }
+
+//    public enum AppendicularType {
+//        HUMERUS("Humerus"),
+//        RADIUS("Radius"),
+//        ULNA("Ulna"),
+//        FEMUR("Femur"),
+//        TIBIA("Tibia"),
+//        FIBULA("Fibula");
+//
+//        private final String description;
+//
+//        AppendicularType(String description) {
+//            this.description = description;
+//        }
+//
+//        public String getDescription() {
+//            return description;
+//        }
+//    }
 
     public enum PathologyCondition {
         PRESENT("Present"),
