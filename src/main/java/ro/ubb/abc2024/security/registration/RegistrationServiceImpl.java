@@ -14,6 +14,8 @@ import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
 import ro.ubb.abc2024.utils.file.FileService;
 
+import java.util.Arrays;
+
 
 @RequiredArgsConstructor
 @Service
@@ -58,8 +60,13 @@ public class RegistrationServiceImpl implements RegistrationService {
                 "<p>Best regards,<br/>The Team</p>" +
                 "</body>" +
                 "</html>";
+        try {
+            emailService.sendHtmlEmail(newUser.getEmail(), "Registration", htmlContent);
 
-        emailService.sendHtmlEmail(newUser.getEmail(), "Registration", htmlContent);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+        }
     }
 
     @Override
