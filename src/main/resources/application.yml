@@ -60,3 +60,13 @@ rsa-key:
 api:
    endpoint:
     base-url: /api/v1
+
+
+server:
+  port: 8433
+  ssl:
+    certificate: /etc/letsencrypt/live/pd-structuri.ro/fullchain.pem
+    certificate-private-key: /etc/letsencrypt/live/pd-structuri.ro/privkey.pem
+security:
+  require-ssl: true
+
