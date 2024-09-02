@@ -43,9 +43,8 @@ public class AuthController {
             summary = "Registration endpoint. After registering it sends an email with confirmation token."
     )
     @PostMapping("/register")
-    public Result<?> register(@ModelAttribute RegistrationUserDto registrationUserDto,
-                              @RequestParam("profilePicture")MultipartFile file) {
-            this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto), file);
+    public Result<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
+           this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto));
 //        this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto));
         return new Result<>(true, HttpStatus.CREATED.value(), "User created successfully", null);
     }

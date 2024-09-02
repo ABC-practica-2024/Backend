@@ -28,7 +28,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public void addUser(User user, MultipartFile file) {
+    public void addUser(User user) {
         var newUser = this.userRepository.save(User.builder()
                 .username(user.getUsername())
                 .password(passwordEncoder.encode(user.getPassword()))
@@ -38,8 +38,6 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .lastName(user.getLastName())
                 .role(user.getRole())
                 .build());
-        var profilePicturePath = this.fileService.saveFile(file, newUser.getUsername());
-        newUser.setImagePath(profilePicturePath);
         this.userRepository.save(newUser);
         var token = this.tokenService.createToken(newUser, 60);
 

@@ -90,6 +90,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers(this.baseUrl+"/auth/register",
@@ -130,7 +131,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

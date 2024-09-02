@@ -16,7 +16,7 @@ public class UserAdminDtoConverter implements Converter<User, UserAdminDto> {
                 .firstName(dto.firstName())
                 .lastName(dto.lastName())
                 .isEnabled(dto.isEnabled())
-                .role(Role.valueOf(dto.role()))
+                .role(dto.role())
                 .build();
     }
 
@@ -28,7 +28,7 @@ public class UserAdminDtoConverter implements Converter<User, UserAdminDto> {
                 entity.getEmail(),
                 entity.getFirstName(),
                 entity.getLastName(),
-                entity.getRole().name(),
+                entity.getRole(),
                 entity.isEnabled());
     }
 }

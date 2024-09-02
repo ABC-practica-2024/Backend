@@ -36,6 +36,7 @@ spring:
 
 
 
+
 #jackson configuration
 jackson:
   serialization:
