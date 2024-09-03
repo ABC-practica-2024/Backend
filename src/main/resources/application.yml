@@ -3,24 +3,25 @@ spring:
     name: abc2024
 
 
-#datasource configuration
+  #datasource configuration
   datasource:
-#        url: jdbc:postgresql://localhost:5432/abc2024
-    #    username: abc2024
-    #    password: abc2024
-
-    url: jdbc:postgresql://localhost:5433/abc2024
-    username: postgres
-    password: admin
+    url: jdbc:postgresql://localhost:5432/abc2024
+    username: abc2024
+    password: abc2024
     driver-class-name: org.postgresql.Driver
+
+  #    url: jdbc:postgresql://localhost:5433/abc2024
+  #    username: postgres
+  #    password: admin
+  #    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-#profiles configuration
+  #profiles configuration
   profiles:
     active: dev
-#email configuration
+  #email configuration
   mail:
     host: smtp.gmail.com
     port: 587
@@ -61,5 +62,5 @@ rsa-key:
   public-key: classpath:certs/public.pem
 
 api:
-   endpoint:
+  endpoint:
     base-url: /api/v1

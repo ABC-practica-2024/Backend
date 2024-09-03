@@ -7,13 +7,13 @@ import lombok.experimental.SuperBuilder;
 import ro.ubb.abc2024.biology.domain.Bone;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
 
-//@Entity
+@Entity
 @Data
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@MappedSuperclass
+//@MappedSuperclass
 public class Extremity extends Bone {
     @Nullable
     private int bonesNo;

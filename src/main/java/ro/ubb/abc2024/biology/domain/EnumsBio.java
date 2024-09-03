@@ -102,17 +102,25 @@ public class EnumsBio {
             return description;
         }
     }
-    public enum AppendicularType {
-        HUMERUS("Humerus"),
-        RADIUS("Radius"),
-        ULNA("Ulna"),
+
+    public enum AppendicularBoneType {
+        CLAVICLE("Clavicle"),
         FEMUR("Femur"),
+        FIBULA("Fibula"),
+        HUMERUS("Humerus"),
+        ILIUM("Ilium"),
+        OSCOXA("Innominate Os Coxa Hip Bone"),
+        ISCHIUM("Ischium"),
+        PATELLA("Patella"),
+        PUBIS("Pubis"),
+        RADIUS("Radius"),
+        SCAPULA("Scapula"),
         TIBIA("Tibia"),
-        FIBULA("Fibula");
+        ULNA("Ulna");
 
         private final String description;
 
-        AppendicularType(String description) {
+        AppendicularBoneType(String description) {
             this.description = description;
         }
 
@@ -120,6 +128,67 @@ public class EnumsBio {
             return description;
         }
     }
+
+    public enum AxialBoneType {
+        COCCYX("Coccyx"),
+        RIBS("Ribs"),
+        SACRUM("Sacrum"),
+        STERNUM("Sternum"),
+        VERTEBRAE("Vertebrae");
+
+        private final String description;
+
+        AxialBoneType(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+
+
+    public enum VertebraeType {
+        C_ONE("Cervical1"),
+        C_TWO("Cervical2"),
+        C_THREE("Cervical 3 to 6"),
+        C_SEVEN("Cervical 7"),
+        T_ONE("Thoracic 1 to 9"),
+        T_TEN("Thoracic 10"),
+        T_ELEVEN("Thoracic 11"),
+        T_TWELVE("Thoracic 12"),
+        L_ONE("Lumbar 1 to 4"),
+        L_FIVE("Lumbar 5");
+
+        private final String description;
+
+        VertebraeType(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+
+//    public enum AppendicularType {
+//        HUMERUS("Humerus"),
+//        RADIUS("Radius"),
+//        ULNA("Ulna"),
+//        FEMUR("Femur"),
+//        TIBIA("Tibia"),
+//        FIBULA("Fibula");
+//
+//        private final String description;
+//
+//        AppendicularType(String description) {
+//            this.description = description;
+//        }
+//
+//        public String getDescription() {
+//            return description;
+//        }
+//    }
     public enum PathologyCondition {
         PRESENT("Present"),
         ABSENT("Absent"),
@@ -539,5 +608,10 @@ public class EnumsBio {
         public String getDescription() {
             return description;
         }
+    }
+
+    public enum MaxilaMandible {
+        MAXILA,
+        MANDIBLE
     }
 }
