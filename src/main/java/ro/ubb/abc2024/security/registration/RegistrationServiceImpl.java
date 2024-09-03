@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ro.ubb.abc2024.security.token.UserToken;
 import ro.ubb.abc2024.utils.email.EmailService;
 import ro.ubb.abc2024.security.token.TokenService;
 import ro.ubb.abc2024.user.User;
@@ -43,23 +44,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         this.userRepository.save(newUser);
         var token = this.tokenService.createToken(newUser, 60);
 
-        String htmlContent = "<html>" +
-                "<head>" +
-                "<style>" +
-                "body {font-family: Arial, sans-serif; margin: 20px;}" +
-                "h1 {color: #4CAF50;}" +
-                "p {font-size: 16px;}" +
-                "</style>" +
-                "</head>" +
-                "<body>" +
-                "<h1>Welcome to Our Service!</h1>" +
-                "<p>Thank you for signing up. We're excited to have you on board.</p>" +
-                "<p>Please click the link below to activate your account:</p>" +
-                "<p>" + token.getToken() + "</p>" +
-                "<p>The token will be available for 60 minutes. </p>" +
-                "<p>Best regards,<br/>The Team</p>" +
-                "</body>" +
-                "</html>";
+        String htmlContent = getHtmlContent(token);
         try {
             emailService.sendHtmlEmail(newUser.getEmail(), "Registration", htmlContent);
 
@@ -68,6 +53,8 @@ public class RegistrationServiceImpl implements RegistrationService {
             System.out.println(Arrays.toString(e.getStackTrace()));
         }
     }
+
+
 
     @Override
     @Transactional
@@ -100,5 +87,28 @@ public class RegistrationServiceImpl implements RegistrationService {
                 });
 
         return true;
+    }
+
+
+    private  String getHtmlContent(UserToken token) {
+        String validationUrl = "http://localhost:5173/enable/" + token.getToken();
+        return "<html>" +
+                "<head>" +
+                "<style>" +
+                "body {font-family: Arial, sans-serif; margin: 20px;}" +
+                "h1 {color: #4CAF50;}" +
+                "p {font-size: 16px;}" +
+                "a.button {display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<h1>Welcome to Our Service!</h1>" +
+                "<p>Thank you for signing up. We're excited to have you on board.</p>" +
+                "<p>Please click the button below to activate your account:</p>" +
+                "<p><a href=\"" + validationUrl + "\" class=\"button\">Activate Account</a></p>" +
+                "<p>The token will be available for 60 minutes. </p>" +
+                "<p>Best regards,<br/>The Team</p>" +
+                "</body>" +
+                "</html>";
     }
 }
