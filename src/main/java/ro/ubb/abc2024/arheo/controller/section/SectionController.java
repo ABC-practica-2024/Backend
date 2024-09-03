@@ -2,16 +2,28 @@ package ro.ubb.abc2024.arheo.controller.section;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
+import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.service.SectionService;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
+import ro.ubb.abc2024.controller.UserController;
 import ro.ubb.abc2024.user.Role;
+import ro.ubb.abc2024.user.UserService;
+import ro.ubb.abc2024.user.UserServiceImpl;
 import ro.ubb.abc2024.utils.dto.Result;
+import ro.ubb.abc2024.arheo.controller.utils.HelperMethods;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -20,14 +32,22 @@ import java.util.stream.Collectors;
 public class SectionController {
     private final SectionService sectionService;
     private final SectionDtoConverter sectionDtoConverter;
+    private final UserService userService;
 
     @GetMapping
     //@PreAuthorize("hasAnyAuthority('ARH')")
-    // get all sections
-    public Result<List<SectionDto>> getSections() {
-        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all sections", sectionService.getSections().stream()
-                .map(sectionDtoConverter::createFromEntity)
-                .collect(Collectors.toList()));
+    public Result<Map<String, Object>> getSections(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int pageSize,
+            @RequestParam(required = false) Long sectionId,
+            @RequestParam(required = false) String sectionName,
+            @RequestParam(required = false) Long siteId,
+            @RequestParam(required = false) String status) {
+
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Section> sectionsPage = sectionService.findAllByCriteria(sectionId, sectionName, siteId, status, pageable);
+        Map<String, Object> response = HelperMethods.makeResponse(sectionsPage, sectionDtoConverter);
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all sections based on params", response);
     }
 
     // get by id
@@ -41,6 +61,7 @@ public class SectionController {
     //@PreAuthorize("hasAnyAuthority('ARH')")
     // add a new section, add it to the list of sections
     public Result<SectionDto> addSection(@RequestBody SectionDto sectionDto) {
+        // TODO: check if current user is mainArchaeologist of the site
         var section = sectionService.addSection(sectionDtoConverter.createFromDto(sectionDto));
         //return sectionDtoConverter.createFromEntity(section);
         return new Result<>(true, HttpStatus.CREATED.value(), "Added section", sectionDtoConverter.createFromEntity(section));
