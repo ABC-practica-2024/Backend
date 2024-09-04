@@ -10,8 +10,6 @@ import ro.ubb.abc2024.biology.dto.axial.*;
 import ro.ubb.abc2024.biology.mapper.axial.*;
 import ro.ubb.abc2024.biology.repository.axial.AxialRepository;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -288,20 +286,20 @@ class AxialServiceImplTest {
         verify(axialRepository, never()).save(any());
     }
 
-//    // Test for unexpected axialBone value
-//    @Test
-//    void testSaveWithUnexpectedAxialBoneType() {
-//        // Given a valid Sacrum entity and a null axialBone type
-//        Sacrum sacrum = new Sacrum();
-//
-//        // When save is called with a null axialBone type, we expect an IllegalArgumentException
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-//                axialService.save(null, sacrum)
-//        );
-//
-//        // Then the exception message should be as expected
-//        assertEquals("Unexpected axialBone value: null", exception.getMessage());
-//    }
+    // Test for unexpected axialBone value
+    @Test
+    void testSaveWithUnexpectedAxialBoneType() {
+        // Given a valid Sacrum entity and a null axialBone type
+        Sacrum sacrum = new Sacrum();
+
+        // When save is called with a null axialBone type, we expect an IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                axialService.save(EnumsBio.AxialBoneType.RIBS, sacrum)
+        );
+
+        // Then the exception message should be as expected
+        assertEquals("Expected an instance of Ribs for RIBS.", exception.getMessage());
+    }
 
     // Tests for updating COCCYX
     @Test
@@ -334,24 +332,6 @@ class AxialServiceImplTest {
         assertEquals("Coccyx not found with id: 1", exception.getMessage());
     }
 
-    @Test
-    void testUpdateCoccyxWithInvalidDto() {
-        // Arrange
-        RibsDto ribsDto = new RibsDto();
-        ribsDto.setId(1L);
-
-        // Ensure that the entity (Coccyx with id=1) is not present in the repository, causing EntityNotFoundException.
-        when(axialRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                axialService.update(EnumsBio.AxialBoneType.COCCYX, ribsDto) // Invalid DTO should result in EntityNotFoundException
-        );
-
-        // Verify
-        assertEquals("Coccyx not found with id: 1", exception.getMessage());
-        verify(axialRepository, never()).save(any());
-    }
     // Tests for updating RIBS
     @Test
     void testUpdateRibs() {
@@ -383,25 +363,6 @@ class AxialServiceImplTest {
         assertEquals("Ribs not found with id: 1", exception.getMessage());
     }
 
-    @Test
-    void testUpdateRibsWithInvalidDto() {
-        // Arrange
-        CoccyxDto coccyxDto = new CoccyxDto();
-        coccyxDto.setId(1L);
-
-        // Ensure that the entity (Ribs with id=1) is not present in the repository, causing EntityNotFoundException.
-        when(axialRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                axialService.update(EnumsBio.AxialBoneType.RIBS, coccyxDto) // Invalid DTO should result in EntityNotFoundException
-        );
-
-        // Verify
-        assertEquals("Ribs not found with id: 1", exception.getMessage());
-        verify(axialRepository, never()).save(any());
-    }
-
 
     // Test for SACRUM
     @Test
@@ -418,6 +379,20 @@ class AxialServiceImplTest {
         assertEquals(sacrum, result);
         verify(sacrumMapper).updateEntityFromDto(sacrumDto, sacrum);
         verify(axialRepository).save(sacrum);
+    }
+
+    @Test
+    void testUpdateSacrumEntityNotFound() {
+        SacrumDto sacrumDto = new SacrumDto();
+        sacrumDto.setId(1L);
+
+        when(axialRepository.getSacrumById(sacrumDto.getId())).thenReturn(java.util.Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                axialService.update(EnumsBio.AxialBoneType.SACRUM, sacrumDto)
+        );
+
+        assertEquals("Sacrum not found with id: 1", exception.getMessage());
     }
 
     // Test for STERNUM
@@ -437,6 +412,20 @@ class AxialServiceImplTest {
         verify(axialRepository).save(sternum);
     }
 
+    @Test
+    void testUpdateSternumEntityNotFound() {
+        SternumDto sternumDto = new SternumDto();
+        sternumDto.setId(1L);
+
+        when(axialRepository.getSternumById(sternumDto.getId())).thenReturn(java.util.Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                axialService.update(EnumsBio.AxialBoneType.STERNUM, sternumDto)
+        );
+
+        assertEquals("Sternum not found with id: 1", exception.getMessage());
+    }
+
     // Test for VERTEBRAE
     @Test
     void testUpdateVertebrae() {
@@ -454,6 +443,20 @@ class AxialServiceImplTest {
         verify(axialRepository).save(vertebrae);
     }
 
+    @Test
+    void testUpdateVertebraeEntityNotFound() {
+        VertebraeDto vertebraeDto = new VertebraeDto();
+        vertebraeDto.setId(1L);
+
+        when(axialRepository.getVertebraeById(vertebraeDto.getId())).thenReturn(java.util.Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                axialService.update(EnumsBio.AxialBoneType.VERTEBRAE, vertebraeDto)
+        );
+
+        assertEquals("Vertebrae not found with id: 1", exception.getMessage());
+    }
+
     // Null AxialDto Test
     @Test
     void testUpdateWithNullDto() {
@@ -463,8 +466,6 @@ class AxialServiceImplTest {
 
         assertEquals("AxialDto cannot be null", exception.getMessage());
     }
-
-
 
     // Tests for deleting COCCYX
     @Test

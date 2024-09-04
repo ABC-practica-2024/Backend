@@ -13,9 +13,9 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 @AllArgsConstructor
 @SuperBuilder
 public class Metatarsals extends Extremity {
-    @Range(min=0, max=2) //verifica sa includa si valoarea min si max
+    @Range(min=0, max=2)
     private int proximalJuvenileStageOfUnion;
-    @Range(min=0, max=2) //verifica sa includa si valoarea min si max
+    @Range(min=0, max=2)
     private int distalJuvenileStageOfUnion;
     @Enumerated(EnumType.STRING)
     private EnumsBio.StagesOfDJD stagesOfDJD;

@@ -1,6 +1,6 @@
 package ro.ubb.abc2024.biology.dto;
 
-import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +14,8 @@ import java.util.UUID;
 @SuperBuilder
 public class BioLabDto {
 
-    private long id;
+    private Long id;
 
-    @Nullable
+    @NotEmpty
     private UUID artefactId;
 }

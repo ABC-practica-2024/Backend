@@ -2,11 +2,10 @@ package ro.ubb.abc2024.biology.mapper.teeth.permanent;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMaxillaMolar3;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMaxillaMolar3Dto;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface PermanentMaxillaMolar3Mapper {
 
     PermanentMaxillaMolar3Dto toDto(PermanentMaxillaMolar3 entity);

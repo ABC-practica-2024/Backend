@@ -6,7 +6,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
 
-@Entity
+
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor

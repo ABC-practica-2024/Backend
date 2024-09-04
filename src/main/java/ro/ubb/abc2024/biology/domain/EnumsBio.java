@@ -171,24 +171,6 @@ public class EnumsBio {
         }
     }
 
-//    public enum AppendicularType {
-//        HUMERUS("Humerus"),
-//        RADIUS("Radius"),
-//        ULNA("Ulna"),
-//        FEMUR("Femur"),
-//        TIBIA("Tibia"),
-//        FIBULA("Fibula");
-//
-//        private final String description;
-//
-//        AppendicularType(String description) {
-//            this.description = description;
-//        }
-//
-//        public String getDescription() {
-//            return description;
-//        }
-//    }
     public enum PathologyCondition {
         PRESENT("Present"),
         ABSENT("Absent"),
@@ -218,6 +200,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum ToothType {
         M_ONE("Molar 1"),
         M_TWO("Molar 2"),
@@ -314,6 +297,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum Sex {
         M("Male"),
         F("Female");
@@ -328,6 +312,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum DentalMorpho {
         FALSE("False"),
         TRUE("True"),
@@ -343,6 +328,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum IsolatedRemainsType {
         CRANIAL("Cranial"),
         AXIAL("Axial"),

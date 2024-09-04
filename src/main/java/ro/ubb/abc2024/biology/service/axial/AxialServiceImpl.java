@@ -23,7 +23,7 @@ public class AxialServiceImpl implements AxialService {
 
     @Override
     public Axial getById(EnumsBio.AxialBoneType axialBone, Long id) {
-        return switch(axialBone){
+        return switch (axialBone) {
             case COCCYX -> axialRepository.getCoccyxById(id).orElseThrow(() ->
                     new EntityNotFoundException("Coccyx not found with id: " + id));
             case RIBS -> axialRepository.getRibsById(id).orElseThrow(() ->
@@ -43,6 +43,7 @@ public class AxialServiceImpl implements AxialService {
         if (axial == null) {
             throw new IllegalArgumentException("The entity to be saved cannot be null.");
         }
+
         return switch (axialBone) {
             case COCCYX -> {
                 if (!(axial instanceof Coccyx coccyx)) {
@@ -74,7 +75,6 @@ public class AxialServiceImpl implements AxialService {
                 }
                 yield axialRepository.save(vertebrae);
             }
-            default -> throw new IllegalArgumentException("Unexpected axialBone value: " + axialBone);
         };
     }
 
@@ -84,49 +84,39 @@ public class AxialServiceImpl implements AxialService {
         if (axial == null) {
             throw new IllegalArgumentException("AxialDto cannot be null");
         }
-        return switch(axialBone){
+        return switch (axialBone) {
             case COCCYX -> {
+                CoccyxDto source = (CoccyxDto) axial;
                 Coccyx target = axialRepository.getCoccyxById(axial.getId()).orElseThrow(() ->
                         new EntityNotFoundException("Coccyx not found with id: " + axial.getId()));
-                if (!(axial instanceof CoccyxDto source)) {
-                    throw new IllegalArgumentException("Invalid DTO type for COCCYX");
-                }
                 coccyxMapper.updateEntityFromDto(source, target);
                 yield axialRepository.save(target);
             }
             case RIBS -> {
+                RibsDto source = (RibsDto) axial;
                 Ribs target = axialRepository.getRibsById(axial.getId()).orElseThrow(() ->
                         new EntityNotFoundException("Ribs not found with id: " + axial.getId()));
-                if (!(axial instanceof RibsDto source)) {
-                    throw new IllegalArgumentException("Invalid DTO type for RIBS");
-                }
                 ribsMapper.updateEntityFromDto(source, target);
                 yield axialRepository.save(target);
             }
             case SACRUM -> {
+                SacrumDto source = (SacrumDto) axial;
                 Sacrum target = axialRepository.getSacrumById(axial.getId()).orElseThrow(() ->
                         new EntityNotFoundException("Sacrum not found with id: " + axial.getId()));
-                if (!(axial instanceof SacrumDto source)) {
-                    throw new IllegalArgumentException("Invalid DTO type for SACRUM");
-                }
                 sacrumMapper.updateEntityFromDto(source, target);
                 yield axialRepository.save(target);
             }
             case STERNUM -> {
+                SternumDto source = (SternumDto) axial;
                 Sternum target = axialRepository.getSternumById(axial.getId()).orElseThrow(() ->
                         new EntityNotFoundException("Sternum not found with id: " + axial.getId()));
-                if (!(axial instanceof SternumDto source)) {
-                    throw new IllegalArgumentException("Invalid DTO type for STERNUM");
-                }
                 sternumMapper.updateEntityFromDto(source, target);
                 yield axialRepository.save(target);
             }
             case VERTEBRAE -> {
+                VertebraeDto source = (VertebraeDto) axial;
                 Vertebrae target = axialRepository.getVertebraeById(axial.getId()).orElseThrow(() ->
                         new EntityNotFoundException("Vertebrae not found with id: " + axial.getId()));
-                if (!(axial instanceof VertebraeDto source)) {
-                    throw new IllegalArgumentException("Invalid DTO type for VERTEBRAE");
-                }
                 vertebraeMapper.updateEntityFromDto(source, target);
                 yield axialRepository.save(target);
             }
@@ -135,7 +125,7 @@ public class AxialServiceImpl implements AxialService {
 
     @Override
     public void deleteById(EnumsBio.AxialBoneType axialBone, Long id) {
-        switch (axialBone){
+        switch (axialBone) {
             case COCCYX -> axialRepository.delete(axialRepository.getCoccyxById(id).orElseThrow(() ->
                     new EntityNotFoundException("Coccyx not found with id: " + id)));
             case RIBS -> axialRepository.delete(axialRepository.getRibsById(id).orElseThrow(() ->

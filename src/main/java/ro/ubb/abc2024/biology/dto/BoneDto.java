@@ -24,6 +24,7 @@ public class BoneDto extends BioLab {
     @Nullable
     private EnumsBio.BoneHatch boneHatch;
 
+    @Nullable
     private EnumsBio.BoneCrematedHatch boneCrematedHatch;
 
 }

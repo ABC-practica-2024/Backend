@@ -6,7 +6,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.Teeth;
 import ro.ubb.abc2024.biology.dto.TeethDto;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface TeethMapper {
 
     TeethDto toDto(Teeth entity);

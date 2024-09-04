@@ -11,7 +11,6 @@ import ro.ubb.abc2024.biology.dto.appendicular.*;
 import ro.ubb.abc2024.biology.mapper.append.*;
 import ro.ubb.abc2024.biology.repository.appendicular.AppendRepository;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AppendServiceImpl implements AppendService {
@@ -66,7 +65,6 @@ public class AppendServiceImpl implements AppendService {
     @Transactional
     @Override
     public Append save(EnumsBio.AppendicularBoneType appendBone, Append append) {
-        log.error("Service --- save method entered");
         if (append == null) {
             throw new IllegalArgumentException("The entity to be saved cannot be null.");
         }

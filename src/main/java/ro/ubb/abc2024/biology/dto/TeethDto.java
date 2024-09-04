@@ -1,6 +1,5 @@
 package ro.ubb.abc2024.biology.dto;
 
-import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,11 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder
 public class TeethDto {
-
-    @Nullable
     private Long id;
 
-    @Nullable
     private UUID artefactId;
 
 }

@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
 import ro.ubb.abc2024.biology.domain.teeth.Tooth;
 
-@Entity
+@MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

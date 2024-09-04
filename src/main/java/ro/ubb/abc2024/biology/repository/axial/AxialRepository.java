@@ -29,4 +29,6 @@ public interface AxialRepository extends JpaRepository<Axial, Long> {
     //    -----------------------------------------Vertebrae---------------------------------------------------
     @Query(value = "select c from Vertebrae c where c.id=:id")
     Optional<Vertebrae> getVertebraeById(Long id);
+
 }
+

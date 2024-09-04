@@ -1,16 +1,14 @@
 package ro.ubb.abc2024.biology.domain;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor

@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Range;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
 import ro.ubb.abc2024.biology.domain.Teeth;
 
-@Entity
+@MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
