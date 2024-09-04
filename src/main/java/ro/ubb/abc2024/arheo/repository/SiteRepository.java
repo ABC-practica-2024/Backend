@@ -13,7 +13,7 @@ import ro.ubb.abc2024.user.User;
 import java.beans.Transient;
 import java.util.List;
 
-public interface SiteRepository extends JpaRepository<Site, Long> {
+public interface SiteRepository extends JpaRepository<Site, Long>, JpaSpecificationExecutor<Site> {
     List<Site> getSitesByStatus(SiteStatus status);
     Site getSiteById(Long id);
     Site getSiteByTitle(String title);

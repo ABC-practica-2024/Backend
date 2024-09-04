@@ -2,11 +2,13 @@ package ro.ubb.abc2024.arheo.controller.site;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
-import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SiteConverterDto;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
@@ -15,7 +17,10 @@ import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.service.SiteServiceImpl;
 import ro.ubb.abc2024.utils.dto.Result;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -28,9 +33,20 @@ public class SiteController {
     private final SiteConverterDto siteConverterDto;
     private final SectionDtoConverter sectionDtoConverter;
 
-    @GetMapping()
-    public Result<List<SiteDTO>> getSites(){
-        return new Result<>(true, HttpStatus.OK.value(), "Sites returned.", siteService.getAll().stream().map(siteConverterDto::createFromEntity).toList());
+    @GetMapping
+    public Result<Map<String,Object>> getSites(@RequestParam(required = false) String status,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Site> sitePage = siteService.getAllPaginatedByCriteria(status, pageable);
+        List<SiteDTO> siteDtoList = sitePage.getContent().stream().map(siteConverterDto::createFromEntity)
+                .collect(Collectors.toList());
+        Map<String, Object> response = new HashMap<>();
+        response.put("sites", siteDtoList);
+        response.put("currentPage", sitePage.getNumber());
+        response.put("totalItems", sitePage.getTotalElements());
+        response.put("totalPages", sitePage.getTotalPages());
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all sites", response);
     }
 
     @GetMapping("{id}")
@@ -49,7 +65,6 @@ public class SiteController {
     @PutMapping()
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
     public Result<SiteDTO> updateSite(@RequestBody SiteDTO siteDTO){
-        //Site updatedSite = siteConverterDto.createFromDto(siteDTO);
         siteService.updateSite(siteDTO.id(), siteDTO);
         return new Result<>(true, HttpStatus.OK.value(), "Site updated successfully.", siteDTO);
     }
@@ -59,37 +74,6 @@ public class SiteController {
     public Result<Boolean> deleteSite(@PathVariable Long id){
         siteService.deleteSite(id);
         return new Result<>(true, HttpStatus.OK.value(), "Site deleted successfully.", Boolean.TRUE);
-    }
-
-    @GetMapping("/digging")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<List<SiteDTO>> getDiggingSites(){
-        return new Result<>(true, HttpStatus.OK.value(), "Returned digging sites.", siteService.getAllByStatus(SiteStatus.DIGGING).stream().map(siteConverterDto::createFromEntity).toList());
-    }
-
-    @GetMapping("/analysis")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<List<SiteDTO>> getAnalyzedSites(){
-        return new Result<>(true, HttpStatus.OK.value(), "Returned analyzed sites.", siteService.getAllByStatus(SiteStatus.ANALYSIS).stream().map(siteConverterDto::createFromEntity).toList());
-    }
-
-    @GetMapping("/completed")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<List<SiteDTO>> getCompletedSites(){
-        return new Result<>(true, HttpStatus.OK.value(), "Returned completed sites.", siteService.getAllByStatus(SiteStatus.COMPLETED).stream().map(siteConverterDto::createFromEntity).toList());
-    }
-
-    @GetMapping("/incomplete")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<List<SiteDTO>> getIncompleteSites(){
-        return new Result<>(true,
-                HttpStatus.OK.value(),
-                "Returned incomplete sites.",
-                Stream.concat(
-                        siteService.getAllByStatus(SiteStatus.DIGGING).stream().map(siteConverterDto::createFromEntity),
-                        siteService.getAllByStatus(SiteStatus.ANALYSIS).stream().map(siteConverterDto::createFromEntity))
-                        .toList()
-        );
     }
 
     @GetMapping("/sections/{id}")
