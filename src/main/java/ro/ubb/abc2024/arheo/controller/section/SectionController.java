@@ -38,6 +38,14 @@ public class SectionController {
     private final ArtifactDtoConverter artifactDtoConverter;
     private final UserService userService;
 
+
+    private boolean checkIfCurrentUserIsMainArchaeologist(Section section) {
+        var userId = userService.getUser(SecurityContextHolder.getContext().getAuthentication().getName()).getId();
+        var mainArchaeologistId = sectionService.getSection(section.getSite().getMainArchaeologist().getId())
+                .getSite().getMainArchaeologist().getId();
+        return Objects.equals(userId, mainArchaeologistId);
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
     public Result<Map<String, Object>> getSections(
@@ -65,9 +73,7 @@ public class SectionController {
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
     // add a new section, add it to the list of sections
     public Result<SectionDto> addSection(@RequestBody SectionDto sectionDto) {
-        var userId = userService.getUser(SecurityContextHolder.getContext().getAuthentication().getName()).getId();
-        var mainArchaeologistId = sectionService.getSection(sectionDto.siteId()).getSite().getMainArchaeologist().getId();
-        if (!Objects.equals(userId, mainArchaeologistId)) {
+        if(!checkIfCurrentUserIsMainArchaeologist(sectionDtoConverter.createFromDto(sectionDto))) {
             return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can add sections", null);
         }
         var section = sectionService.addSection(sectionDtoConverter.createFromDto(sectionDto));
@@ -79,22 +85,24 @@ public class SectionController {
     public Result<SectionDto> removeSection(@RequestBody long sectionId){
         // given a section id, remove the section from the list of sections
         var section = sectionService.getSection(sectionId);
-        var userId = userService.getUser(SecurityContextHolder.getContext().getAuthentication().getName()).getId();
-        var mainArchaeologistId = sectionService.getSection(section.getSite().getMainArchaeologist().getId())
-                .getSite().getMainArchaeologist().getId();
-        if (!Objects.equals(userId, mainArchaeologistId)) {
+        if (!checkIfCurrentUserIsMainArchaeologist(section))
             return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can add sections", null);
-        }
         sectionService.deleteSection(sectionId);
         return new Result<>(true, HttpStatus.OK.value(), "Deleted section", sectionDtoConverter.createFromEntity(sectionService.getSection(sectionId)));
     }
+
 
     @PutMapping
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
     // edit/update a section; subject to change depending on what fields could be updated
     // could be improved by adding to SectionService a method that takes the Dto as parameter
     public Result<SectionDto> updateSection(@RequestBody SectionDto sectionDto) {
-        var section = sectionService.updateSection(sectionDtoConverter.createFromDto(sectionDto));
+        var section = sectionService.getSection(sectionDto.id());
+        if (!checkIfCurrentUserIsMainArchaeologist(section))
+            return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can add sections", null);
+
+        section = sectionService.updateSection(sectionDtoConverter.createFromDto(sectionDto));
+
         return new Result<>(true, HttpStatus.OK.value(), "Updated section", sectionDtoConverter.createFromEntity(section));
     }
 
