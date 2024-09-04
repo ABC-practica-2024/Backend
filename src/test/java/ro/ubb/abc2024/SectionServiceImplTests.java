@@ -114,7 +114,7 @@ public class SectionServiceImplTests {
 
         // Act
         Section result = sectionService.addSection(section);
-        Section foundSection = sectionService.getSection(1L);
+        Section foundSection = sectionService.getSection(result.getId());
 
         // Assert
         assertEquals("Test Section", foundSection.getName());
