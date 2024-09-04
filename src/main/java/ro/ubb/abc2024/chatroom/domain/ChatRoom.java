@@ -6,7 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ro.ubb.abc2024.arheo.domain.Artifact;
+
+import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.user.User;
 
 @Data
@@ -22,14 +23,17 @@ public class ChatRoom {
     @NotNull(message = "Chat type cannot be null")
     @Enumerated(EnumType.STRING)
     private ChatType chatType;
-    @ManyToOne
-    @JoinColumn(name = "mainArcheologist_id", nullable = false)
+
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "mainArcheologist_id", nullable = false, updatable = false)
     private User mainArchaeologist;
-    @ManyToOne
+
+    @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "otherParty_id", nullable = false)
     private User otherParty;
-    @ManyToOne
-    @JoinColumn(name = "artifact_id", nullable = false)
+
+    @ManyToOne(targetEntity = Artifact.class)
+    @JoinColumn(name = "artifact_id", nullable = false, updatable = false)
     private Artifact artifact;
 
 }
