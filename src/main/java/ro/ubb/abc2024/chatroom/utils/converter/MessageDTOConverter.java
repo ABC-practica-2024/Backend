@@ -1,10 +1,10 @@
-package ro.ubb.abc2024.chatroom.utils;
+package ro.ubb.abc2024.chatroom.utils.converter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ro.ubb.abc2024.chatroom.domain.Message;
 import ro.ubb.abc2024.chatroom.repository.ChatRoomRepository;
-import ro.ubb.abc2024.chatroom.repository.MessageRepository;
+import ro.ubb.abc2024.chatroom.utils.dto.MessageDTO;
 import ro.ubb.abc2024.user.UserRepository;
 import ro.ubb.abc2024.utils.converter.Converter;
 
