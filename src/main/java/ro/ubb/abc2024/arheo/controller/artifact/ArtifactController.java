@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.service.ArtifactService;
 import ro.ubb.abc2024.arheo.utils.converter.ArtifactDtoConverter;
 import ro.ubb.abc2024.arheo.utils.dto.ArtifactDto;
+import ro.ubb.abc2024.chatroom.domain.ChatRoom;
+import ro.ubb.abc2024.chatroom.service.ChatRoomService;
 import ro.ubb.abc2024.utils.dto.Result;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 @RequestMapping("${api.endpoint.arheo}/artifacts")
 public class ArtifactController {
     private final ArtifactService artifactService;
+    private final ChatRoomService chatRoomService;
     private final ArtifactDtoConverter artifactDtoConverter;
 
     // get all artifacts
@@ -36,6 +39,7 @@ public class ArtifactController {
     @PostMapping
     public Result<ArtifactDto> addArtifact(@RequestBody ArtifactDto artifactDto) {
         var artifact = artifactService.addArtifact(artifactDtoConverter.createFromDto(artifactDto));
+        var chatroom = chatRoomService.addChatroomArhPrimeAndArh(ChatRoom.builder().otherParty(artifact.getArcheologist()).artifact(artifact).build());
         return new Result<>(true, HttpStatus.CREATED.value(), "Added artifact", artifactDtoConverter.createFromEntity(artifact));
     }
 
