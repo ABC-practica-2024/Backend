@@ -1,25 +1,17 @@
 package ro.ubb.abc2024.arheo.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
-import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.exception.SectionServiceException;
 import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -135,51 +127,8 @@ public class SectionServiceImpl implements SectionService{
 
     public List<Section> getSections() {
         //return this.sectionRepository.findAll();
-        return this.sectionRepository.getSectionsWithArtifacts(null).getContent();
-    }
+        return this.sectionRepository.getSectionsWithArtifacts();
 
-
-//    @Override
-//    public List<Section> getSections(int page, int pageSize) {
-//        Pageable pageable = PageRequest.of(page - 1, pageSize);
-//        return this.sectionRepository.getSectionsWithArtifacts(pageable).getContent();
-//    }
-
-    @Override
-    public Page<Section> getSections(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return this.sectionRepository.getSectionsWithArtifacts(pageable);
-    }
-
-    @Override
-    public Page<Section> findAllByCriteria(Long sectionId, String sectionName, Long siteId, String status, Pageable pageable) {
-        return sectionRepository.findAll((root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            root.fetch("artifactsList", JoinType.LEFT);
-
-            if (sectionId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), sectionId));
-            }
-            if (sectionName != null) {
-                predicates.add(criteriaBuilder.like(root.get("name"), "%" + sectionName + "%"));
-            }
-            // for the site id, we need to join the site table
-            if (siteId != null) {
-                Join<Section, Site> siteJoin = root.join("site");
-                predicates.add(criteriaBuilder.equal(siteJoin.get("id"), siteId));
-            }
-            if (status != null) {
-                // predicates.add(criteriaBuilder.equal(root.get("status"), status));
-                // status is SectionStatus, not String. We need to convert it
-                if(status.equals("INCOMPLETE")){
-                    predicates.add(criteriaBuilder.notEqual(root.get("status"), SectionStatus.COMPLETED));
-                } else {
-                    predicates.add(criteriaBuilder.equal(root.get("status"), SectionStatus.valueOf(status)));
-                }
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        }, pageable);
     }
 
     @Override
