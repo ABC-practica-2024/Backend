@@ -1,6 +1,7 @@
 package ro.ubb.abc2024.arheo.controller.site;
 
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,8 +21,8 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.endpoint.arheo}/site")
-//@SecurityRequirement(name = "bearerAuth")
+@RequestMapping("${api.endpoint.base-url}/site")
+@SecurityRequirement(name = "bearerAuth")
 public class SiteController {
 
     private final SiteServiceImpl siteService;
@@ -29,17 +30,19 @@ public class SiteController {
     private final SectionDtoConverter sectionDtoConverter;
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SiteDTO>> getSites(){
         return new Result<>(true, HttpStatus.OK.value(), "Sites returned.", siteService.getAll().stream().map(siteConverterDto::createFromEntity).toList());
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<SiteDTO> getSiteById(@PathVariable Long id){
         return new Result<>(true, HttpStatus.OK.value(), "Sites returned.", siteConverterDto.createFromEntity(siteService.getSite(id)));
     }
 
     @PostMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<SiteDTO> createSite(@RequestBody SiteDTO siteDTO){
         Site newSite=siteConverterDto.createFromDto(siteDTO);
         siteService.addSite(newSite);
@@ -47,7 +50,7 @@ public class SiteController {
     }
 
     @PutMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<SiteDTO> updateSite(@RequestBody SiteDTO siteDTO){
         //Site updatedSite = siteConverterDto.createFromDto(siteDTO);
         siteService.updateSite(siteDTO.id(), siteDTO);
@@ -55,32 +58,32 @@ public class SiteController {
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<Boolean> deleteSite(@PathVariable Long id){
         siteService.deleteSite(id);
         return new Result<>(true, HttpStatus.OK.value(), "Site deleted successfully.", Boolean.TRUE);
     }
 
     @GetMapping("/digging")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SiteDTO>> getDiggingSites(){
         return new Result<>(true, HttpStatus.OK.value(), "Returned digging sites.", siteService.getAllByStatus(SiteStatus.DIGGING).stream().map(siteConverterDto::createFromEntity).toList());
     }
 
     @GetMapping("/analysis")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SiteDTO>> getAnalyzedSites(){
         return new Result<>(true, HttpStatus.OK.value(), "Returned analyzed sites.", siteService.getAllByStatus(SiteStatus.ANALYSIS).stream().map(siteConverterDto::createFromEntity).toList());
     }
 
     @GetMapping("/completed")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SiteDTO>> getCompletedSites(){
         return new Result<>(true, HttpStatus.OK.value(), "Returned completed sites.", siteService.getAllByStatus(SiteStatus.COMPLETED).stream().map(siteConverterDto::createFromEntity).toList());
     }
 
     @GetMapping("/incomplete")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SiteDTO>> getIncompleteSites(){
         return new Result<>(true,
                 HttpStatus.OK.value(),
@@ -93,13 +96,13 @@ public class SiteController {
     }
 
     @GetMapping("/sections/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SectionDto>> getSectionsById(@PathVariable long id){
         return new Result<>(true, HttpStatus.OK.value(), "Returned all sections.", siteService.getSectionsBySiteId(id).stream().map(sectionDtoConverter::createFromEntity).toList());
     }
 
     @GetMapping("sections_incomplete/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SectionDto>> getIncompleteSectionsBySiteId(@PathVariable long id){
         return new Result<>(true,
                 HttpStatus.OK.value(),
@@ -113,12 +116,14 @@ public class SiteController {
 
     //todo: complete endpoint when done artifacts
     /*@GetMapping("artifacts/{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<ArtifactDto>> getArtifactsBySiteId(@PathVariable long id){
 
     }*/
 
     //todo: complete endpoint when done artifacts
     /*@GetMapping("artifacts")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<SectionDto>> getArtifactsBySiteIdAndArchaeologist(@RequestBody Long siteId,
                                                                          @RequestBody Long archaeologistId){
 

@@ -60,7 +60,7 @@ public class RequestNewArcheologicalSiteTests {
         userArheo.setEmail("arheo@gmail.com");
         userArheo.setFirstName("firstName");
         userArheo.setLastName("lastName");
-        userArheo.setRole(Role.ARH);
+        userArheo.setRole(Role.ARHEO);
         userArheo.setEnabled(true);
         userRepository.save(userArheo);
 

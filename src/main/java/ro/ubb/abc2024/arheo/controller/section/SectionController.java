@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.arheo.controller.section;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,14 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.endpoint.arheo}/sections")
+@RequestMapping("${api.endpoint.base-url}/sections")
+@SecurityRequirement(name = "bearerAuth")
 public class SectionController {
     private final SectionService sectionService;
     private final SectionDtoConverter sectionDtoConverter;
 
     @GetMapping
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // get all sections
     public Result<List<SectionDto>> getSections() {
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all sections", sectionService.getSections().stream()
@@ -32,13 +34,13 @@ public class SectionController {
 
     // get by id
     @GetMapping("/{id}")
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<SectionDto> getSection(@PathVariable long id) {
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved section", sectionDtoConverter.createFromEntity(sectionService.getSection(id)));
     }
 
     @PostMapping
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // add a new section, add it to the list of sections
     public Result<SectionDto> addSection(@RequestBody SectionDto sectionDto) {
         var section = sectionService.addSection(sectionDtoConverter.createFromDto(sectionDto));
@@ -47,7 +49,7 @@ public class SectionController {
     }
 
     @DeleteMapping
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<SectionDto> removeSection(@RequestBody long sectionId){
         // given a section id, remove the section from the list of sections
         sectionService.deleteSection(sectionId);
@@ -55,7 +57,7 @@ public class SectionController {
     }
 
     @PutMapping
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // edit/update a section; subject to change depending on what fields could be updated
     // could be improved by adding to SectionService a method that takes the Dto as parameter
     public Result<SectionDto> updateSection(@RequestBody SectionDto sectionDto) {
@@ -64,7 +66,7 @@ public class SectionController {
     }
 
     @GetMapping("/incomplete")
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // get all sections that are incomplete
     public Result<List<SectionDto>> getIncompleteSections() {
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all incomplete sections", sectionService.getIncompleteSections().stream()
@@ -73,7 +75,7 @@ public class SectionController {
     }
 
     @GetMapping("/artefacts/{sectionId}")
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // get all artifacts from a section
     public Result<List<Long>> getArtifactsFromSection(@PathVariable long sectionId) {
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all artifacts from section", sectionService.getArtifactsFromSection(sectionId)
@@ -84,7 +86,7 @@ public class SectionController {
     }
 
     @GetMapping("/artefacts")
-    //@PreAuthorize("hasAnyAuthority('ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // get all artifacts from a section, from a specific archaeologist
     public Result<List<Long>> getArtifactsFromSectionByArchaeologist(@RequestParam long sectionId, @RequestParam long archaeologistId) {
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all artifacts from section by archaeologist", sectionService.getArtifactsFromSectionByArchaeologist(sectionId, archaeologistId)

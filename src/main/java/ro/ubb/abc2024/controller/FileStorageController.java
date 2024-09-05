@@ -27,7 +27,7 @@ public class FileStorageController {
     private final FileService fileService;
 
     @PostMapping("/upload")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<String> storeFilesIntoDB(@RequestParam("file") MultipartFile file, @RequestParam("folder") String folder){
         FileDto fileDto = new FileDto(file, folder);
 
@@ -36,7 +36,7 @@ public class FileStorageController {
     }
 
     @GetMapping("/download")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public ResponseEntity<Resource> downloadFile(@RequestParam("file") UUID uuid) {
         var downloadedFile = this.fileService.downloadFile(uuid);
         return ResponseEntity.ok()
