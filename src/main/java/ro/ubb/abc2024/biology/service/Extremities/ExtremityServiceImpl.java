@@ -1,6 +1,5 @@
 package ro.ubb.abc2024.biology.service.Extremities;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import ro.ubb.abc2024.biology.exception.ResourceNotFoundException;
 import ro.ubb.abc2024.biology.repository.Extremities.ExtremityRepository;
-import ro.ubb.abc2024.biology.service.Extremities.ExtremityService;
 
 
 @Service

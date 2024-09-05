@@ -1,12 +1,10 @@
-package ro.ubb.abc2024.biology.domain.teeth;
+package ro.ubb.abc2024.biology.domain;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Range;
-import ro.ubb.abc2024.biology.domain.EnumsBio;
-import ro.ubb.abc2024.biology.domain.Teeth;
 
 @MappedSuperclass
 @Data
@@ -14,7 +12,7 @@ import ro.ubb.abc2024.biology.domain.Teeth;
 @NoArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class Tooth extends Teeth {
+public class Tooth extends BioLab {
 
     @Nullable
     @Enumerated(EnumType.STRING)

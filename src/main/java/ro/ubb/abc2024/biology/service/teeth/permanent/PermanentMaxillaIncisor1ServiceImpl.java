@@ -2,13 +2,16 @@ package ro.ubb.abc2024.biology.service.teeth.permanent;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMaxillaIncisor1;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMaxillaIncisor1Dto;
 import ro.ubb.abc2024.biology.mapper.teeth.permanent.PermanentMaxillaIncisor1Mapper;
+import ro.ubb.abc2024.biology.repository.teeth.permanent.PermanentMaxillaIncisor1Repository;
 import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
 import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PermanentMaxillaIncisor1ServiceImpl
@@ -18,7 +21,7 @@ public class PermanentMaxillaIncisor1ServiceImpl
     private final PermanentMaxillaIncisor1Mapper mapper;
 
     @Autowired
-    public PermanentMaxillaIncisor1ServiceImpl(JpaRepository<PermanentMaxillaIncisor1, Long> repository,
+    public PermanentMaxillaIncisor1ServiceImpl(PermanentMaxillaIncisor1Repository repository,
                                                PermanentMaxillaIncisor1Mapper mapper) {
         super(repository);
         this.mapper = mapper;
@@ -36,5 +39,9 @@ public class PermanentMaxillaIncisor1ServiceImpl
         PermanentMaxillaIncisor1 existingEntity = getById(id);
         mapper.updateEntityFromDto(dto, existingEntity);
         return repository.save(existingEntity);
+    }
+
+    public List<PermanentMaxillaIncisor1> getAllByArtefactId(UUID artefactId) {
+        return ((PermanentMaxillaIncisor1Repository) repository).getAllByArtefactId(artefactId);
     }
 }

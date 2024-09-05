@@ -2,7 +2,6 @@ package ro.ubb.abc2024.biology.service.appendicular;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.ubb.abc2024.biology.domain.EnumsBio;

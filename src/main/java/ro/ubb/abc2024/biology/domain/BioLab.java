@@ -9,15 +9,15 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@MappedSuperclass
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@MappedSuperclass
 public class BioLab {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotNull

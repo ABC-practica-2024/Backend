@@ -48,7 +48,7 @@ public class Humerus extends Appendicular {
 
     @Nullable
     @Range(min=0, max=2)
-    private EnumsBio.StagesOfDJD medEpicondyleElbowStageOfUnion;
+    private Integer medEpicondyleElbowStageOfUnion;
 
     @Nullable
     @Enumerated(EnumType.STRING)

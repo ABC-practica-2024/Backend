@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.biology.service.teeth.deciduous;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,8 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMandibleIncisor2;
 import ro.ubb.abc2024.biology.dto.teeth.deciduous.DeciduousMandibleIncisor2Dto;
 import ro.ubb.abc2024.biology.mapper.teeth.deciduous.DeciduousMandibleIncisor2Mapper;
+import ro.ubb.abc2024.biology.repository.teeth.deciduous.DeciduousMandibleIncisor2Repository;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
 class DeciduousMandibleIncisor2ServiceImplTest {
 
     @Mock
-    private JpaRepository<DeciduousMandibleIncisor2, Long> repository;
+    private DeciduousMandibleIncisor2Repository repository;
 
     @Mock
     private DeciduousMandibleIncisor2Mapper mapper;

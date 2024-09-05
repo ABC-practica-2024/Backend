@@ -3,11 +3,11 @@ package ro.ubb.abc2024.biology.domain;
 public class EnumsBio {
 
     public enum Side {
-        LEFT ("Left"),
-        RIGHT ("Right"),
-        USIDED ("U sided"),
-        APPROXIMATED ("Approximated"),
-        MID ("Middle");
+        LEFT("Left"),
+        RIGHT("Right"),
+        USIDED("U sided"),
+        APPROXIMATED("Approximated"),
+        MID("Middle");
         private final String description;
 
         Side(String description) {
@@ -18,11 +18,12 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum BoneHatch {
-        TAN ("Tan"),
-        BLACK ("Black"),
-        WHITE_CALCINATED ("White or Calcinated"),
-        BLUE_GRAY ("Blue or Gray");
+        TAN("Tan"),
+        BLACK("Black"),
+        WHITE_CALCINATED("White or Calcinated"),
+        BLUE_GRAY("Blue or Gray");
         private final String description;
 
         BoneHatch(String description) {
@@ -33,11 +34,12 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum BoneCrematedHatch {
-        TAN ("Tan"),
-        BLACK ("Black"),
-        WHITE_CALCINATED ("White or Calcinated"),
-        BLUE_GRAY ("Blue or Gray");
+        TAN("Tan"),
+        BLACK("Black"),
+        WHITE_CALCINATED("White or Calcinated"),
+        BLUE_GRAY("Blue or Gray");
         private final String description;
 
         BoneCrematedHatch(String description) {
@@ -48,6 +50,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum InventoryCondition {
         F("1-25% present"),
         P("25-75% present"),
@@ -64,6 +67,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum ExtremityBone {
         SCAPHOID("Scaphoid"),
         CALCANEUS("Calcaneus"),
@@ -83,10 +87,10 @@ public class EnumsBio {
         METATARSALS("Metatarsals"),
 
         METACARPALS("Metacarpals"),
-       UPPER_PROXIMAL_PHALANGES("UpperProximalPhalanges"),
-       LOWER_PROXIMAL_PHALANGES("LowerProximalPhalanges"),
-       UPPER_MIDDLE_PHALANGES("UpperMiddlePhalanges"),
-       LOWER_MIDDLE_PHALANGES("LowerMiddlePhalanges"),
+        UPPER_PROXIMAL_PHALANGES("UpperProximalPhalanges"),
+        LOWER_PROXIMAL_PHALANGES("LowerProximalPhalanges"),
+        UPPER_MIDDLE_PHALANGES("UpperMiddlePhalanges"),
+        LOWER_MIDDLE_PHALANGES("LowerMiddlePhalanges"),
         UPPER_DISTAL_PHALANGES("UpperDistalPhalanges"),
         LOWER_DISTAL_PHALANGES("LowerDistalPhalanges"),
         UPPER_SESAMOIDS("UpperSesamoids"),
@@ -186,6 +190,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum DigitsProxDistal {
         PROX("Proximal"),
         DISTAL("Distal");
@@ -202,25 +207,34 @@ public class EnumsBio {
     }
 
     public enum ToothType {
-        M_ONE("Molar 1"),
-        M_TWO("Molar 2"),
-        M_THREE("Molar 3"),
-        PM_ONE("Premolar 1"),
-        PM_TWO("Premolar 2"),
-        C("Canin"),
-        I_ONE("Incisive 1"),
-        I_TWO("Incisive 2");
-
-        private final String description;
-
-        ToothType(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return description;
-        }
+        PERMANENT_MANDIBLE_CANINE,
+        PERMANENT_MANDIBLE_INCISOR1,
+        PERMANENT_MANDIBLE_INCISOR2,
+        PERMANENT_MANDIBLE_MOLAR1,
+        PERMANENT_MANDIBLE_MOLAR2,
+        PERMANENT_MANDIBLE_MOLAR3,
+        PERMANENT_MANDIBLE_PREMOLAR1,
+        PERMANENT_MANDIBLE_PREMOLAR2,
+        PERMANENT_MAXILLA_CANINE,
+        PERMANENT_MAXILLA_INCISOR1,
+        PERMANENT_MAXILLA_INCISOR2,
+        PERMANENT_MAXILLA_MOLAR1,
+        PERMANENT_MAXILLA_MOLAR2,
+        PERMANENT_MAXILLA_MOLAR3,
+        PERMANENT_MAXILLA_PREMOLAR1,
+        PERMANENT_MAXILLA_PREMOLAR2,
+        DECIDUOUS_MANDIBLE_CANINE,
+        DECIDUOUS_MANDIBLE_INCISOR1,
+        DECIDUOUS_MANDIBLE_INCISOR2,
+        DECIDUOUS_MANDIBLE_MOLAR1,
+        DECIDUOUS_MANDIBLE_MOLAR2,
+        DECIDUOUS_MAXILLA_CANINE,
+        DECIDUOUS_MAXILLA_INCISOR1,
+        DECIDUOUS_MAXILLA_INCISOR2,
+        DECIDUOUS_MAXILLA_MOLAR1,
+        DECIDUOUS_MAXILLA_MOLAR2
     }
+
     public enum GenericToothType {
         INCISORS("Incisors"),
         CANINES("Canines"),
@@ -237,6 +251,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum BonesCondition {
         YES("Yes"),
         NO("No"),
@@ -252,6 +267,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PhalangesHandFoot {
         HAND("Hand"),
         FOOT("Foot");
@@ -266,6 +282,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PhalangesPosition {
         PROX("Proximal"),
         MID("Middle"),
@@ -281,6 +298,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum VertebraeZoneType {
         CERVICAL("Cervical"),
         THORACIC("Thoracic"),
@@ -346,6 +364,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum StagesOfDJD {
         A("Normal articular surface"),
         B("Appearance of small deposits of bone on articular margins"),
@@ -363,6 +382,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum NonmetricTraits {
         ZERO("Absent"),
         ONE("Present/Partial"),
@@ -379,6 +399,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum EstimatedAge {
         FETUS("Fetus"),
         INFANT("Infant (birth - 2 yr)"),
@@ -398,6 +419,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum RemainsCondition {
         ONE("Remains are burned"),
         TWO("Remains are consistent with human"),
@@ -414,6 +436,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum RemainsTexture {
         L("Longitudinally split"),
         T("Transversely splitting"),
@@ -430,6 +453,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum ArtificialCranialModification {
         ONE("Yes"),
         TWO("No");
@@ -444,6 +468,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum Transtubercle {
         ONE("Circumferential"),
         TWO("Squamous portion of occipital"),
@@ -459,6 +484,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PlaneOfPressure {
         ONE("Perpendicular (90°)"),
         TWO("Obtuse (>90°)"),
@@ -474,6 +500,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PossiblePresence {
         ONE("Sagittal elevation"),
         TWO("Lambdic elevation"),
@@ -489,6 +516,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum ConfirmationStatus {
         YES("Yes"),
         NO("No");
@@ -503,6 +531,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PadImpressions {
         ZERO("No pad impressions"),
         ONE("One pad"),
@@ -519,6 +548,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PadImpressionsShort {
         ZERO("No pad impressions"),
         ONE("One pad"),
@@ -534,6 +564,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PadLocation {
         ONE("Midline"),
         TWO("Symmetrically lateral to midline"),
@@ -550,6 +581,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PadShape {
         ONE("Circular or oval"),
         TWO("Donut-shaped"),
@@ -566,6 +598,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum PadPosition {
         ONE("High, near coronal suture"),
         TWO("Low, near or below frontal boss");
@@ -580,6 +613,7 @@ public class EnumsBio {
             return description;
         }
     }
+
     public enum SymmetricalReshaping {
         ONE("Yes"),
         TWO("No, right side more deformed"),

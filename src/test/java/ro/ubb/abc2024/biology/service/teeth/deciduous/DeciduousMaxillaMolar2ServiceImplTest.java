@@ -1,17 +1,18 @@
 package ro.ubb.abc2024.biology.service.teeth.deciduous;
-
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.jpa.repository.JpaRepository;
 import ro.ubb.abc2024.biology.domain.teeth.deciduous.DeciduousMaxillaMolar2;
 import ro.ubb.abc2024.biology.dto.teeth.deciduous.DeciduousMaxillaMolar2Dto;
 import ro.ubb.abc2024.biology.mapper.teeth.deciduous.DeciduousMaxillaMolar2Mapper;
+import ro.ubb.abc2024.biology.repository.teeth.deciduous.DeciduousMaxillaMolar2Repository;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
 class DeciduousMaxillaMolar2ServiceImplTest {
 
     @Mock
-    private JpaRepository<DeciduousMaxillaMolar2, Long> repository;
+    private DeciduousMaxillaMolar2Repository repository;
 
     @Mock
     private DeciduousMaxillaMolar2Mapper mapper;
@@ -32,7 +33,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // Positive test for save method
     @Test
     void testSave() {
         DeciduousMaxillaMolar2Dto dto = new DeciduousMaxillaMolar2Dto();
@@ -51,7 +51,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         verify(repository).save(entity);
     }
 
-    // Negative test for save method (e.g., mapper throws an exception)
     @Test
     void testSaveThrowsException() {
         DeciduousMaxillaMolar2Dto dto = new DeciduousMaxillaMolar2Dto();
@@ -67,7 +66,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         verify(repository, never()).save(any());
     }
 
-    // Positive test for update method
     @Test
     void testUpdate() {
         Long id = 1L;
@@ -89,7 +87,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         verify(repository).save(existingEntity);
     }
 
-    // Negative test for update method (entity not found)
     @Test
     void testUpdateThrowsEntityNotFoundException() {
         Long id = 1L;
@@ -103,7 +100,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         assertEquals("Entity not found with id " + id, exception.getMessage());
     }
 
-    // Positive test for getById method
     @Test
     void testGetById() {
         Long id = 1L;
@@ -121,7 +117,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         verify(repository).findById(id);
     }
 
-    // Negative test for getById method (entity not found)
     @Test
     void testGetByIdThrowsEntityNotFoundException() {
         Long id = 1L;
@@ -134,7 +129,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         assertEquals("Entity not found with id " + id, exception.getMessage());
     }
 
-    // Positive test for delete method
     @Test
     void testDelete() {
         Long id = 1L;
@@ -150,7 +144,6 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         verify(repository).deleteById(id);
     }
 
-    // Negative test for delete method (entity not found)
     @Test
     void testDeleteThrowsEntityNotFoundException() {
         Long id = 1L;
@@ -165,5 +158,19 @@ class DeciduousMaxillaMolar2ServiceImplTest {
         // Verify that deleteById was not called due to the entity not being found
         verify(repository).existsById(id);
         verify(repository, never()).deleteById(id);
+    }
+
+    @Test
+    void testGetAllByArtefactId() {
+        UUID artefactId = UUID.randomUUID();
+        List<DeciduousMaxillaMolar2> resultList = List.of(new DeciduousMaxillaMolar2());
+
+        when(repository.getAllByArtefactId(artefactId)).thenReturn(resultList);
+
+        List<DeciduousMaxillaMolar2> result = service.getAllByArtefactId(artefactId);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(repository).getAllByArtefactId(artefactId);
     }
 }

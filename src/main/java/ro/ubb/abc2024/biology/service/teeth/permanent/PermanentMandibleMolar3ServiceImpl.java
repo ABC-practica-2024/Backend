@@ -2,13 +2,16 @@ package ro.ubb.abc2024.biology.service.teeth.permanent;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMandibleMolar3;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMandibleMolar3Dto;
 import ro.ubb.abc2024.biology.mapper.teeth.permanent.PermanentMandibleMolar3Mapper;
+import ro.ubb.abc2024.biology.repository.teeth.permanent.PermanentMandibleMolar3Repository;
 import ro.ubb.abc2024.biology.service.teeth.GenericServiceImpl;
 import ro.ubb.abc2024.biology.service.teeth.SpecificToothService;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PermanentMandibleMolar3ServiceImpl
@@ -18,7 +21,7 @@ public class PermanentMandibleMolar3ServiceImpl
     private final PermanentMandibleMolar3Mapper mapper;
 
     @Autowired
-    public PermanentMandibleMolar3ServiceImpl(JpaRepository<PermanentMandibleMolar3, Long> repository,
+    public PermanentMandibleMolar3ServiceImpl(PermanentMandibleMolar3Repository repository,
                                               PermanentMandibleMolar3Mapper mapper) {
         super(repository);
         this.mapper = mapper;
@@ -36,5 +39,9 @@ public class PermanentMandibleMolar3ServiceImpl
         PermanentMandibleMolar3 existingEntity = getById(id);
         mapper.updateEntityFromDto(dto, existingEntity);
         return repository.save(existingEntity);
+    }
+
+    public List<PermanentMandibleMolar3> getAllByArtefactId(UUID artefactId) {
+        return ((PermanentMandibleMolar3Repository) repository).getAllByArtefactId(artefactId);
     }
 }

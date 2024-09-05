@@ -1,7 +1,6 @@
 package ro.ubb.abc2024.biology.domain.teeth.permanent;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
@@ -11,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
-import ro.ubb.abc2024.biology.domain.teeth.Tooth;
+import ro.ubb.abc2024.biology.domain.Tooth;
 
 @MappedSuperclass
 @Data

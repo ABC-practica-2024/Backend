@@ -44,7 +44,7 @@ public class HumerusDto extends AppendicularDto {
 
     @Nullable
     @Range(min=0, max=2)
-    private EnumsBio.StagesOfDJD medEpicondyleElbowStageOfUnion;
+    private Integer medEpicondyleElbowStageOfUnion;
 
     @Nullable
     private EnumsBio.StagesOfDJD distHumerusElbowStageOfDJD;

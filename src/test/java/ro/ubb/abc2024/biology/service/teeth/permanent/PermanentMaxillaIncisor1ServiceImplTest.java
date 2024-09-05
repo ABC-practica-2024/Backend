@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.biology.service.teeth.permanent;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,8 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ro.ubb.abc2024.biology.domain.teeth.permanent.PermanentMaxillaIncisor1;
 import ro.ubb.abc2024.biology.dto.teeth.permanent.PermanentMaxillaIncisor1Dto;
 import ro.ubb.abc2024.biology.mapper.teeth.permanent.PermanentMaxillaIncisor1Mapper;
+import ro.ubb.abc2024.biology.repository.teeth.permanent.PermanentMaxillaIncisor1Repository;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
 class PermanentMaxillaIncisor1ServiceImplTest {
 
     @Mock
-    private JpaRepository<PermanentMaxillaIncisor1, Long> repository;
+    private PermanentMaxillaIncisor1Repository repository;
 
     @Mock
     private PermanentMaxillaIncisor1Mapper mapper;
