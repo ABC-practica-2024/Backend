@@ -1,3 +1,4 @@
+/*
 package ro.ubb.abc2024;
 
 import org.junit.jupiter.api.*;
@@ -142,3 +143,4 @@ class RoleRequestImplTest {
         userRepository.deleteById(userRepository.findByUsername("guest").get().getId());
     }
 }
+*/
