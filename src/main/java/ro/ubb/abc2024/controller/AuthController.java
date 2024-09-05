@@ -16,6 +16,8 @@ import ro.ubb.abc2024.utils.dto.PasswordResetDto;
 import ro.ubb.abc2024.utils.dto.RegistrationUserDto;
 import ro.ubb.abc2024.utils.dto.Result;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.endpoint.base-url}/auth")
@@ -43,9 +45,14 @@ public class AuthController {
             summary = "Registration endpoint. After registering it sends an email with confirmation token."
     )
     @PostMapping("/register")
-    public Result<?> register(@ModelAttribute RegistrationUserDto registrationUserDto,
-                              @RequestParam("profilePicture")MultipartFile file) {
-            this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto), file);
+    public Result<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
+        try {
+            this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto));
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+        }
+
 //        this.registrationService.addUser(this.registrationUserDtoConverter.createFromDto(registrationUserDto));
         return new Result<>(true, HttpStatus.CREATED.value(), "User created successfully", null);
     }

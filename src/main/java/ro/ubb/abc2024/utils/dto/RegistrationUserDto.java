@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ro.ubb.abc2024.user.Role;
 
 @Data
 @AllArgsConstructor
@@ -15,5 +16,5 @@ public class RegistrationUserDto {
     private String email;
     private String firstName;
     private String lastName;
-    private String role;
+    private Role role;
 }

@@ -19,7 +19,7 @@ public class RegistrationUserDtoConverter implements Converter<User, Registratio
                 .email(dto.getEmail())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
-                .role(Role.ADMIN)
+                .role(dto.getRole())
                 .uniqueKey(UUID.randomUUID())
                 .build();
 

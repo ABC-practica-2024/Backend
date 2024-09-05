@@ -14,6 +14,7 @@ public class UserDtoConverter implements Converter<User, UserDto> {
                 .email(dto.email())
                 .firstName(dto.firstName())
                 .lastName(dto.lastName())
+                .role(dto.role())
                 .build();
     }
 
@@ -25,6 +26,6 @@ public class UserDtoConverter implements Converter<User, UserDto> {
                 entity.getEmail(),
                 entity.getFirstName(),
                 entity.getLastName(),
-                entity.getRole().name());
+                entity.getRole());
     }
 }

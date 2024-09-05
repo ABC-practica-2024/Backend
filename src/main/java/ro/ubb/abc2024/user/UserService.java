@@ -9,7 +9,7 @@ import ro.ubb.abc2024.utils.dto.PasswordResetDto;
 import java.util.List;
 
 public interface UserService {
-    User addUser(User user, MultipartFile file);
+    User addUser(User user);
     User updateUser(User user);
     void deleteUser(long id);
     List<User> getUsersByRole(Role role);

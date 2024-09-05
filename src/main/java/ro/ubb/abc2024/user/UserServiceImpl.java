@@ -23,12 +23,11 @@ public class UserServiceImpl implements UserService{
     private final FileService fileService;
     private final GenericValidator<User> validator;
     private final PasswordEncoder passwordEncoder;
+
     @Override
-    public User addUser(User user, MultipartFile file) {
+    public User addUser(User user) {
         try {
             validator.validate(user);
-            var imagePath = this.fileService.saveFile(file, user.getUsername());
-
             return this.userRepository.save(user);
         } catch (ConstraintViolationException ex){
             throw new UserServiceException(ex.getMessage());
@@ -38,7 +37,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public User updateUser(User user) {
         var updatedUser = this.userRepository.findByUsername(user.getUsername()).orElseThrow(
-                () -> new EntityNotFoundException(String.format("User with id %d, does not exist.", user.getId())
+                () -> new EntityNotFoundException(String.format("User with username %s, does not exist.", user.getUsername())
                 ));
         updatedUser.setEmail(user.getEmail());
         updatedUser.setFirstName(user.getFirstName());
