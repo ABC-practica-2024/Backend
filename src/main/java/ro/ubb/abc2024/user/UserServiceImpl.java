@@ -32,9 +32,7 @@ public class UserServiceImpl implements UserService{
         } catch (ConstraintViolationException ex){
             throw new UserServiceException(ex.getMessage());
         }
-
     }
-
     @Override
     @Transactional
     public User updateUser(User user) {

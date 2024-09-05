@@ -24,7 +24,8 @@ class FileServiceImplTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        fileService = new FileServiceImpl();
+        FileRepository fileRepository = mock(FileRepository.class);
+        fileService = new FileServiceImpl(fileRepository);
         multipartFile = mock(MultipartFile.class);
 
         tempFile = Files.createTempFile("test", ".txt").toFile();
