@@ -17,7 +17,7 @@ import ro.ubb.abc2024.biology.domain.BioLab;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class SutureClosure extends BioLab {
+public class SutureClosure extends Cranial {
     @Nullable
     @Min(0)
     @Max(3)

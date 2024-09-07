@@ -8,12 +8,12 @@ import ro.ubb.abc2024.biology.domain.Cranial.Palatine;
 import ro.ubb.abc2024.biology.dto.Cranial.PalatineDto;
 
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface PalatineMapper {
     PalatineDto toDto(Palatine palatines);
 
     Palatine toEntity(PalatineDto palatinesDto);
 
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(PalatineDto source, @MappingTarget Palatine target);
 }

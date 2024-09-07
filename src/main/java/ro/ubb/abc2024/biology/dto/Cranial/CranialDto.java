@@ -21,7 +21,7 @@ import ro.ubb.abc2024.biology.dto.BoneDto;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "boneType"
+        property = "boneTypeAndTraits"
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = EthmoidDto.class, name = "ETHMOID"),
@@ -41,12 +41,22 @@ import ro.ubb.abc2024.biology.dto.BoneDto;
         @JsonSubTypes.Type(value = ThyroidDto.class, name = "THYROID"),
         @JsonSubTypes.Type(value = TMJDto.class, name = "TMJ"),
         @JsonSubTypes.Type(value = VomerDto.class, name = "VOMER"),
-        @JsonSubTypes.Type(value = ZygomaticDto.class, name = "ZYGOMATIC")
+        @JsonSubTypes.Type(value = ZygomaticDto.class, name = "ZYGOMATIC"),
+        @JsonSubTypes.Type(value = NonmetricTraitsMidElementDto.class, name = "NONMETRIC_TRAITS_MID"),
+        @JsonSubTypes.Type(value = NonmetricTraitsSideElementDto.class, name = "NONMETRIC_TRAITS_SIDE"),
+        @JsonSubTypes.Type(value = SutureClosureDto.class, name = "SUTURE_CLOSURE"),
+        @JsonSubTypes.Type(value = CraniumMeasurementsDto.class, name = "CRANIUM_MEASUREMENTS"),
+
+
 
 })
 public class CranialDto extends BoneDto {
     @Nullable
     @Enumerated(EnumType.STRING)
-    private EnumsBio.CranialBoneType boneType;
+    private EnumsBio.CranialBoneAndTraits boneTypeAndTraits;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private EnumsBio.CranialBoneAndTraits cranialBoneTypeAndTraits;
 
 }

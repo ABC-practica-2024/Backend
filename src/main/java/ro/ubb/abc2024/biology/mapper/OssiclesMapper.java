@@ -8,12 +8,12 @@ import ro.ubb.abc2024.biology.domain.Cranial.Ossicles;
 import ro.ubb.abc2024.biology.dto.Cranial.OssiclesDto;
 
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface OssiclesMapper {
     OssiclesDto toDto(Ossicles ossicles);
 
     Ossicles toEntity(OssiclesDto ossiclesDto);
 
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(OssiclesDto source, @MappingTarget Ossicles target);
 }

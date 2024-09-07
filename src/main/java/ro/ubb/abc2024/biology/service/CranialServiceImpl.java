@@ -25,24 +25,25 @@ public class CranialServiceImpl implements CranialService {
     private final MandibleMapper mandibleMapper;
     private final MaxillaMapper maxillaMapper;
     private final NasalMapper nasalMapper;
-    private final NonmetricTraitsMidMapper nonmetrictraitsmidMapper;
-    private final NonmetricTraitsSideMapper nonmetrictraitssideMapper;
+    private final NonmetricTraitsMidMapper nonmetricTraitsMidMapper;
+    private final NonmetricTraitsSideMapper nonmetricTraitsSideMapper;
     private final OccipitalMapper occipitalMapper;
     private final OssiclesMapper ossiclesMapper;
     private final PalatineMapper palatineMapper;
     private final ParietalMapper parietalMapper;
     private final SphenoidMapper sphenoidMapper;
-    private final StureClosureMapper stureclosureMapper;
+    private final SutureClosureMapper sutureClosureMapper;
     private final TemporalMapper temporalMapper;
     private final ThyroidMapper thyroidMapper;
     private final TMJMapper tmjMapper;
     private final VomerMapper vomerMapper;
     private final ZygomaticMapper zygomaticMapper;
+    private final CraniumMeasurementsMapper craniumMeasurementsMapper;
 
 
 
     @Override
-    public Cranial getById(EnumsBio.CranialBoneType cranialBone, Long id) {
+    public Cranial getById(EnumsBio.CranialBoneAndTraits cranialBone, Long id) {
         return switch (cranialBone) {
             case FRONTAL -> cranialRepository.findFrontalById(id).orElseThrow(() ->
                     new EntityNotFoundException("Frontal bone not found with id: " + id));
@@ -80,6 +81,14 @@ public class CranialServiceImpl implements CranialService {
                     new EntityNotFoundException("Thyroid/Crycoid bone not found with id: " + id));
             case OSSICLES -> cranialRepository.findOssiclesById(id).orElseThrow(() ->
                     new EntityNotFoundException("Ossicles not found with id: " + id));
+            case NONMETRIC_TRAITS_MID -> cranialRepository.findNonMetricTraitsMidById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Nonmetric traits mid not found with id: " + id));
+            case NONMETRIC_TRAITS_SIDE -> cranialRepository.findNonMetricTraitsSideById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Nonmetric traits side not found with id: " + id));
+            case SUTURE_CLOSURE -> cranialRepository.findSutureClosureById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Suture closure not found with id: " + id));
+            case CRANIUM_MEASUREMENTS -> cranialRepository.findCraniumMeasurementsById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Cranium measurements not found with id: " + id));
             default -> throw new IllegalArgumentException("Unknown cranial bone: " + cranialBone);
         };
 
@@ -87,7 +96,7 @@ public class CranialServiceImpl implements CranialService {
 
     @Transactional
     @Override
-    public Cranial save(EnumsBio.CranialBoneType cranialBoneType, Cranial cranialBone) {
+    public Cranial save(EnumsBio.CranialBoneAndTraits cranialBoneType, Cranial cranialBone) {
         if (cranialBone == null) {
             throw new IllegalArgumentException("The entity to be saved cannot be null.");
         }
@@ -200,7 +209,33 @@ public class CranialServiceImpl implements CranialService {
                 }
                 yield cranialRepository.save(ossicles);
             }
+            case NONMETRIC_TRAITS_MID -> {
+                if (!(cranialBone instanceof NonmetricTraitsMidElement  nonmetricTraitsMidElement)) {
+                    throw new IllegalArgumentException("Expected an instance of NonmetricTraitsMidElement for NONMETRIC_TRAITS_MID.");
+                }
+                yield cranialRepository.save(nonmetricTraitsMidElement);
+            }
+            case NONMETRIC_TRAITS_SIDE -> {
+                if (!(cranialBone instanceof NonmetricTraitsMidElement  nonmetricTraitsSideElement)) {
+                    throw new IllegalArgumentException("Expected an instance of NonmetricTraitsMidElement for NONMETRIC_TRAITS_SIDE.");
+                }
+                yield cranialRepository.save(nonmetricTraitsSideElement);
+            }
+
+            case SUTURE_CLOSURE -> {
+                if (!(cranialBone instanceof SutureClosure  sutureClosure)) {
+                    throw new IllegalArgumentException("Expected an instance of SutureClosure for SUTURE_CLOSURE.");
+                }
+                yield cranialRepository.save(sutureClosure);
+            }
+            case CRANIUM_MEASUREMENTS -> {
+                if (!(cranialBone instanceof CraniumMeasurements  sutureClosure)) {
+                    throw new IllegalArgumentException("Expected an instance of CraniumMeasurements for CRANIUM_MEASUREMENTS.");
+                }
+                yield cranialRepository.save(sutureClosure);
+            }
             default -> throw new IllegalArgumentException("Unknown cranial bone: " + cranialBoneType);
+
         };
 
     }
@@ -209,7 +244,7 @@ public class CranialServiceImpl implements CranialService {
 
     @Transactional
     @Override
-    public Cranial update(EnumsBio.CranialBoneType cranialBone, CranialDto cranialBoneDto) {
+    public Cranial update(EnumsBio.CranialBoneAndTraits cranialBone, CranialDto cranialBoneDto) {
         if (cranialBoneDto == null) {
             throw new IllegalArgumentException("The entity to be updated cannot be null.");
         }
@@ -340,12 +375,42 @@ public class CranialServiceImpl implements CranialService {
                 zygomaticMapper.updateEntityFromDto(source, target);
                 yield cranialRepository.save(target);
             }
+            case NONMETRIC_TRAITS_MID -> {
+                NonmetricTraitsMidElementDto source = (NonmetricTraitsMidElementDto) cranialBoneDto;
+                NonmetricTraitsMidElement target = (NonmetricTraitsMidElement) cranialRepository.findNonMetricTraitsMidById(cranialBoneDto.getId()).orElseThrow(() ->
+                        new EntityNotFoundException("NonMetric Traits Mid not found with id: " + cranialBoneDto.getId()));
+                nonmetricTraitsMidMapper.updateEntityFromDto(source, target);
+                yield cranialRepository.save(target);
+            }
+            case NONMETRIC_TRAITS_SIDE -> {
+                NonmetricTraitsSideElementDto source = (NonmetricTraitsSideElementDto) cranialBoneDto;
+                NonmetricTraitsSideElement target = (NonmetricTraitsSideElement) cranialRepository.findNonMetricTraitsSideById(cranialBoneDto.getId()).orElseThrow(() ->
+                        new EntityNotFoundException("NonMetric Traits Mid not found with id: " + cranialBoneDto.getId()));
+                nonmetricTraitsSideMapper.updateEntityFromDto(source, target);
+                yield cranialRepository.save(target);
+            }
+            case SUTURE_CLOSURE -> {
+                SutureClosureDto source = (SutureClosureDto) cranialBoneDto;
+                SutureClosure target = (SutureClosure) cranialRepository.findSutureClosureById(cranialBoneDto.getId()).orElseThrow(() ->
+                        new EntityNotFoundException("NonMetric Traits Mid not found with id: " + cranialBoneDto.getId()));
+                sutureClosureMapper.updateEntityFromDto(source, target);
+                yield cranialRepository.save(target);
+            }
+            case CRANIUM_MEASUREMENTS -> {
+                CraniumMeasurementsDto source = (CraniumMeasurementsDto) cranialBoneDto;
+                CraniumMeasurements target = (CraniumMeasurements) cranialRepository.findSutureClosureById(cranialBoneDto.getId()).orElseThrow(() ->
+                        new EntityNotFoundException("NonMetric Traits Mid not found with id: " + cranialBoneDto.getId()));
+                craniumMeasurementsMapper.updateEntityFromDto(source, target);
+                yield cranialRepository.save(target);
+            }
+            default -> throw new IllegalArgumentException("Unknown cranial bone: " + cranialBone);
+
         };
     }
 
 
     @Override
-    public void deleteById(EnumsBio.CranialBoneType cranialBone, Long id) {
+    public void deleteById(EnumsBio.CranialBoneAndTraits cranialBone, Long id) {
         switch (cranialBone) {
             case ETHMOID -> cranialRepository.delete(cranialRepository.findEthmoidById(id).orElseThrow(() ->
                     new EntityNotFoundException("Ethmoid not found with id: " + id)));
@@ -381,8 +446,14 @@ public class CranialServiceImpl implements CranialService {
                     new EntityNotFoundException("TMJ not found with id: " + id)));
             case VOMER -> cranialRepository.delete(cranialRepository.findVomerById(id).orElseThrow(() ->
                     new EntityNotFoundException("Vomer not found with id: " + id)));
-            case ZYGOMATIC -> cranialRepository.delete(cranialRepository.findZygomaticById(id).orElseThrow(() ->
-                    new EntityNotFoundException("Zygomatic not found with id: " + id)));
+            case NONMETRIC_TRAITS_MID -> cranialRepository.delete(cranialRepository.findNonMetricTraitsMidById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Nonmetric traits mid not found with id: " + id)));
+            case NONMETRIC_TRAITS_SIDE -> cranialRepository.delete(cranialRepository.findNonMetricTraitsSideById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Nonmetric traits side not found with id: " + id)));
+            case SUTURE_CLOSURE -> cranialRepository.delete(cranialRepository.findSutureClosureById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Suture closure not found with id: " + id)));
+            case CRANIUM_MEASUREMENTS -> cranialRepository.delete(cranialRepository.findCraniumMeasurementsById(id).orElseThrow(() ->
+                    new EntityNotFoundException("Suture closure not found with id: " + id)));
         }
     }
 

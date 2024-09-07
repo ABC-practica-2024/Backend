@@ -15,7 +15,7 @@ import ro.ubb.abc2024.biology.dto.BioLabDto;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class SutureClosureDto extends BioLabDto {
+public class SutureClosureDto extends CranialDto {
     @Nullable
     @Min(0)
     @Max(3)

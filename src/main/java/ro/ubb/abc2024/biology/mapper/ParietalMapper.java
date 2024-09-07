@@ -8,11 +8,11 @@ import ro.ubb.abc2024.biology.domain.Cranial.Parietal;
 import ro.ubb.abc2024.biology.dto.Cranial.ParietalDto;
 
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface ParietalMapper {
     ParietalDto toDto(Parietal parietal);
 
     Parietal toEntity(ParietalDto parietalDto);
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(ParietalDto source, @MappingTarget Parietal target);
 }

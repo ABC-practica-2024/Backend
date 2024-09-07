@@ -8,13 +8,12 @@ import ro.ubb.abc2024.biology.domain.Cranial.Ethmoid;
 import ro.ubb.abc2024.biology.dto.Cranial.EthmoidDto;
 
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface EthmoidMapper {
 
     EthmoidDto toDto(Ethmoid ethmoid);
 
     Ethmoid toEntity(EthmoidDto ethmoidDto);
 
-    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(EthmoidDto source, @MappingTarget Ethmoid target);
 }

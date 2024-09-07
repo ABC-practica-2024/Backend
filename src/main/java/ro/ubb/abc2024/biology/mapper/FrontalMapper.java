@@ -14,6 +14,6 @@ public interface FrontalMapper {
     FrontalDto toDto(Frontal frontal);
 
     Frontal toEntity(FrontalDto frontalDto);
-    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(FrontalDto source, @MappingTarget Frontal target);
 }

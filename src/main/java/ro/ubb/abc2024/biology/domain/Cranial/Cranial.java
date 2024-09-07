@@ -12,16 +12,20 @@ import ro.ubb.abc2024.biology.domain.Bone;
 import jakarta.annotation.Nullable;
 import ro.ubb.abc2024.biology.domain.EnumsBio;
 
+@MappedSuperclass
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@MappedSuperclass
 public class Cranial extends Bone {
     @Nullable
     @Enumerated(EnumType.STRING)
-    private EnumsBio.CranialBoneType boneType;
+    private EnumsBio.CranialBoneAndTraits boneTypeAndTraits;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private EnumsBio.CranialBoneAndTraits cranialBoneTypeAndTraits;
 
 
 }

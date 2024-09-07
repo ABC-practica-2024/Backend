@@ -7,13 +7,13 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.Cranial.Hyoid;
 import ro.ubb.abc2024.biology.dto.Cranial.HyoidDto;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface HyoidMapper {
 
     HyoidDto toDto(Hyoid hyoid);
 
     Hyoid toEntity(HyoidDto hyoidDto);
 
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(HyoidDto source, @MappingTarget Hyoid target);
 }

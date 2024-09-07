@@ -7,12 +7,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.Cranial.Mandible;
 import ro.ubb.abc2024.biology.dto.Cranial.MandibleDto;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface MandibleMapper {
 
     MandibleDto toDto(Mandible mandible);
 
     Mandible toEntity(MandibleDto mandibleDto);
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(MandibleDto source, @MappingTarget Mandible target);
 }

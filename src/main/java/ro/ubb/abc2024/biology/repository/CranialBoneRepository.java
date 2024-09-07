@@ -63,5 +63,15 @@ public interface CranialBoneRepository extends JpaRepository<Cranial, Long> {
     @Query("SELECT c FROM Ossicles c WHERE c.id=:id")
     Optional<Cranial> findOssiclesById(Long id);
 
+    @Query("SELECT c FROM NonmetricTraitsMidElement c WHERE c.id=:id")
+    Optional<Cranial> findNonMetricTraitsMidById(Long id);
 
+    @Query("SELECT c FROM NonmetricTraitsSideElement c WHERE c.id=:id")
+    Optional<Cranial> findNonMetricTraitsSideById(Long id);
+
+    @Query("SELECT c FROM SutureClosure c WHERE c.id=:id")
+    Optional<Cranial> findSutureClosureById(Long id);
+
+    @Query("SELECT c FROM CraniumMeasurements c WHERE c.id=:id")
+    Optional<Cranial> findCraniumMeasurementsById(Long id);
 }

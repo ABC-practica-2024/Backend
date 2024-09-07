@@ -8,12 +8,12 @@ import ro.ubb.abc2024.biology.domain.Cranial.Thyroid;
 import ro.ubb.abc2024.biology.dto.Cranial.ThyroidDto;
 
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface ThyroidMapper {
     ThyroidDto toDto(Thyroid ossicles);
 
     Thyroid toEntity(ThyroidDto ossiclesDto);
 
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(ThyroidDto source, @MappingTarget Thyroid target);
 }

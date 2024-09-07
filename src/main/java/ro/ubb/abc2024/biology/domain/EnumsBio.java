@@ -865,7 +865,7 @@ public class EnumsBio {
         }
     }
 
-    public enum CranialBoneType {
+    public enum CranialBoneAndTraits {
         FRONTAL("Frontal"),
         PARIETAL("Parietal"),
         OCCIPITAL("Occipital"),
@@ -883,11 +883,15 @@ public class EnumsBio {
         VOMER("Vomer"),
         HYOID("Hyoid"),
         THYROID("Thyroid/Cricoid"),
-        OSSICLES("Ossicles");
+        OSSICLES("Ossicles"),
+        NONMETRIC_TRAITS_MID("Nonmetric traits mid elements"),
+        NONMETRIC_TRAITS_SIDE("Nonmetric traits mid elements"),
+        SUTURE_CLOSURE("Suture closure"),
+        CRANIUM_MEASUREMENTS("Cranium measurements");
 
         private final String description;
 
-        CranialBoneType(String description) {
+        CranialBoneAndTraits(String description) {
             this.description = description;
         }
 

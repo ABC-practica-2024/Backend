@@ -8,11 +8,11 @@ import ro.ubb.abc2024.biology.domain.Cranial.TMJ;
 import ro.ubb.abc2024.biology.dto.Cranial.TMJDto;
 
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface TMJMapper {
     TMJDto toDto(TMJ tmj);
 
     TMJ toEntity(TMJDto tmjDto);
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(TMJDto source, @MappingTarget TMJ target);
 }

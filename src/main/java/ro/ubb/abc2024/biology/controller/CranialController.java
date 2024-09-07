@@ -33,7 +33,7 @@ public class CranialController {
     private final PalatineMapper palatineMapper;
     private final ParietalMapper parietalMapper;
     private final SphenoidMapper sphenoidMapper;
-    private final StureClosureMapper stureClosureMapper;
+    private final SutureClosureMapper sutureClosureMapper;
     private final TemporalMapper temporalMapper;
     private final ThyroidMapper thyroidMapper;
     private final TMJMapper tmjMapper;
@@ -41,7 +41,7 @@ public class CranialController {
     private final ZygomaticMapper zygomaticMapper;
 
     @GetMapping("/{cranialBoneType}/{id}")
-    public Result<CranialDto> getById(@PathVariable EnumsBio.CranialBoneType cranialBoneType, @PathVariable Long id) {
+    public Result<CranialDto> getById(@PathVariable EnumsBio.CranialBoneAndTraits cranialBoneType, @PathVariable Long id) {
         Cranial cranial = cranialService.getById(cranialBoneType, id);
         if (cranial == null) {
             throw new EntityNotFoundException(String.format("Entity with ID %d not found", id));
@@ -51,7 +51,7 @@ public class CranialController {
     }
 
     @PostMapping("/{cranialBoneType}")
-    public Result<CranialDto> save(@PathVariable EnumsBio.CranialBoneType cranialBoneType, @RequestBody CranialDto cranialDto) {
+    public Result<CranialDto> save(@PathVariable EnumsBio.CranialBoneAndTraits cranialBoneType, @RequestBody CranialDto cranialDto) {
         try {
             Cranial cranialEntity = mapToEntity(cranialBoneType, cranialDto);
             Cranial savedCranial = cranialService.save(cranialBoneType, cranialEntity);
@@ -65,7 +65,7 @@ public class CranialController {
     }
 
     @PutMapping("/{cranialBoneType}")
-    public Result<CranialDto> update(@PathVariable EnumsBio.CranialBoneType cranialBoneType, @RequestBody CranialDto cranialDto) {
+    public Result<CranialDto> update(@PathVariable EnumsBio.CranialBoneAndTraits cranialBoneType, @RequestBody CranialDto cranialDto) {
         Cranial entity = cranialService.update(cranialBoneType, cranialDto);
         if (entity == null) {
             throw new EntityNotFoundException(String.format("Entity with ID %d not found", cranialDto.getId()));
@@ -75,7 +75,7 @@ public class CranialController {
     }
 
     @DeleteMapping("/{cranialBoneType}/{id}")
-    public Result<Void> deleteById(@PathVariable EnumsBio.CranialBoneType cranialBoneType, @PathVariable Long id) {
+    public Result<Void> deleteById(@PathVariable EnumsBio.CranialBoneAndTraits cranialBoneType, @PathVariable Long id) {
         Cranial entity = cranialService.getById(cranialBoneType, id);
         if (entity == null) {
             throw new EntityNotFoundException(String.format("Entity with ID %d not found", id));
@@ -84,7 +84,7 @@ public class CranialController {
         return new Result<>(true, HttpStatus.NO_CONTENT.value(), "Entity deleted successfully", null);
     }
 
-    private Cranial mapToEntity(EnumsBio.CranialBoneType cranialBoneType, CranialDto cranialDto) {
+    private Cranial mapToEntity(EnumsBio.CranialBoneAndTraits cranialBoneType, CranialDto cranialDto) {
         return switch (cranialBoneType) {
             case ETHMOID -> {
                 if (!(cranialDto instanceof EthmoidDto ethmoidDto)) {
@@ -194,11 +194,32 @@ public class CranialController {
                 }
                 yield zygomaticMapper.toEntity(zygomaticDto);
             }
+            case NONMETRIC_TRAITS_MID -> {
+                if (!(cranialDto instanceof NonmetricTraitsMidElementDto nonmetricMidDto)) {
+                    throw new IllegalArgumentException("Invalid DTO type for NONMETRIC_TRAITS_MID");
+                }
+                yield nonmetricTraitsMidMapper.toEntity(nonmetricMidDto);
+            }
+
+            case NONMETRIC_TRAITS_SIDE -> {
+                if (!(cranialDto instanceof NonmetricTraitsSideElementDto nonmetricSideDto)) {
+                    throw new IllegalArgumentException("Invalid DTO type for NONMETRIC_TRAITS_SIDE");
+                }
+                yield nonmetricTraitsSideMapper.toEntity(nonmetricSideDto);
+            }
+
+            case SUTURE_CLOSURE -> {
+                if (!(cranialDto instanceof SutureClosureDto sutureClosureDto)) {
+                    throw new IllegalArgumentException("Invalid DTO type for SUTURE_CLOSURE");
+                }
+                yield sutureClosureMapper.toEntity(sutureClosureDto);
+            }
+            default -> throw new IllegalArgumentException("Unknown cranial bone: " + cranialDto);
         };
     }
 
 
-    private CranialDto mapToDto(EnumsBio.CranialBoneType cranialBoneType, Cranial cranial) {
+    private CranialDto mapToDto(EnumsBio.CranialBoneAndTraits cranialBoneType, Cranial cranial) {
         return switch (cranialBoneType) {
             case ETHMOID -> {
                 if (!(cranial instanceof Ethmoid ethmoid)) {
@@ -308,6 +329,27 @@ public class CranialController {
                 }
                 yield zygomaticMapper.toDto(zygomatic);
             }
+            case NONMETRIC_TRAITS_MID -> {
+                if (!(cranial instanceof NonmetricTraitsMidElement nonmetricMid)) {
+                    throw new IllegalArgumentException("Invalid entity type for NONMETRIC_TRAITS_MID");
+                }
+                yield nonmetricTraitsMidMapper.toDto(nonmetricMid);
+            }
+
+            case NONMETRIC_TRAITS_SIDE -> {
+                if (!(cranial instanceof NonmetricTraitsSideElement nonmetricSide)) {
+                    throw new IllegalArgumentException("Invalid entity type for NONMETRIC_TRAITS_SIDE");
+                }
+                yield nonmetricTraitsSideMapper.toDto(nonmetricSide);
+            }
+
+            case SUTURE_CLOSURE -> {
+                if (!(cranial instanceof SutureClosure sutureClosure)) {
+                    throw new IllegalArgumentException("Invalid entity type for SUTURE_CLOSURE");
+                }
+                yield sutureClosureMapper.toDto(sutureClosure);
+            }
+            default -> throw new IllegalArgumentException("Unknown cranial bone: " + cranial);
         };
     }
 

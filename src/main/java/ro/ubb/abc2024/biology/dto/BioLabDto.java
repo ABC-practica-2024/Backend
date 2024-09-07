@@ -14,6 +14,6 @@ import java.util.UUID;
 
 public class BioLabDto {
     private long id;
-    private UUID designationID;
+    private UUID artefactId;
 
 }

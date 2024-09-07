@@ -6,7 +6,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.Cranial.Cranial;
 import ro.ubb.abc2024.biology.dto.Cranial.CranialDto;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface CranialBoneMapper {
 
     CranialDto toDto(Cranial cranium);

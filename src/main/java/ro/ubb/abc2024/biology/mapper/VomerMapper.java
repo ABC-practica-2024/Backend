@@ -8,12 +8,12 @@ import ro.ubb.abc2024.biology.domain.Cranial.Vomer;
 import ro.ubb.abc2024.biology.dto.Cranial.VomerDto;
 
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface VomerMapper {
     VomerDto toDto(Vomer vomer);
 
     Vomer toEntity(VomerDto vomerDto);
 
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(VomerDto source, @MappingTarget Vomer target);
 }

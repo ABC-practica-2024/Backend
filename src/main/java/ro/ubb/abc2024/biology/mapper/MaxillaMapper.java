@@ -7,13 +7,13 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ro.ubb.abc2024.biology.domain.Cranial.Maxilla;
 import ro.ubb.abc2024.biology.dto.Cranial.MaxillaDto;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface MaxillaMapper {
 
     MaxillaDto toDto(Maxilla maxilla);
 
     Maxilla toEntity(MaxillaDto maxillaDto);
 
-    @Mapping(target = "id", ignore = true)
+
     void updateEntityFromDto(MaxillaDto source, @MappingTarget Maxilla target);
 }

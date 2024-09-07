@@ -5,11 +5,11 @@ import ro.ubb.abc2024.biology.domain.EnumsBio;
 import ro.ubb.abc2024.biology.dto.Cranial.CranialDto;
 
 public interface CranialService {
-    Cranial getById(EnumsBio.CranialBoneType cranialBoneType, Long id);
+    Cranial getById(EnumsBio.CranialBoneAndTraits cranialBoneType, Long id);
 
-    Cranial save(EnumsBio.CranialBoneType cranialBoneType, Cranial cranialBone);
+    Cranial save(EnumsBio.CranialBoneAndTraits cranialBoneType, Cranial cranialBone);
 
-    Cranial update(EnumsBio.CranialBoneType cranialBoneType, CranialDto cranialBoneDto);
+    Cranial update(EnumsBio.CranialBoneAndTraits cranialBoneType, CranialDto cranialBoneDto);
 
-    void deleteById(EnumsBio.CranialBoneType cranialBoneType, Long id);
+    void deleteById(EnumsBio.CranialBoneAndTraits cranialBoneType, Long id);
 }

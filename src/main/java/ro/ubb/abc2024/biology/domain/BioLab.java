@@ -7,12 +7,11 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@MappedSuperclass
 public class BioLab {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
