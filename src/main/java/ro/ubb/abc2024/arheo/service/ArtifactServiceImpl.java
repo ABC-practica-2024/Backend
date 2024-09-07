@@ -2,6 +2,7 @@ package ro.ubb.abc2024.arheo.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -19,7 +20,6 @@ import ro.ubb.abc2024.utils.validation.GenericValidator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -29,22 +29,18 @@ public class ArtifactServiceImpl implements ArtifactService {
     private final GenericValidator<Artifact> validator;
 
     @Override
-    public List<Artifact> getAllArtifacts() {
-        return artifactRepository.findAll();
-    }
-
-    @Override
     public Artifact getArtifactById(Long id) {
-        return artifactRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Artifact with id: %d, not found", id)));
+        return artifactRepository.getArtifactsByIdWithImages(id).orElseThrow(() -> new EntityNotFoundException(String.format("Artifact with id: %d, not found", id)));
     }
 
     @Override
-    public Artifact addArtifact(Artifact artifact) {
+    public Artifact addArtifact(Artifact artifact, User archaeologist) {
         try {
             validator.validate(artifact);
             // the issues mentioned the labScan should be null and analysisComplete false
             artifact.setLabScan(null);
             artifact.setAnalysisCompleted(false);
+            artifact.setArcheologist(archaeologist);
             return artifactRepository.save(artifact);
         } catch (ConstraintViolationException ex) {
             throw new ArtifactServiceException(ex.getMessage());
@@ -66,7 +62,6 @@ public class ArtifactServiceImpl implements ArtifactService {
         updatedArtifact.setLabel(artifact.getLabel());
         updatedArtifact.setCategory(artifact.getCategory());
         updatedArtifact.setAnalysisCompleted(false); // I did the same here for update
-        updatedArtifact.setThumbnail(artifact.getThumbnail());
         updatedArtifact.setSection(artifact.getSection());
         updatedArtifact.setArcheologist(artifact.getArcheologist());
         updatedArtifact.setLabScan(null); // and here
@@ -80,40 +75,13 @@ public class ArtifactServiceImpl implements ArtifactService {
     }
 
     @Override
-    public List<Artifact> getUnanalysedArtifacts() {
-        return artifactRepository.findArtifactsByLabScanIsNull();
-    }
-
-    @Override
-    public List<Artifact> getArtifactsByArcheologistId(Long id) {
-        return artifactRepository.findArtifactsByArcheologist_Id(id);
-    }
-
-    @Override
-    public List<Artifact> getArtifactsBySectionId(Long id) {
-        return artifactRepository.findArtifactsBySection_Id(id);
-    }
-
-    @Override
-    public List<Artifact> getArtifactsBySiteId(Long id) {
-        return artifactRepository.findArtifactsBySection_Site_Id(id);
-    }
-
-    @Override
-    public List<Artifact> getArtifactsBySiteIdAndArcheologistId(Long siteId, Long archeologistId) {
-        return artifactRepository.findArtifactsBySection_Site_IdAndArcheologist_Id(siteId, archeologistId);
-    }
-
-    @Override
-    public List<Artifact> getArtifactsByCategory(String category) {
-        return artifactRepository.findArtifactsByCategory(category);
-    }
-
-    @Override
-    public Page<Artifact> getAllPaginatedByCriteria(Long siteId, Long sectionId, Long archaeologistId, String label, String category, Boolean analysisCompleted, Pageable pageable) {
+    public Page<Artifact> getAllPaginatedByCriteria(Long artifactId, Long siteId, Long sectionId, Long archaeologistId, String label, String category, Boolean analysisCompleted, Pageable pageable) {
         return artifactRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            if (artifactId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("id"), artifactId));
+            }
             if (siteId != null) {
                 Join<Artifact, Section> artifactSectionJoin = root.join("section");
                 Join<Section, Site> sectionSiteJoin = artifactSectionJoin.join("site");
