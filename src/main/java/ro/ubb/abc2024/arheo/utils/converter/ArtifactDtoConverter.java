@@ -53,7 +53,7 @@ public class ArtifactDtoConverter implements Converter<Artifact, ArtifactDto> {
     public ArtifactDto createFromEntity(Artifact entity) {
         UUID thumbnailId = entity.getThumbnail() != null ? entity.getThumbnail().getId() : null;
         UUID model3DId = entity.getModel3D() != null ? entity.getModel3D().getId() : null;
-        List<UUID> imageIds = entity.getImages().size() > 0
+        List<UUID> imageIds = !entity.getImages().isEmpty()
                 ? entity.getImages().stream().map(imageToArtifact -> imageToArtifact.getDbFile().getId()).collect(Collectors.toList())
                 : new ArrayList<>();
 

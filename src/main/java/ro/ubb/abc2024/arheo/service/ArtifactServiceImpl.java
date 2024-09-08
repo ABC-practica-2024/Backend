@@ -7,10 +7,12 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
+import ro.ubb.abc2024.arheo.domain.artifact.ImageToArtifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.exception.ArtifactServiceException;
@@ -20,6 +22,7 @@ import ro.ubb.abc2024.utils.validation.GenericValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -56,17 +59,18 @@ public class ArtifactServiceImpl implements ArtifactService {
     @Transactional
     public Artifact updateArtifact(Artifact artifact) {
         var updatedArtifact = this.artifactRepository.findById(artifact.getId()).orElseThrow(() -> new EntityNotFoundException(String.format("Artifact with id %d, does not exist.", artifact.getId())));
-        updatedArtifact.setDimension(artifact.getDimension());
-        updatedArtifact.setPosition(artifact.getPosition());
-        updatedArtifact.setRotation(artifact.getRotation());
-        updatedArtifact.setLabel(artifact.getLabel());
-        updatedArtifact.setCategory(artifact.getCategory());
-        updatedArtifact.setAnalysisCompleted(false); // I did the same here for update
-        updatedArtifact.setSection(artifact.getSection());
-        updatedArtifact.setArcheologist(artifact.getArcheologist());
-        updatedArtifact.setLabScan(null); // and here
         try {
             validator.validate(artifact);
+
+            updatedArtifact.setDimension(artifact.getDimension());
+            updatedArtifact.setPosition(artifact.getPosition());
+            updatedArtifact.setRotation(artifact.getRotation());
+            updatedArtifact.setLabel(artifact.getLabel());
+            updatedArtifact.setCategory(artifact.getCategory());
+            updatedArtifact.setAnalysisCompleted(false); // I did the same here for update
+            updatedArtifact.setSection(artifact.getSection());
+            updatedArtifact.setLabScan(null); // and here
+
             return artifactRepository.save(updatedArtifact);
         } catch (ConstraintViolationException ex) {
             throw new ArtifactServiceException(ex.getMessage());
