@@ -47,5 +47,5 @@ public class HelperMethods {
                 .getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("SCOPE_ADMIN"));
     }
-
+    
 }
