@@ -37,7 +37,7 @@ public class UserController {
             description = "Retrieves details about the current user, based on the JWT token."
     )
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER', 'SCOPE_GUEST')")
     public Result<UserDto> getUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var user = userDtoConverter.createFromEntity(this.userService.getUser(username));
@@ -49,7 +49,7 @@ public class UserController {
             description = "Retrieves the profile picture of the current user, based on the JWT token; returns the image itself."
     )
     @GetMapping("/profile_picture")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER', 'SCOPE_GUEST')")
     public ResponseEntity<?> getUserProfilePicture() throws IOException {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var user = this.userService.getUser(username);
@@ -71,7 +71,7 @@ public class UserController {
             description = "Updates a given user's fields (first/last name and email) based on the username; returns the updated user."
     )
     @PutMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER', 'SCOPE_GUEST')")
     public Result<UserDto> modifyUser(@RequestBody UserDto userDto){
         var user = this.userDtoConverter.createFromEntity(this.userService.updateUser(this.userDtoConverter.createFromDto(userDto)));
         return new Result<>(true, HttpStatus.OK.value(), "User updated successfully.", user);
@@ -82,7 +82,7 @@ public class UserController {
             description = "Updates a given user's password based on the username; requires old password for security and new password."
     )
     @PutMapping("/password")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARH_PRIME', 'SCOPE_ARH', 'SCOPE_BIO_PRIME', 'SCOPE_BIO', 'SCOPE_GUEST')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER', 'SCOPE_GUEST')")
     public Result<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
         this.userService.changePassword(changePasswordDto);
         return new Result<>(true, HttpStatus.OK.value(), "Password changed.");

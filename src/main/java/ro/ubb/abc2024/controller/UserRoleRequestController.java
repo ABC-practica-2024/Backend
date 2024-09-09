@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/request_role")
+@RequestMapping("${api.endpoint.base-url}/request_role")
 @SecurityRequirement(name = "bearerAuth")
 public class UserRoleRequestController {
 
@@ -29,7 +29,7 @@ public class UserRoleRequestController {
     public Result<?> addUserRoleRequest(@RequestBody CreateUserRoleRequestDTO userRoleRequestDTO) {
         var userRoleRequest = userRoleRequestDtoConverter.createFromDto(userRoleRequestDTO);
         userRoleRequestService.addUserRoleRequest(userRoleRequest);
-        return new Result<>(true, HttpStatus.OK.value(), "Role request added successfully");
+        return new Result<>(true, HttpStatus.OK.value(), "Role request added successfully", "");
     }
 
     @GetMapping("/get_all")
@@ -57,13 +57,13 @@ public class UserRoleRequestController {
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<?> deleteUserRoleRequest(@PathVariable("id") Long id) {
         userRoleRequestService.deleteUserRoleRequest(id);
-        return new Result<>(true, HttpStatus.OK.value(), "Role request deleted successfully");
+        return new Result<>(true, HttpStatus.OK.value(), "Role request deleted successfully", "");
     }
 
     @PutMapping("/resolve")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public Result<?> resolveUserRoleRequest(@RequestBody SolveRoleRequestDTO roleRequestDTO) {
         userRoleRequestService.resolvePendingUserRoleRequest(roleRequestDTO.id(), RequestStatus.valueOf(roleRequestDTO.status()));
-        return new Result<>(true, HttpStatus.OK.value(), "Role request resolved successfully (" + roleRequestDTO.status() + ")");
+        return new Result<>(true, HttpStatus.OK.value(), "Role request resolved successfully (" + roleRequestDTO.status() + ")", "");
     }
 }

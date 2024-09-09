@@ -1,4 +1,3 @@
-/*
 package ro.ubb.abc2024;
 
 import org.junit.jupiter.api.*;
@@ -58,7 +57,7 @@ class RoleRequestImplTest {
     @Test
     void addUserRoleRequestSuccessfully() throws Exception {
         var userRoleRequest = new UserRoleRequest();
-        userRoleRequest.setRole(Role.ARH);
+        userRoleRequest.setRole(Role.ARHEO);
         userRoleRequest.setUser(userRepository.findByUsername("guest").get());
         userRoleRequest.setRequestStatus(RequestStatus.PENDING);
         userRoleRequest.setTimeSent(LocalDateTime.now());
@@ -71,7 +70,7 @@ class RoleRequestImplTest {
     @Test
     void addUserRoleRequestViolatesConstraintThrowsUserRoleRequestException() {
         var userRoleRequest = new UserRoleRequest();
-        userRoleRequest.setRole(Role.ARH);
+        userRoleRequest.setRole(Role.ARHEO);
         userRoleRequest.setUser(userRepository.findByUsername("guest").get());
         userRoleRequest.setRequestStatus(RequestStatus.PENDING);
         userRoleRequest.setTimeSent(null);
@@ -82,7 +81,7 @@ class RoleRequestImplTest {
     @Test
     void getUserRoleRequestByIdSuccessfully() throws Exception {
         var userRoleRequest = new UserRoleRequest();
-        userRoleRequest.setRole(Role.ARH);
+        userRoleRequest.setRole(Role.ARHEO);
         userRoleRequest.setUser(userRepository.findByUsername("guest").get());
         userRoleRequest.setRequestStatus(RequestStatus.PENDING);
         userRoleRequest.setTimeSent(LocalDateTime.parse("2024-08-23T14:34"));
@@ -96,7 +95,7 @@ class RoleRequestImplTest {
     @Test
     void getPendingUserRoleRequestsSuccessfully() throws Exception {
         var userRoleRequest = new UserRoleRequest();
-        userRoleRequest.setRole(Role.ARH);
+        userRoleRequest.setRole(Role.ARHEO);
         userRoleRequest.setUser(userRepository.findByUsername("guest").get());
         userRoleRequest.setRequestStatus(RequestStatus.PENDING);
         userRoleRequest.setTimeSent(LocalDateTime.parse("2024-08-23T14:34"));
@@ -111,7 +110,7 @@ class RoleRequestImplTest {
     @Test
     void resolveUserRoleRequestSuccessfully() throws Exception {
         var userRoleRequest = new UserRoleRequest();
-        userRoleRequest.setRole(Role.ARH);
+        userRoleRequest.setRole(Role.ARHEO);
         userRoleRequest.setUser(userRepository.findByUsername("guest").get());
         userRoleRequest.setRequestStatus(RequestStatus.PENDING);
         userRoleRequest.setTimeSent(LocalDateTime.parse("2024-08-23T14:34"));
@@ -127,7 +126,7 @@ class RoleRequestImplTest {
     @Test
     void deleteUserRoleRequestSuccessfully() throws Exception {
         var userRoleRequest = new UserRoleRequest();
-        userRoleRequest.setRole(Role.ARH);
+        userRoleRequest.setRole(Role.ARHEO);
         userRoleRequest.setUser(userRepository.findByUsername("guest").get());
         userRoleRequest.setRequestStatus(RequestStatus.PENDING);
         userRoleRequest.setTimeSent(LocalDateTime.parse("2024-08-23T14:34"));
@@ -143,4 +142,3 @@ class RoleRequestImplTest {
         userRepository.deleteById(userRepository.findByUsername("guest").get().getId());
     }
 }
-*/

@@ -22,7 +22,7 @@ public class SiteRequestController {
     private final ArheologicalSiteRequestDtoConverter converter;
     //TODO: implement the functions here and in service
     @PostMapping("/request")
-    @PreAuthorize("hasAuthority('SCOPE_ARH')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     public Result<?> requestCreateArchaeologicalSite(@RequestBody ArheologicalSiteRequestDto requestDto)  {
 
         CreateArchaeologicalSiteRequest siteRequest = converter.createFromDto(requestDto);
