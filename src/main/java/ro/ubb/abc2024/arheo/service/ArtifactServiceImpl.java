@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.artifact.ImageToArtifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
+import ro.ubb.abc2024.arheo.domain.section.SectionDimensions;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.exception.ArtifactServiceException;
 import ro.ubb.abc2024.arheo.repository.ArtifactRepository;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 public class ArtifactServiceImpl implements ArtifactService {
     private final ArtifactRepository artifactRepository;
+    private final SectionService sectionService;
     private final GenericValidator<Artifact> validator;
 
     @Override
@@ -44,7 +46,20 @@ public class ArtifactServiceImpl implements ArtifactService {
             artifact.setLabScan(null);
             artifact.setAnalysisCompleted(false);
             artifact.setArcheologist(archaeologist);
+
+            // update the section's depth
+            Section section = artifact.getSection();
+            SectionDimensions sectionDimensions = section.getDimensions();
+            // update only if it'd make the section deeper
+            if (sectionDimensions.getDepth() < artifact.getPosition().getDepth()) {
+                sectionDimensions.setDepth(artifact.getPosition().getDepth());
+            }
+            section.setDimensions(sectionDimensions);
+            artifact.setSection(section);
+            sectionService.updateSectionDepth(section.getId(), sectionDimensions.getDepth());
             return artifactRepository.save(artifact);
+
+
         } catch (ConstraintViolationException ex) {
             throw new ArtifactServiceException(ex.getMessage());
         }

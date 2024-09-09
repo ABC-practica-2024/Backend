@@ -3,6 +3,8 @@ package ro.ubb.abc2024.arheo.controller.utils;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ro.ubb.abc2024.arheo.service.ArtifactService;
+import ro.ubb.abc2024.arheo.service.SectionService;
+import ro.ubb.abc2024.arheo.service.SiteService;
 import ro.ubb.abc2024.user.UserService;
 import ro.ubb.abc2024.utils.converter.Converter;
 
@@ -46,6 +48,16 @@ public class HelperMethods {
         return SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("SCOPE_ADMIN"));
+    }
+
+    public static boolean isMainArchaeologistBySectionId(UserService userService, SectionService sectionService, Long sectionId) {
+        // is current user the main archaeologist of the section?
+        return sectionService.getMainArchaeologistIdFromSectionId(sectionId).equals(getCurrentUserId(userService));
+    }
+
+    public static boolean isMainArchaeologistBySiteId(UserService userService, SiteService siteService, Long siteId) {
+        // compare the main archaeologist of the site with the current user
+        return siteService.getSite(siteId).getMainArchaeologist().getId().equals(getCurrentUserId(userService));
     }
     
 }

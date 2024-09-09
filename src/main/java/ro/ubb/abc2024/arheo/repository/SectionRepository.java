@@ -53,7 +53,9 @@ public interface SectionRepository extends JpaRepository<Section, Long>, JpaSpec
     // get Section by id, with artifacts
     @Query(value = "SELECT s FROM Section s LEFT JOIN FETCH s.artifactsList WHERE s.id = ?1")
     public Optional<Section> getSectionByIdWithArtifacts(Long id);
-    // get Section by id, with artifacts
 
+    // get the id of the main archaeologist of a section, through the site
+    @Query(value = "SELECT s.site.mainArchaeologist.id FROM Section s WHERE s.id = ?1")
+    public Long getMainArchaeologistIdFromSectionId(Long sectionId);
 
 }
