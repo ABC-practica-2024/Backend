@@ -7,6 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
@@ -15,7 +17,10 @@ import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
 import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.service.SiteServiceImpl;
+import ro.ubb.abc2024.user.User;
+import ro.ubb.abc2024.utils.converter.UserDtoConverter;
 import ro.ubb.abc2024.utils.dto.Result;
+import ro.ubb.abc2024.utils.dto.UserDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +37,7 @@ public class SiteController {
     private final SiteServiceImpl siteService;
     private final SiteConverterDto siteConverterDto;
     private final SectionDtoConverter sectionDtoConverter;
+    private final UserDtoConverter userDtoConverter;
 
     @GetMapping
     public Result<Map<String,Object>> getSites(@RequestParam(required = false) String status,
@@ -107,4 +113,28 @@ public class SiteController {
                                                                          @RequestBody Long archaeologistId){
 
     }*/
+
+    @PostMapping("/add_archaeologist")
+    //@PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    public Result<User> addArchaeologistToSite(@RequestParam Long siteId, @RequestParam Long addedArchaeologistId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null){
+            return new Result<>(false, HttpStatus.UNAUTHORIZED.value(), "User is not authenticated.", null);
+        }
+
+        try {
+            Object principal = authentication.getPrincipal();
+            System.out.println(principal);
+            if(principal instanceof User){
+                String username = ((User)principal).getUsername();
+                System.out.println(username);
+                siteService.addArchaeologistToSite(siteId, username, addedArchaeologistId);
+            }
+        }
+        catch (Exception e){
+            return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+        }
+        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist added to site successfully.", new User());
+    }
 }

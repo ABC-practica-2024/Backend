@@ -17,6 +17,7 @@ import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.repository.SiteRepository;
 import ro.ubb.abc2024.arheo.repository.SiteRequestRepository;
 import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
+import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
 import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
 
@@ -105,9 +106,8 @@ public class SiteServiceImpl implements SiteService{
 
     public CreateArchaeologicalSiteRequest getCreateArchaeologicalSiteRequest(Long id){
         return this.siteRequestRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(String.format("Create Archaeological Site Request with id %d, not found",id)));
-
-
     }
+
     public void deleteCreateArchaeologicalSiteRequest(Long id){
         this.siteRequestRepository.deleteById(id);
     }
@@ -158,4 +158,34 @@ public class SiteServiceImpl implements SiteService{
         return request;
     }
 
+    public User addArchaeologistToSite(Long siteId, String mainArchaeologistUsername, Long archaeologistId) throws Exception{
+        User archaeologist = userRepository.findById(archaeologistId).orElseThrow();
+
+        User mainArchaeologist = userRepository.findByUsername(mainArchaeologistUsername).orElse(null);
+        if(mainArchaeologist == null) {
+            throw new EntityNotFoundException(String.format("User with name %s not found", mainArchaeologistUsername));
+        }
+
+        Long mainArchaeologistId = mainArchaeologist.getId();
+
+        Site site = siteRepository.getSiteById(siteId);
+
+        if(site == null)
+            throw new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId));
+
+        if(site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
+            List<User> archaeologists = site.getArchaeologists();
+
+            if(archaeologists.stream().anyMatch(user -> user.getId().equals(archaeologistId))){
+                throw new Exception("The wanted archaeologist is already assigned to the current site.");
+            }
+
+            archaeologists.add(archaeologist);
+            site.setArchaeologists(archaeologists);
+            siteRepository.save(site);
+            return archaeologist;
+        }
+
+        throw new Exception("The user is not main archaeologist on the selected site!");
+    }
 }
