@@ -20,11 +20,6 @@ public interface SiteRepository extends JpaRepository<Site, Long>, JpaSpecificat
     Site getSiteById(Long id);
     Site getSiteByTitle(String title);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Site s SET s.status = :status WHERE s.id = :id")
-    void updateSiteStatus(@Param("id") Long id, @Param("status") String status);
-
     @Transactional
     @Query(value = "select s from Site s left join fetch s.sections")
     List<Site> getSitesWithSectionsAndArchaeologists();

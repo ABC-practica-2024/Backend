@@ -9,10 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
+import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
+import ro.ubb.abc2024.arheo.utils.converter.ArtifactDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SiteConverterDto;
+import ro.ubb.abc2024.arheo.utils.dto.ArtifactDto;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
 import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
 import ro.ubb.abc2024.arheo.domain.site.Site;
@@ -20,7 +25,6 @@ import ro.ubb.abc2024.arheo.service.SiteServiceImpl;
 import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.utils.converter.UserDtoConverter;
 import ro.ubb.abc2024.utils.dto.Result;
-import ro.ubb.abc2024.utils.dto.UserDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +41,7 @@ public class SiteController {
     private final SiteServiceImpl siteService;
     private final SiteConverterDto siteConverterDto;
     private final SectionDtoConverter sectionDtoConverter;
-    private final UserDtoConverter userDtoConverter;
+    private final ArtifactDtoConverter artifactDtoConverter;
 
     @GetMapping
     public Result<Map<String,Object>> getSites(@RequestParam(required = false) String status,
@@ -101,21 +105,26 @@ public class SiteController {
         );
     }
 
-    //todo: complete endpoint when done artifacts
-    /*@GetMapping("artifacts/{id}")
-    public Result<List<ArtifactDto>> getArtifactsBySiteId(@PathVariable long id){
-
-    }*/
-
-    //todo: complete endpoint when done artifacts
-    /*@GetMapping("artifacts")
-    public Result<List<SectionDto>> getArtifactsBySiteIdAndArchaeologist(@RequestBody Long siteId,
-                                                                         @RequestBody Long archaeologistId){
-
-    }*/
+    @GetMapping("/artifacts")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    public Result<Map<String, Object>> getArtifactsBySite(@RequestParam Long siteId,
+                                                         @RequestParam(required = false) Long archaeologistId,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Artifact> artifactPage = siteService.getPaginatedArtifactsByCriteria(siteId, archaeologistId, pageable);
+        List<ArtifactDto> siteDtoList = artifactPage.getContent().stream().map(artifactDtoConverter::createFromEntity)
+                .collect(Collectors.toList());
+        Map<String, Object> response = new HashMap<>();
+        response.put("artifacts", siteDtoList);
+        response.put("currentPage", artifactPage.getNumber());
+        response.put("totalItems", artifactPage.getTotalElements());
+        response.put("totalPages", artifactPage.getTotalPages());
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all artifacts", response);
+    }
 
     @PostMapping("/add_archaeologist")
-    //@PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
     public Result<User> addArchaeologistToSite(@RequestParam Long siteId, @RequestParam Long addedArchaeologistId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -124,11 +133,8 @@ public class SiteController {
         }
 
         try {
-            Object principal = authentication.getPrincipal();
-            System.out.println(principal);
-            if(principal instanceof User){
-                String username = ((User)principal).getUsername();
-                System.out.println(username);
+            if(authentication.getPrincipal() instanceof Jwt jwt){
+                String username = jwt.getSubject();
                 siteService.addArchaeologistToSite(siteId, username, addedArchaeologistId);
             }
         }
@@ -136,5 +142,47 @@ public class SiteController {
             return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
         }
         return new Result<>(true, HttpStatus.OK.value(), "Archaeologist added to site successfully.", new User());
+    }
+
+    @PostMapping("/delete_archaeologist")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    public Result<User> deleteArchaeologistFromSite(@RequestParam Long siteId, @RequestParam Long addedArchaeologistId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null){
+            return new Result<>(false, HttpStatus.UNAUTHORIZED.value(), "User is not authenticated.", null);
+        }
+
+        try {
+            if(authentication.getPrincipal() instanceof Jwt jwt){
+                String username = jwt.getSubject();
+                siteService.deleteArchaeologistFromSite(siteId, username, addedArchaeologistId);
+            }
+        }
+        catch (Exception e){
+            return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+        }
+        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist deleted from site successfully.", new User());
+    }
+
+    @PostMapping("/change_status")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    public Result<User> changeSiteStatus(@RequestParam Long siteId, @RequestParam SiteStatus newStatus){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null){
+            return new Result<>(false, HttpStatus.UNAUTHORIZED.value(), "User is not authenticated.", null);
+        }
+
+        try {
+            if(authentication.getPrincipal() instanceof Jwt jwt){
+                String username = jwt.getSubject();
+                siteService.changeSiteStatus(siteId, username, newStatus);
+            }
+        }
+        catch (Exception e){
+            return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+        }
+        return new Result<>(true, HttpStatus.OK.value(), "Site status changed successfully.", new User());
     }
 }
