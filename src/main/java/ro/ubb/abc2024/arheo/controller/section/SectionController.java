@@ -2,29 +2,18 @@ package ro.ubb.abc2024.arheo.controller.section;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
-import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.service.SectionService;
 import ro.ubb.abc2024.arheo.service.SiteService;
 import ro.ubb.abc2024.arheo.utils.converter.ArtifactDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.dto.ArtifactDto;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
-import ro.ubb.abc2024.controller.UserController;
 import ro.ubb.abc2024.user.Role;
-import ro.ubb.abc2024.user.UserService;
-import ro.ubb.abc2024.user.UserServiceImpl;
 import ro.ubb.abc2024.utils.dto.Result;
-import ro.ubb.abc2024.arheo.controller.utils.HelperMethods;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +28,6 @@ public class SectionController {
     private final SectionDtoConverter sectionDtoConverter;
     private final ArtifactDtoConverter artifactDtoConverter;
     private final UserService userService;
-
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
@@ -73,6 +61,7 @@ public class SectionController {
         if(!HelperMethods.isMainArchaeologistBySiteId(userService, siteService, sectionDto.siteId())){
             return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can add sections", null);
         }
+
         var section = sectionService.addSection(sectionDtoConverter.createFromDto(sectionDto));
         return new Result<>(true, HttpStatus.CREATED.value(), "Added section", sectionDtoConverter.createFromEntity(section));
     }

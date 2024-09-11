@@ -1,13 +1,9 @@
 package ro.ubb.abc2024.arheo.service;
 
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
-import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
-
 import java.util.List;
 
 public interface SectionService {
