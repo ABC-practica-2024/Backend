@@ -14,7 +14,7 @@ import ro.ubb.abc2024.utils.dto.Result;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.endpoint.base-url}/request_site")
+@RequestMapping("${api.endpoint.arheo}/request_site")
 @SecurityRequirement(name = "bearerAuth")
 public class SiteRequestController {
 

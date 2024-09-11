@@ -1,6 +1,7 @@
 package ro.ubb.abc2024.arheo.controller.site;
 
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.endpoint.arheo}/site")
-//@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "bearerAuth")
 public class SiteController {
 
     private final SiteServiceImpl siteService;
@@ -34,6 +35,7 @@ public class SiteController {
     private final SectionDtoConverter sectionDtoConverter;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<Map<String,Object>> getSites(@RequestParam(required = false) String status,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
@@ -50,12 +52,13 @@ public class SiteController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<SiteDTO> getSiteById(@PathVariable Long id){
         return new Result<>(true, HttpStatus.OK.value(), "Sites returned.", siteConverterDto.createFromEntity(siteService.getSite(id)));
     }
 
     @PostMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     public Result<SiteDTO> createSite(@RequestBody SiteDTO siteDTO){
         Site newSite=siteConverterDto.createFromDto(siteDTO);
         siteService.addSite(newSite);
@@ -63,27 +66,27 @@ public class SiteController {
     }
 
     @PutMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     public Result<SiteDTO> updateSite(@RequestBody SiteDTO siteDTO){
         siteService.updateSite(siteDTO.id(), siteDTO);
         return new Result<>(true, HttpStatus.OK.value(), "Site updated successfully.", siteDTO);
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
     public Result<Boolean> deleteSite(@PathVariable Long id){
         siteService.deleteSite(id);
         return new Result<>(true, HttpStatus.OK.value(), "Site deleted successfully.", Boolean.TRUE);
     }
 
     @GetMapping("/sections/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
     public Result<List<SectionDto>> getSectionsById(@PathVariable long id){
         return new Result<>(true, HttpStatus.OK.value(), "Returned all sections.", siteService.getSectionsBySiteId(id).stream().map(sectionDtoConverter::createFromEntity).toList());
     }
 
     @GetMapping("sections_incomplete/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
     public Result<List<SectionDto>> getIncompleteSectionsBySiteId(@PathVariable long id){
         return new Result<>(true,
                 HttpStatus.OK.value(),

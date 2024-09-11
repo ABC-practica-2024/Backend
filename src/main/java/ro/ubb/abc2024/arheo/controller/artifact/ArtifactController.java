@@ -32,7 +32,7 @@ public class ArtifactController {
 
     // get all artifacts paginated and filtered by whatever fields we want
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<Map<String, Object>> getArtifacts(
             @RequestParam(required = false) Long artifactId,
             @RequestParam(required = false) Long siteId,
@@ -63,7 +63,7 @@ public class ArtifactController {
 
     // add a new artifact
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     public Result<ArtifactDto> addArtifact(@RequestBody ArtifactDto artifactDto) {
         Long currentUserId = HelperMethods.getCurrentUserId(userService);
 
@@ -88,7 +88,7 @@ public class ArtifactController {
 
     // delete an artifact
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     public Result<Void> deleteArtifact(@PathVariable long id) {
         Artifact existingArtifact = artifactService.getArtifactById(id);
         Long currentUserId = HelperMethods.getCurrentUserId(userService);
@@ -109,7 +109,7 @@ public class ArtifactController {
 
     // update an artifact
     @PutMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     public Result<ArtifactDto> updateArtifact(@RequestBody ArtifactDto artifactDto) {
         Artifact existingArtifact = artifactService.getArtifactById(artifactDto.id());
         Long currentUserId = HelperMethods.getCurrentUserId(userService);

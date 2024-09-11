@@ -1,23 +1,30 @@
 package ro.ubb.abc2024.arheo.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
+import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.exception.SectionServiceException;
 import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class SectionServiceImpl implements SectionService{
-
     private final SectionRepository sectionRepository;
     private final GenericValidator<Section> validator;
 
@@ -139,16 +146,10 @@ public class SectionServiceImpl implements SectionService{
     }
 
     @Override
-
     public List<Section> getSections() {
         //return this.sectionRepository.findAll();
-        return this.sectionRepository.getSectionsWithArtifacts();
-
-//    @Override
-//    public List<Section> getSections(int page, int pageSize) {
-//        Pageable pageable = PageRequest.of(page - 1, pageSize);
-//        return this.sectionRepository.getSectionsWithArtifacts(pageable).getContent();
-//    }
+        return this.sectionRepository.getSectionsWithArtifacts(null).getContent();
+    }
 
     @Override
     public Page<Section> getSections(int page, int pageSize) {

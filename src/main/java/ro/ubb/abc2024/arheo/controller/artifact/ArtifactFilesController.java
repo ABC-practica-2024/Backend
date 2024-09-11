@@ -24,28 +24,28 @@ public class ArtifactFilesController {
     private final ArtifactFilesService artifactFilesService;
 
     @PostMapping("/image")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<Void> addImageToArtifact(@RequestParam(required = true) Long artifactId, @RequestParam(required = true) UUID fileId) {
         artifactFilesService.addImageToArtifact(artifactId, fileId);
         return new Result<>(true, HttpStatus.OK.value(), "Image added successfully to artifact.", null);
     }
 
     @PostMapping("/3d-model")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<Void> add3DModelToArtifact(@RequestParam(required = true) Long artifactId, @RequestParam(required = true) UUID fileId) {
         artifactFilesService.add3DModeloArtifact(artifactId, fileId);
         return new Result<>(true, HttpStatus.OK.value(), "3D model added successfully to artifact.", null);
     }
 
     @PostMapping("/thumbnail")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<Void> addThumbnailToArtifact(@RequestParam(required = true) Long artifactId, @RequestParam(required = true) UUID fileId) {
         artifactFilesService.addThumbnailToArtifact(artifactId, fileId);
         return new Result<>(true, HttpStatus.OK.value(), "Thumbnail added successfully to artifact.", null);
     }
 
     @GetMapping("/images")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN', 'SCOPE_BIO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<List<DbFile>> getAvailableImages() {
         return new Result<>(true, HttpStatus.OK.value(), "Retrieved all available images", artifactFilesService.getAvailableImages());
     }
