@@ -127,7 +127,7 @@ public class SiteServiceImpl implements SiteService{
         return siteRequestRepository.findByStatus(RequestStatus.PENDING);
     }
 
-    public CreateArchaeologicalSiteRequest solveCreateSiteRequest(Long id) {
+    public CreateArchaeologicalSiteRequest solveCreateSiteRequest(Long id, RequestStatus status) {
         CreateArchaeologicalSiteRequest request = siteRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Create Archaeological Site Request with id %d not found", id)));
 
@@ -135,23 +135,26 @@ public class SiteServiceImpl implements SiteService{
             throw new IllegalStateException("Request is not in PENDING and cannot be solved.");
         }
 
-        // Create a new Site based on the request
-        Site newSite = Site.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .centerCoordinates(request.getCenterCoordinates())
-                .perimeterCoordinates(request.getPerimeterCoordinates())
-                .status(SiteStatus.DIGGING)
-                .createdAt(LocalDateTime.now())
-                .sections(Collections.emptyList())
-                .mainArchaeologist(request.getArcheologist())
-                .archaeologists(Collections.emptyList())
-                .build();
+        if(status.name().equals("ACCEPTED"))
+        {
+            // Create a new Site based on the request
+            Site newSite = Site.builder()
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .centerCoordinates(request.getCenterCoordinates())
+                    .perimeterCoordinates(request.getPerimeterCoordinates())
+                    .status(SiteStatus.DIGGING)
+                    .createdAt(LocalDateTime.now())
+                    .sections(Collections.emptyList())
+                    .mainArchaeologist(request.getArcheologist())
+                    .archaeologists(Collections.emptyList())
+                    .build();
 
-        siteRepository.save(newSite);
+            siteRepository.save(newSite);
+        }
 
         // Update request status and solveRequestTime
-        request.setStatus(RequestStatus.ACCEPTED);
+        request.setStatus(status);
         request.setSolveRequestTime(LocalDateTime.now());
         siteRequestRepository.save(request);
 

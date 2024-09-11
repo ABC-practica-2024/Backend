@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
+import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
 
 import java.util.List;
 
@@ -22,5 +23,5 @@ public interface SiteService {
     CreateArchaeologicalSiteRequest requestCreateArchaeologicalSite(CreateArchaeologicalSiteRequest requestToBeAdded);
     List<CreateArchaeologicalSiteRequest> getAllSiteRequests();
     List<CreateArchaeologicalSiteRequest> getPendingSiteRequests();
-    CreateArchaeologicalSiteRequest solveCreateSiteRequest(Long id);
+    CreateArchaeologicalSiteRequest solveCreateSiteRequest(Long id, RequestStatus status);
 }
