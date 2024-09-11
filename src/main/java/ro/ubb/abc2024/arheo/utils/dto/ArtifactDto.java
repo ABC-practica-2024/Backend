@@ -1,7 +1,15 @@
 package ro.ubb.abc2024.arheo.utils.dto;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Builder
 public record ArtifactDto(
         long id,
         ArtifactDimensionDto artifactDimension,
@@ -10,7 +18,9 @@ public record ArtifactDto(
         String label,
         String category,
         boolean analysisComplete,
-        String thumbnail,
+        UUID thumbnailId,
+        UUID model3DId,
+        List<UUID> imagesId,
         long sectionId,
         long archeologistId,
         //long labScanId,

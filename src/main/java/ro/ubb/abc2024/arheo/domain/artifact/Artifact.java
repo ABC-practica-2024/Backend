@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.arheo.domain.artifact;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,8 +12,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.bio.domain.LabScanMock;
 import ro.ubb.abc2024.user.User;
+import ro.ubb.abc2024.utils.file.DbFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 public class Artifact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
     private ArtifactDimension dimension;
     private ArtifactPosition position;
@@ -33,7 +37,14 @@ public class Artifact {
     // TODO: change the type to ENUM once we know the exact categories for artifacts
     private String category;
     private boolean analysisCompleted;
-    private String thumbnail;
+
+    @OneToOne
+    @JoinColumn(name = "thumbnail_id", referencedColumnName = "id", nullable = true)
+    private DbFile thumbnail;
+
+    @OneToOne
+    @JoinColumn(name = "3DModel_id", referencedColumnName = "id", nullable = true)
+    private DbFile model3D;
 
     // many to one relationship with Section
     @ManyToOne(targetEntity = Section.class, fetch = FetchType.LAZY)
@@ -47,7 +58,9 @@ public class Artifact {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "artifact")
     @JoinColumn(name = "lab_scan_id", referencedColumnName = "id")
     private LabScanMock labScan; // TODO: change to actual LabScan when implemented
-    // and maybe make sure the OneToMany relationship is correct and what we want
+
+    @OneToMany(targetEntity = ImageToArtifact.class, mappedBy = "artifact", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ImageToArtifact> images;
 
     @CreationTimestamp
     @Column(nullable = false, name = "created_at", updatable = false) // prevent updates to this field after creation
