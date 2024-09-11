@@ -4,9 +4,11 @@ import org.springframework.stereotype.Component;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.arheo.domain.section.Section;
+import ro.ubb.abc2024.arheo.domain.section.SectionDimensions;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.repository.SiteRepository;
 import ro.ubb.abc2024.arheo.utils.dto.GeographicPointDto;
+import ro.ubb.abc2024.arheo.utils.dto.SectionDimensionsDto;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
 import ro.ubb.abc2024.utils.converter.Converter;
 
@@ -34,6 +36,7 @@ public class SectionDtoConverter implements Converter<Section, SectionDto> {
                 .northEast(toEntity(dto.northEast()))
                 .southEast(toEntity(dto.southEast()))
                 .status(dto.status())
+                .dimensions(toEntity(dto.dimensions()))
                 .createdAt(dto.createdAt())
                 .updatedAt(dto.updatedAt())
                 .site(site)
@@ -50,6 +53,7 @@ public class SectionDtoConverter implements Converter<Section, SectionDto> {
                 toDto(entity.getNorthWest()),
                 toDto(entity.getNorthEast()),
                 toDto(entity.getSouthEast()),
+                toDto(entity.getDimensions()),
                 entity.getStatus(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
@@ -67,6 +71,18 @@ public class SectionDtoConverter implements Converter<Section, SectionDto> {
 
     private static GeographicPointDto toDto(GeographicPoint entity) {
         return new GeographicPointDto(entity.getLatitude(), entity.getLongitude());
+    }
+
+    private static SectionDimensionsDto toDto(SectionDimensions entity) {
+        return new SectionDimensionsDto(entity.getLength(), entity.getWidth(), entity.getDepth());
+    }
+
+    private static SectionDimensions toEntity(SectionDimensionsDto dto) {
+        return SectionDimensions.builder()
+                .length(dto.length())
+                .width(dto.width())
+                .depth(dto.depth())
+                .build();
     }
 
 }

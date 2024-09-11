@@ -46,6 +46,7 @@ public class SectionServiceImpl implements SectionService{
         updatedSection.setNorthEast(section.getNorthEast());
         updatedSection.setNorthWest(section.getNorthWest());
         updatedSection.setSouthWest(section.getSouthWest());
+        updatedSection.setDimensions(section.getDimensions());
         updatedSection.setArtifactsList(section.getArtifactsList());
         try {
             validator.validate(section);
@@ -124,11 +125,72 @@ public class SectionServiceImpl implements SectionService{
     }
 
     @Override
+    public List<Section> getSectionsDeeperThan(double depth){
+        List<Section> sections = this.sectionRepository.findAll();
+        sections.removeIf(section -> section.getDimensions().getDepth() < depth);
+        return sections;
+    }
+
+    @Override
+    public List<Section> getSectionsShallowerThan(double depth){
+        List<Section> sections = this.sectionRepository.findAll();
+        sections.removeIf(section -> section.getDimensions().getDepth() > depth);
+        return sections;
+    }
+
+    @Override
 
     public List<Section> getSections() {
         //return this.sectionRepository.findAll();
         return this.sectionRepository.getSectionsWithArtifacts();
 
+//    @Override
+//    public List<Section> getSections(int page, int pageSize) {
+//        Pageable pageable = PageRequest.of(page - 1, pageSize);
+//        return this.sectionRepository.getSectionsWithArtifacts(pageable).getContent();
+//    }
+
+    @Override
+    public Page<Section> getSections(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return this.sectionRepository.getSectionsWithArtifacts(pageable);
+    }
+
+    @Override
+    public Page<Section> findAllByCriteria(Long sectionId, String sectionName, Long siteId, String status, Double minDepth, Double maxDepth, Pageable pageable) {
+        return sectionRepository.findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            root.fetch("artifactsList", JoinType.LEFT);
+
+            if (sectionId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("id"), sectionId));
+            }
+            if (sectionName != null) {
+                predicates.add(criteriaBuilder.like(root.get("name"), "%" + sectionName + "%"));
+            }
+            // for the site id, we need to join the site table
+            if (siteId != null) {
+                Join<Section, Site> siteJoin = root.join("site");
+                predicates.add(criteriaBuilder.equal(siteJoin.get("id"), siteId));
+            }
+            if (status != null) {
+                // predicates.add(criteriaBuilder.equal(root.get("status"), status));
+                // status is SectionStatus, not String. We need to convert it
+                if(status.equals("INCOMPLETE")){
+                    predicates.add(criteriaBuilder.notEqual(root.get("status"), SectionStatus.COMPLETED));
+                } else {
+                    predicates.add(criteriaBuilder.equal(root.get("status"), SectionStatus.valueOf(status)));
+                }
+            }
+            if (minDepth != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("dimensions").get("depth"), minDepth));
+            }
+            if (maxDepth != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dimensions").get("depth"), maxDepth));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
     }
 
     @Override
@@ -163,4 +225,19 @@ public class SectionServiceImpl implements SectionService{
         artifacts.removeIf(artifact -> artifact.getArcheologist().getId() != archaeologistId);
         return artifacts;
     }
+
+    @Override
+    public Long getMainArchaeologistIdFromSectionId(long sectionId) {
+        return this.sectionRepository.getMainArchaeologistIdFromSectionId(sectionId);
+    }
+
+    @Override
+    public void updateSectionDepth(long sectionId, double depth) {
+        Section section = this.sectionRepository.findById(sectionId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
+                ));
+        section.getDimensions().setDepth(depth);
+        this.sectionRepository.save(section);
+    }
+
 }

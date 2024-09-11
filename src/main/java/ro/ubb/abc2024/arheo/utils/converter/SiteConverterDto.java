@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class SiteConverterDto implements Converter<Site, SiteDTO> {
 
-    GeographicPointConverterDto pointConverter = new GeographicPointConverterDto();
+    GeographicPointConverterDto pointConverter;
     private final UserRepository userRepository;
 
     @Override

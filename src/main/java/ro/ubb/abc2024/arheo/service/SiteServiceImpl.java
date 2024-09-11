@@ -1,9 +1,13 @@
 package ro.ubb.abc2024.arheo.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.domain.section.Section;
@@ -17,6 +21,7 @@ import ro.ubb.abc2024.user.UserRepository;
 import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +42,24 @@ public class SiteServiceImpl implements SiteService{
     @Transactional
     public List<Site> getAll(){
         return siteRepository.getSitesWithSectionsAndArchaeologists();
+    }
+
+    public Page<Site> getAllPaginatedByCriteria(String status, Pageable pageable) {
+        return siteRepository.findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            root.fetch("sections", JoinType.LEFT);
+
+            if (status != null) {
+                if(status.equals("INCOMPLETE")){
+                    predicates.add(criteriaBuilder.notEqual(root.get("status"), SectionStatus.COMPLETED));
+                } else {
+                    predicates.add(criteriaBuilder.equal(root.get("status"), SectionStatus.valueOf(status)));
+                }
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
     }
 
     public List<Site> getAllByStatus(SiteStatus status){
@@ -69,12 +92,7 @@ public class SiteServiceImpl implements SiteService{
         updateSite.setDescription(newSite.description());
         updateSite.setStatus(newSite.status());
 
-//        try {
-//            validator.validate(user);
         return this.siteRepository.save(updateSite);
-//        } catch (ConstraintViolationException ex){
-//            throw new UserServiceException(ex.getMessage());
-//        }
     }
 
     public List<Section> getSectionsBySiteId(Long siteId){

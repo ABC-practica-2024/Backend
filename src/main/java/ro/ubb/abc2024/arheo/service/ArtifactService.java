@@ -1,19 +1,20 @@
 package ro.ubb.abc2024.arheo.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
+import ro.ubb.abc2024.user.User;
 
 import java.util.List;
 
 public interface ArtifactService {
-    List<Artifact> getAllArtifacts();
     Artifact getArtifactById(Long id);
-    Artifact addArtifact(Artifact artifact);
+    Artifact addArtifact(Artifact artifact, User archaeologist);
     void deleteArtifact(Long id);
     Artifact updateArtifact(Artifact updatedArtifact);
-    List<Artifact> getUnanalysedArtifacts();
-    List<Artifact> getArtifactsByArcheologistId(Long id);
-    List<Artifact> getArtifactsBySectionId(Long id);
-    List<Artifact> getArtifactsBySiteId(Long id);
-    List<Artifact> getArtifactsBySiteIdAndArcheologistId(Long siteId, Long archeologistId);
-    List<Artifact> getArtifactsByCategory(String category);
+    Page<Artifact> getAllPaginatedByCriteria(Long artifactId, Long siteId, Long sectionId, Long archaeologistId, String label, String category, Boolean analysisCompleted, Pageable pageable);
+    Long getMainArchaeologistIdFromArtifactId(Long id);
+    List<Long> getAssignedArchaeologistIdsBySectionId(Long id);
+    Long getMainArchaeologistIdFromSectionId(Long id);
+
 }

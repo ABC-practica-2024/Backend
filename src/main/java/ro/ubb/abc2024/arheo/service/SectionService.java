@@ -19,11 +19,25 @@ public interface SectionService {
     List<Section> getSectionsWestOf(double longitude);
     List<Section> getSectionsEastOf(double longitude);
 
+    List<Section> getSectionsDeeperThan(double depth);
+
+    List<Section> getSectionsShallowerThan(double depth);
+
     List<Section> getSections();
+
+    Page<Section> getSections(int page, int pageSize);
+
+    Page<Section> findAllByCriteria(Long sectionId, String sectionName, Long siteId, String status, Double minDepth, Double maxDepth, Pageable pageable);
+
     List<Section> getIncompleteSections();
     List<Section> getSectionsBySite(long siteId);
     List<Section> getSectionsByStatusIsAndSiteId(String status, long siteId);
     @Query(value = "SELECT a FROM Artifact a WHERE a.section.id = ?1")
     List<Artifact> getArtifactsFromSection(long sectionId);
     List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId);
+    // query to return the id of the main archaeologist of a section, through the site
+    @Query(value = "SELECT s.site.mainArchaeologist.id FROM Section s WHERE s.id = ?1")
+    Long getMainArchaeologistIdFromSectionId(long sectionId);
+
+    void updateSectionDepth(long sectionId, double depth);
 }
