@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SiteConverterDto;
@@ -36,8 +37,8 @@ public class SiteController {
     @GetMapping
     public Result<Map<String,Object>> getSites(@RequestParam(required = false) String status,
                                                    @RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+                                                   @RequestParam(defaultValue = "10") int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
         Page<Site> sitePage = siteService.getAllPaginatedByCriteria(status, pageable);
         List<SiteDTO> siteDtoList = sitePage.getContent().stream().map(siteConverterDto::createFromEntity)
                 .collect(Collectors.toList());
@@ -76,7 +77,25 @@ public class SiteController {
         return new Result<>(true, HttpStatus.OK.value(), "Site deleted successfully.", Boolean.TRUE);
     }
 
-    @GetMapping("/sections/{id}")
+    @GetMapping("/sections")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    public Result<Map<String, Object>> getSectionsBySite(@RequestParam Long siteId,
+                                                         @RequestParam(required = false) String sectionStatus,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Section> sectionPage = siteService.getPaginatedSectionsByCriteria(siteId, sectionStatus, pageable);
+        List<SectionDto> siteDtoList = sectionPage.getContent().stream().map(sectionDtoConverter::createFromEntity)
+                .collect(Collectors.toList());
+        Map<String, Object> response = new HashMap<>();
+        response.put("sites", siteDtoList);
+        response.put("currentPage", sectionPage.getNumber());
+        response.put("totalItems", sectionPage.getTotalElements());
+        response.put("totalPages", sectionPage.getTotalPages());
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all sections", response);
+    }
+
+    /*@GetMapping("/sections/{id}")
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
     public Result<List<SectionDto>> getSectionsById(@PathVariable long id){
         return new Result<>(true, HttpStatus.OK.value(), "Returned all sections.", siteService.getSectionsBySiteId(id).stream().map(sectionDtoConverter::createFromEntity).toList());
@@ -93,7 +112,7 @@ public class SiteController {
                         siteService.getSectionsBySiteIdAndStatus(id, SectionStatus.ANALYSIS).stream().map(sectionDtoConverter::createFromEntity))
                         .toList()
         );
-    }
+    }*/
 
     //todo: complete endpoint when done artifacts
     /*@GetMapping("artifacts/{id}")

@@ -1,5 +1,6 @@
 package ro.ubb.abc2024.arheo.service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
@@ -17,6 +19,7 @@ import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.repository.SiteRepository;
 import ro.ubb.abc2024.arheo.repository.SiteRequestRepository;
 import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
+import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
 import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
 
@@ -24,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
@@ -38,6 +42,31 @@ public class SiteServiceImpl implements SiteService {
 
     @Autowired
     private final UserRepository userRepository;
+
+    @PostConstruct
+    public void init() {
+        try{
+            UserRepository userRepository = this.userRepository;
+            User newUser = new User();
+            newUser.setUsername("newUser");
+            newUser.setPassword("@newPassword123");
+            newUser.setEmail("newUser@gmail.com");
+            newUser.setFirstName("newUser");
+            newUser.setLastName("newUser");
+            userRepository.save(newUser);
+
+            Random random = new Random();
+            Site site = new Site();
+            site.setStatus(SiteStatus.DIGGING);
+            site.setDescription("da");
+            site.setTitle(String.valueOf(random.nextInt(10000)));
+            site.setMainArchaeologist(userRepository.findByUsername("newUser").orElseThrow());
+            site.setCenterCoordinates(new GeographicPoint(0.1, 0.1));
+            site.setSections(new ArrayList<>());
+            siteRepository.save(site);
+        }
+        catch(Exception e){}
+    }
 
     @Transactional
     public List<Site> getAll() {
@@ -95,11 +124,15 @@ public class SiteServiceImpl implements SiteService {
         return this.siteRepository.save(updateSite);
     }
 
-    public List<Section> getSectionsBySiteId(Long siteId) {
+    public Page<Section> getPaginatedSectionsByCriteria(Long siteId, String status, Pageable pageable){
+        return sectionService.findAllByCriteria(null, null, siteId, status, pageable);
+    }
+
+    public List<Section> getSectionsBySiteId(Long siteId){
         return siteRepository.getSiteById(siteId).getSections();
     }
 
-    public List<Section> getSectionsBySiteIdAndStatus(Long siteId, SectionStatus status) {
+    public List<Section> getSectionsBySiteId(Long siteId, SectionStatus status){
         return sectionService.getSectionsByStatusIsAndSiteId(status.name(), siteId);
     }
 
