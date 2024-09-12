@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.controller.utils.HelperMethods;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
+import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.service.SectionService;
 import ro.ubb.abc2024.arheo.service.SiteService;
 import ro.ubb.abc2024.arheo.utils.converter.ArtifactDtoConverter;
@@ -21,6 +22,8 @@ import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
 import ro.ubb.abc2024.user.Role;
 import ro.ubb.abc2024.user.UserService;
 import ro.ubb.abc2024.utils.dto.Result;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,7 +66,7 @@ public class SectionController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     // add a new section, add it to the list of sections
     public Result<SectionDto> addSection(@RequestBody SectionDto sectionDto) {
         if(!HelperMethods.isMainArchaeologistBySiteId(userService, siteService, sectionDto.siteId())){
@@ -75,9 +78,10 @@ public class SectionController {
     }
 
     @DeleteMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     public Result<SectionDto> removeSection(@RequestParam long sectionId){
         // given a section id, remove the section from the list of sections
+        // only the main archaeologist of the site can delete sections
         var section = sectionService.getSection(sectionId);
         if(!HelperMethods.isMainArchaeologistBySectionId(userService, sectionService, sectionId))
             return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can delete sections", null);
@@ -87,9 +91,9 @@ public class SectionController {
 
 
     @PutMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
     // edit/update a section; subject to change depending on what fields could be updated
-    // could be improved by adding to SectionService a method that takes the Dto as parameter
+    // only the main archaeologist of the site can update sections
     public Result<SectionDto> updateSection(@RequestBody SectionDto sectionDto) {
         var section = sectionService.getSection(sectionDto.id());
         if (!HelperMethods.isMainArchaeologistBySectionId(userService, sectionService, section.getId()))
@@ -100,15 +104,7 @@ public class SectionController {
         return new Result<>(true, HttpStatus.OK.value(), "Updated section", sectionDtoConverter.createFromEntity(section));
     }
 
-    @GetMapping("/incomplete")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
-    // get all sections that are incomplete
-    public Result<List<SectionDto>> getIncompleteSections() {
-        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all incomplete sections", sectionService.getIncompleteSections().stream()
-                .map(sectionDtoConverter::createFromEntity)
-                .collect(Collectors.toList()));
-    }
-
+    // Why would this be here and not in the ArtifactController?
     @GetMapping("/artefacts/{sectionId}")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // get all artifacts from a section
@@ -118,6 +114,7 @@ public class SectionController {
                 .collect(Collectors.toList()));
     }
 
+    // Why would this be here and not in the ArtifactController?
     @GetMapping("/artefacts")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     // get all artifacts from a section, from a specific archaeologist
@@ -126,6 +123,20 @@ public class SectionController {
                 stream()
                 .map(artifactDtoConverter::createFromEntity)
                 .collect(Collectors.toList()));
+    }
+
+    // change section status
+    @PutMapping("/status")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
+    public Result<SectionDto> changeSectionStatus(@RequestParam long sectionId, @RequestParam String status){
+        var section = sectionService.getSection(sectionId);
+        if (!HelperMethods.isMainArchaeologistBySectionId(userService, sectionService, section.getId()))
+            return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can update sections", null);
+
+        section.setStatus(SectionStatus.valueOf(status));
+        section.setUpdatedAt(LocalDateTime.now());
+        section = sectionService.updateSection(section);
+        return new Result<>(true, HttpStatus.OK.value(), "Updated section status", sectionDtoConverter.createFromEntity(section));
     }
 
 }

@@ -111,7 +111,7 @@ public class Section {
 
     // list of artifacts, nullable; reference to the artifacts
     // list of artifacts found in the section
-    @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     // join column correctly; artifacts are expected to have a section_id
     private List<Artifact> artifactsList;
 

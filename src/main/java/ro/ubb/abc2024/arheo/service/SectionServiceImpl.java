@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
@@ -19,6 +20,7 @@ import ro.ubb.abc2024.arheo.exception.SectionServiceException;
 import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,10 @@ public class SectionServiceImpl implements SectionService{
     @Override
     public Section addSection(Section section) {
         try {
+            // if `createdAt` is not set, set it to the current time
+            if (section.getCreatedAt() == null) {
+                section.setCreatedAt(LocalDateTime.now());
+            }
             validator.validate(section);
             return this.sectionRepository.save(section);
         } catch (ConstraintViolationException ex){
@@ -54,7 +60,8 @@ public class SectionServiceImpl implements SectionService{
         updatedSection.setNorthWest(section.getNorthWest());
         updatedSection.setSouthWest(section.getSouthWest());
         updatedSection.setDimensions(section.getDimensions());
-        updatedSection.setArtifactsList(section.getArtifactsList());
+        updatedSection.getArtifactsList().clear();
+        updatedSection.getArtifactsList().addAll(section.getArtifactsList());
         try {
             validator.validate(section);
             return this.sectionRepository.save(updatedSection);
@@ -159,10 +166,8 @@ public class SectionServiceImpl implements SectionService{
 
     @Override
     public Page<Section> findAllByCriteria(Long sectionId, String sectionName, Long siteId, String status, Double minDepth, Double maxDepth, Pageable pageable) {
-        return sectionRepository.findAll((root, query, criteriaBuilder) -> {
+        Specification<Section> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-
-            root.fetch("artifactsList", JoinType.LEFT);
 
             if (sectionId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("id"), sectionId));
@@ -170,7 +175,6 @@ public class SectionServiceImpl implements SectionService{
             if (sectionName != null) {
                 predicates.add(criteriaBuilder.like(root.get("name"), "%" + sectionName + "%"));
             }
-            // for the site id, we need to join the site table
             if (siteId != null) {
                 Join<Section, Site> siteJoin = root.join("site");
                 predicates.add(criteriaBuilder.equal(siteJoin.get("id"), siteId));
@@ -178,7 +182,7 @@ public class SectionServiceImpl implements SectionService{
             if (status != null) {
                 // predicates.add(criteriaBuilder.equal(root.get("status"), status));
                 // status is SectionStatus, not String. We need to convert it
-                if(status.equals("INCOMPLETE")){
+                if (status.equals("INCOMPLETE")) {
                     predicates.add(criteriaBuilder.notEqual(root.get("status"), SectionStatus.COMPLETED));
                 } else {
                     predicates.add(criteriaBuilder.equal(root.get("status"), SectionStatus.valueOf(status)));
@@ -190,8 +194,12 @@ public class SectionServiceImpl implements SectionService{
             if (maxDepth != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dimensions").get("depth"), maxDepth));
             }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        }, pageable);
+
+            query.where(predicates.toArray(new Predicate[0]));
+            return query.getRestriction();
+        };
+
+        return sectionRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -218,13 +226,10 @@ public class SectionServiceImpl implements SectionService{
                 )).getArtifactsList();
     }
 
+
     @Override
     public List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId) {
-        List<Artifact> artifacts = this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
-                )).getArtifactsList();
-        artifacts.removeIf(artifact -> artifact.getArcheologist().getId() != archaeologistId);
-        return artifacts;
+        return this.sectionRepository.findArtifactsBySectionIdAndArchaeologistId(sectionId, archaeologistId);
     }
 
     @Override
