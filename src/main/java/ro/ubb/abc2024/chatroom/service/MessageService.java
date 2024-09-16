@@ -22,5 +22,11 @@ public class MessageService {
         return messageRepository.findChatMessagesByChatroomId(parseLong(chatroomId));
     }
 
+    public void updateMessagesStatusToSeen(List<Message>msgs){
+        msgs.stream().filter(m-> !m.isSeenByRecipient()).forEach(m->{
+            m.setSeenByRecipient(true);
+            messageRepository.save(m);
+        });
+    }
 
 }
