@@ -20,6 +20,7 @@ import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -208,9 +209,10 @@ public class SectionServiceImpl implements SectionService{
 
     @Override
     public List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId) {
-        List<Artifact> artifacts = this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
-                )).getArtifactsList();
+        List<Artifact> artifacts =
+                new LinkedList<>(this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
+                        () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
+                        )).getArtifactsList());
         artifacts.removeIf(artifact -> artifact.getArcheologist().getId() != archaeologistId);
         return artifacts;
     }

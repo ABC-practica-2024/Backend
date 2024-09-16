@@ -8,45 +8,49 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
+import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.repository.SiteRepository;
+import ro.ubb.abc2024.arheo.repository.SiteRequestRepository;
 import ro.ubb.abc2024.arheo.service.SiteServiceImpl;
 import ro.ubb.abc2024.arheo.utils.converter.GeographicPointConverterDto;
 import ro.ubb.abc2024.arheo.utils.converter.SiteConverterDto;
 import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.UserRepository;
+import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SiteServiceImplTests {
     @Mock
+    private SiteRequestRepository siteRequestRepository;
+    @Mock
     private SiteRepository siteRepository;
-
     @Mock
     private UserRepository userRepository;
-
     @InjectMocks
     private SiteServiceImpl siteService;
-
     private final SiteConverterDto converter = new SiteConverterDto(new GeographicPointConverterDto(), userRepository);
-
     private static Section completedSection;
-
     private static Section diggingSection;
-
     private static Site completedSite;
-
     private static User user;
+    private static CreateArchaeologicalSiteRequest pendingRequest;
+    private static CreateArchaeologicalSiteRequest acceptedRequest;
 
     @BeforeAll
     static void setUp() {
@@ -78,6 +82,20 @@ public class SiteServiceImplTests {
                 .status(SiteStatus.COMPLETED)
                 .sections(List.of(completedSection, diggingSection))
                 .build();
+
+        // creating an archaeological site request
+        pendingRequest = CreateArchaeologicalSiteRequest.builder()
+                .id(1L)
+                .archeologist(user)
+                .status(RequestStatus.PENDING)
+                .build();
+
+
+        acceptedRequest = CreateArchaeologicalSiteRequest.builder()
+                .id(1L)
+                .status(RequestStatus.ACCEPTED)
+                .build();
+
     }
 
     @Test
@@ -208,5 +226,137 @@ public class SiteServiceImplTests {
 
         // Assert
         assertEquals(sectionsInTheSite, List.of(completedSection, diggingSection));
+    }
+
+    @Test
+    void siteService_GetAllPaginatedByCriteria_ReturnsTrue() {
+        // stub
+        Pageable paging = PageRequest.of(0, 10);
+        when(siteRepository.findAll((Specification<Site>) ArgumentMatchers.any(), eq(paging))).thenReturn(new
+                PageImpl<>(List.of(completedSite)));
+
+        // Act
+        var result = siteService.getAllPaginatedByCriteria(SiteStatus.COMPLETED.name(), paging);
+
+        // Assert
+        assertEquals(result, new PageImpl<>(List.of(completedSite)));
+    }
+
+    @Test
+    void siteService_GetCreateArchaeologicalSiteRequest_ReturnsTrue() {
+        // stub
+        when(siteRequestRepository.findById(1L)).thenReturn(Optional.ofNullable(pendingRequest));
+
+        // Act
+        var result = siteService.getCreateArchaeologicalSiteRequest(1L);
+
+        // Assert
+        assertEquals(result, pendingRequest);
+    }
+
+    @Test
+    void siteService_GetCreateArchaeologicalSiteRequest_ThrowsException() {
+        try {
+            // Act
+            siteService.getCreateArchaeologicalSiteRequest(2L);
+        } catch (Exception e) {
+            assertTrue(e instanceof EntityNotFoundException);
+            assertEquals(e.getMessage(), "Create Archaeological Site Request with id 2, not found");
+        }
+    }
+
+    @Test
+    void siteService_DeleteCreateArchaeologicalSiteRequest_ReturnsTrue() {
+        // Act
+        siteService.deleteCreateArchaeologicalSiteRequest(1L);
+
+        // Assert
+        verify(siteRequestRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void siteService_GetAllSiteRequests_ReturnsTrue() {
+        // stub
+        when(siteRequestRepository.findAll()).thenReturn(List.of(pendingRequest));
+
+        // Act
+        var result = siteService.getAllSiteRequests();
+
+        // Assert
+        assertEquals(result, List.of(pendingRequest));
+    }
+
+    @Test
+    void siteService_GetPendingSiteRequests_ReturnsTrue() {
+        // stub
+        when(siteRequestRepository.findByStatus(RequestStatus.PENDING)).thenReturn(List.of(pendingRequest));
+
+        // Act
+        var result = siteService.getPendingSiteRequests();
+
+        // Assert
+        assertEquals(result, List.of(pendingRequest));
+    }
+
+    @Test
+    void siteService_SolveCreateSiteRequest_ReturnsTrue() {
+        // stub
+        when(siteRequestRepository.findById(1L)).thenReturn(Optional.ofNullable(pendingRequest));
+        when(siteRepository.save(ArgumentMatchers.any())).thenReturn(completedSite);
+        when(siteRequestRepository.save(ArgumentMatchers.any())).thenReturn(pendingRequest);
+
+        // Act
+        var result = siteService.solveCreateSiteRequest(1L);
+
+        // Assert
+        assertEquals(result, pendingRequest);
+    }
+
+    @Test
+    void siteService_SolveCreateSiteRequest_ThrowsExceptionRequestNotPending() {
+        // stub
+        when(siteRequestRepository.findById(1L)).thenReturn(Optional.ofNullable(acceptedRequest));
+
+        try {
+            // Act
+            siteService.solveCreateSiteRequest(1L);
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+            assertEquals(e.getMessage(), "Request is not in PENDING and cannot be solved.");
+        }
+    }
+
+    @Test
+    void siteService_SolveCreateSiteRequest_ThrowsExceptionRequestNotFound() {
+        try {
+            // Act
+            siteRequestRepository.findById(2L);
+        } catch (Exception e) {
+            assertTrue(e instanceof EntityNotFoundException);
+            assertEquals(e.getMessage(), "Create Archaeological Site Request with id 2, not found");
+        }
+    }
+
+    @Test
+    void siteService_RequestCreateArchaeologicalSite_ReturnsTrue() {
+        // stub
+        when(userRepository.findById(pendingRequest.getArcheologist().getId())).thenReturn(Optional.ofNullable(pendingRequest.getArcheologist()));
+        when(siteRequestRepository.save(pendingRequest)).thenReturn(pendingRequest);
+
+        // Act
+        var result = siteService.requestCreateArchaeologicalSite(pendingRequest);
+
+        // Assert
+        assertEquals(result, pendingRequest);
+    }
+
+    @Test
+    void siteService_RequestCreateArchaeologicalSite_ThrowsExceptionRequestNotFound() {
+        try {
+            siteService.requestCreateArchaeologicalSite(pendingRequest);
+        } catch (Exception e) {
+            assertTrue(e instanceof EntityNotFoundException);
+            assertEquals(e.getMessage(), "User with id 1 not found");
+        }
     }
 }
