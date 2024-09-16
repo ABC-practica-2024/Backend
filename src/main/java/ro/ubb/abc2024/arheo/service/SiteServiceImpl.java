@@ -1,6 +1,7 @@
 package ro.ubb.abc2024.arheo.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -26,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -50,7 +50,7 @@ public class SiteServiceImpl implements SiteService{
         return siteRepository.getSitesWithSectionsAndArchaeologists();
     }
 
-    public Page<Site> getAllPaginatedByCriteria(String status, Pageable pageable) {
+    public Page<Site> getAllPaginatedByCriteria(String status, Long archaeologistId, Pageable pageable) {
         return siteRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -62,6 +62,14 @@ public class SiteServiceImpl implements SiteService{
                 } else {
                     predicates.add(criteriaBuilder.equal(root.get("status"), SectionStatus.valueOf(status)));
                 }
+            }
+
+            if(archaeologistId != null && archaeologistId > 0){
+                Join<Site, User> archaeologistsJoin = root.join("archaeologists", JoinType.LEFT);
+
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.equal(archaeologistsJoin.get("id"), archaeologistId),
+                        criteriaBuilder.equal(root.get("mainArchaeologist").get("id"), archaeologistId)));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

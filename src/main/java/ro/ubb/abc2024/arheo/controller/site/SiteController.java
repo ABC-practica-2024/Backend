@@ -23,7 +23,6 @@ import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.service.SiteServiceImpl;
 import ro.ubb.abc2024.user.User;
-import ro.ubb.abc2024.utils.converter.UserDtoConverter;
 import ro.ubb.abc2024.utils.dto.Result;
 
 import java.util.HashMap;
@@ -45,10 +44,11 @@ public class SiteController {
 
     @GetMapping
     public Result<Map<String,Object>> getSites(@RequestParam(required = false) String status,
+                                                   @RequestParam(required = false) Long archaeologistId,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Site> sitePage = siteService.getAllPaginatedByCriteria(status, pageable);
+        Page<Site> sitePage = siteService.getAllPaginatedByCriteria(status, archaeologistId, pageable);
         List<SiteDTO> siteDtoList = sitePage.getContent().stream().map(siteConverterDto::createFromEntity)
                 .collect(Collectors.toList());
         Map<String, Object> response = new HashMap<>();
@@ -125,7 +125,7 @@ public class SiteController {
 
     @PostMapping("/add_archaeologist")
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<User> addArchaeologistToSite(@RequestParam Long siteId, @RequestParam Long addedArchaeologistId){
+    public Result<User> addArchaeologistToSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if(authentication == null){
@@ -135,7 +135,7 @@ public class SiteController {
         try {
             if(authentication.getPrincipal() instanceof Jwt jwt){
                 String username = jwt.getSubject();
-                siteService.addArchaeologistToSite(siteId, username, addedArchaeologistId);
+                siteService.addArchaeologistToSite(siteId, username, archaeologistId);
             }
         }
         catch (Exception e){
@@ -146,7 +146,7 @@ public class SiteController {
 
     @PostMapping("/delete_archaeologist")
     @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<User> deleteArchaeologistFromSite(@RequestParam Long siteId, @RequestParam Long addedArchaeologistId){
+    public Result<User> deleteArchaeologistFromSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if(authentication == null){
@@ -156,7 +156,7 @@ public class SiteController {
         try {
             if(authentication.getPrincipal() instanceof Jwt jwt){
                 String username = jwt.getSubject();
-                siteService.deleteArchaeologistFromSite(siteId, username, addedArchaeologistId);
+                siteService.deleteArchaeologistFromSite(siteId, username, archaeologistId);
             }
         }
         catch (Exception e){
