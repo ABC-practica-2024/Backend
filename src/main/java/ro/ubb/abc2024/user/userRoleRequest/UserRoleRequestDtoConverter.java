@@ -31,7 +31,10 @@ public class UserRoleRequestDtoConverter {
                 entity.getRequestStatus().name(),
                 entity.getTimeSent(),
                 entity.getTimeResolved(),
-                entity.getUser().getId()
+                entity.getUser().getId(),
+                entity.getUser().getUsername(),
+                entity.getUser().getEmail(),
+                entity.getUser().getFirstName() + " " + entity.getUser().getLastName()
         );
     }
 

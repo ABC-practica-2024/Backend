@@ -8,5 +8,8 @@ public record UserRoleRequestDTO (
         String status,
         LocalDateTime timeSent,
         LocalDateTime timeResolved,
-        long userId
+        long userId,
+        String username,
+        String email,
+        String name
 ){}
