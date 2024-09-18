@@ -45,6 +45,18 @@ public class UserController {
     }
 
     @Operation(
+            summary = "Get user by id endpoint",
+            description = "Retrieves details about a given user, based on their id."
+    )
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
+    public Result<UserDto> getUserById(@PathVariable long id) {
+        var user = userService.getUser(id);
+        var userDTO = userDtoConverter.createFromEntity(user);
+        return new Result<>(true, HttpStatus.OK.value(), "Details about user served.", userDTO);
+    }
+
+    @Operation(
             summary = "Get profile picture endpoint; returns an image",
             description = "Retrieves the profile picture of the current user, based on the JWT token; returns the image itself."
     )
