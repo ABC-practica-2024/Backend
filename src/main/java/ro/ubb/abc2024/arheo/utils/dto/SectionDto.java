@@ -12,6 +12,7 @@ public record SectionDto(
         GeographicPointDto northWest,
         GeographicPointDto northEast,
         GeographicPointDto southEast,
+        SectionDimensionsDto dimensions,
         SectionStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,

@@ -74,6 +74,16 @@ public class Section {
     @NotNull(message = "South-east corner cannot be null")
     private GeographicPoint southEast;
 
+    // mutable object representing the dimensions of the section - length, width, depth; nullable
+    // depth will be 0 by default - is updated with each added artifact
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "length", column = @Column(name = "length")),
+            @AttributeOverride(name = "width", column = @Column(name = "width")),
+            @AttributeOverride(name = "depth", column = @Column(name = "depth"))
+    })
+    private SectionDimensions dimensions;
+
 
     // status: DIGGING, ANALYSIS, COMPLETED, from enum
     // shows the stage of the section; nullable
@@ -101,7 +111,7 @@ public class Section {
 
     // list of artifacts, nullable; reference to the artifacts
     // list of artifacts found in the section
-    @OneToMany(targetEntity = Artifact.class, mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     // join column correctly; artifacts are expected to have a section_id
     private List<Artifact> artifactsList;
 

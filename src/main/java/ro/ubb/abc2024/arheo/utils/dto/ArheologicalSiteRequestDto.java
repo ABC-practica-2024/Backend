@@ -21,6 +21,9 @@ public class ArheologicalSiteRequestDto {
     private GeographicPoint centerCoordinates;
     private List<SiteCoordinate> perimeterCoordinates;
     private LocalDateTime createRequestTime;
+    private LocalDateTime solveRequestTime;
     private Long arheoId;
+    private Long requestId;
+    private String status;
 
 }

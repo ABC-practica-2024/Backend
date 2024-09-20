@@ -1,29 +1,42 @@
 package ro.ubb.abc2024.arheo.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
+import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.exception.SectionServiceException;
 import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class SectionServiceImpl implements SectionService{
-
     private final SectionRepository sectionRepository;
     private final GenericValidator<Section> validator;
 
     @Override
     public Section addSection(Section section) {
         try {
+            // if `createdAt` is not set, set it to the current time
+            if (section.getCreatedAt() == null) {
+                section.setCreatedAt(LocalDateTime.now());
+            }
             validator.validate(section);
             return this.sectionRepository.save(section);
         } catch (ConstraintViolationException ex){
@@ -46,7 +59,9 @@ public class SectionServiceImpl implements SectionService{
         updatedSection.setNorthEast(section.getNorthEast());
         updatedSection.setNorthWest(section.getNorthWest());
         updatedSection.setSouthWest(section.getSouthWest());
-        updatedSection.setArtifactsList(section.getArtifactsList());
+        updatedSection.setDimensions(section.getDimensions());
+        updatedSection.getArtifactsList().clear();
+        updatedSection.getArtifactsList().addAll(section.getArtifactsList());
         try {
             validator.validate(section);
             return this.sectionRepository.save(updatedSection);
@@ -124,11 +139,67 @@ public class SectionServiceImpl implements SectionService{
     }
 
     @Override
+    public List<Section> getSectionsDeeperThan(double depth){
+        List<Section> sections = this.sectionRepository.findAll();
+        sections.removeIf(section -> section.getDimensions().getDepth() < depth);
+        return sections;
+    }
 
+    @Override
+    public List<Section> getSectionsShallowerThan(double depth){
+        List<Section> sections = this.sectionRepository.findAll();
+        sections.removeIf(section -> section.getDimensions().getDepth() > depth);
+        return sections;
+    }
+
+    @Override
     public List<Section> getSections() {
         //return this.sectionRepository.findAll();
-        return this.sectionRepository.getSectionsWithArtifacts();
+        return this.sectionRepository.getSectionsWithArtifacts(null).getContent();
+    }
 
+    @Override
+    public Page<Section> getSections(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return this.sectionRepository.getSectionsWithArtifacts(pageable);
+    }
+
+    @Override
+    public Page<Section> findAllByCriteria(Long sectionId, String sectionName, Long siteId, String status, Double minDepth, Double maxDepth, Pageable pageable) {
+        Specification<Section> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (sectionId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("id"), sectionId));
+            }
+            if (sectionName != null) {
+                predicates.add(criteriaBuilder.like(root.get("name"), "%" + sectionName + "%"));
+            }
+            if (siteId != null) {
+                Join<Section, Site> siteJoin = root.join("site");
+                predicates.add(criteriaBuilder.equal(siteJoin.get("id"), siteId));
+            }
+            if (status != null) {
+                // predicates.add(criteriaBuilder.equal(root.get("status"), status));
+                // status is SectionStatus, not String. We need to convert it
+                if (status.equals("INCOMPLETE")) {
+                    predicates.add(criteriaBuilder.notEqual(root.get("status"), SectionStatus.COMPLETED));
+                } else {
+                    predicates.add(criteriaBuilder.equal(root.get("status"), SectionStatus.valueOf(status)));
+                }
+            }
+            if (minDepth != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("dimensions").get("depth"), minDepth));
+            }
+            if (maxDepth != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dimensions").get("depth"), maxDepth));
+            }
+
+            query.where(predicates.toArray(new Predicate[0]));
+            return query.getRestriction();
+        };
+
+        return sectionRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -155,12 +226,24 @@ public class SectionServiceImpl implements SectionService{
                 )).getArtifactsList();
     }
 
+
     @Override
     public List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId) {
-        List<Artifact> artifacts = this.sectionRepository.getSectionByIdWithArtifacts(sectionId).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
-                )).getArtifactsList();
-        artifacts.removeIf(artifact -> artifact.getArcheologist().getId() != archaeologistId);
-        return artifacts;
+        return this.sectionRepository.findArtifactsBySectionIdAndArchaeologistId(sectionId, archaeologistId);
     }
+
+    @Override
+    public Long getMainArchaeologistIdFromSectionId(long sectionId) {
+        return this.sectionRepository.getMainArchaeologistIdFromSectionId(sectionId);
+    }
+
+    @Override
+    public void updateSectionDepth(long sectionId, double depth) {
+        Section section = this.sectionRepository.findById(sectionId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Section with id %d, does not exist.", sectionId)
+                ));
+        section.getDimensions().setDepth(depth);
+        this.sectionRepository.save(section);
+    }
+
 }
