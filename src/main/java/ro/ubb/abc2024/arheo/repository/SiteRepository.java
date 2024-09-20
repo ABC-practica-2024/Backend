@@ -11,7 +11,11 @@ import java.util.List;
 
 public interface SiteRepository extends JpaRepository<Site, Long>, JpaSpecificationExecutor<Site> {
     List<Site> getSitesByStatus(SiteStatus status);
+
+    @Transactional
+    @Query("SELECT s FROM Site s LEFT JOIN FETCH s.sections WHERE s.id = :id")
     Site getSiteById(Long id);
+
     Site getSiteByTitle(String title);
 
     @Transactional
