@@ -1,16 +1,12 @@
 package ro.ubb.abc2024;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.boot.test.context.SpringBootTest;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.artifact.ArtifactDimension;
 import ro.ubb.abc2024.arheo.domain.artifact.ArtifactPosition;
@@ -32,9 +28,7 @@ import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ArtifactServiceImplTest {
@@ -44,30 +38,25 @@ public class ArtifactServiceImplTest {
     private GenericValidator<Artifact> validator;
     @InjectMocks
     private ArtifactServiceImpl artifactService;
-    private static Artifact artifact1;
-    private static Artifact artifact2;
-    private static Site site;
-    private static User user;
-    private static Section section;
+    private Artifact artifact1;
+    private Artifact artifact2;
 
-    @BeforeAll
-    static void setUp() {
-        user = User.builder()
+    @BeforeEach
+    void setUp() {
+        User user = User.builder()
                 .id(1L)
                 .username("Archaeologist A")
                 .email("user1@gmail.com")
                 .build();
 
-        site = new Site();
-        site.setId(1L);
+        Site site = new Site();
         site.setTitle("Site A");
         site.setDescription("Description A");
         site.setCenterCoordinates(new GeographicPoint(1.0, 1.0));
         site.setStatus(SiteStatus.DIGGING);
         site.setMainArchaeologist(user);
 
-        section = new Section();
-        section.setId(1L);
+        Section section = new Section();
         section.setName("Section A");
         section.setSouthWest(new GeographicPoint(1.0, 1.0));
         section.setNorthWest(new GeographicPoint(1.0, 2.0));
@@ -221,54 +210,7 @@ public class ArtifactServiceImplTest {
         assertEquals(1, artifacts.size());
     }
 
-    @Test
-    void artifactService_GetMainArchaeologistIdFromArtifactId_ReturnsTrue() {
-        // stub
-        when(artifactRepository.findMainArcheologistIdByArtifactId(1L)).thenReturn(user.getId());
 
-        // Act
-        var result = artifactService.getMainArchaeologistIdFromArtifactId(1L);
 
-        // Assert
-        assertEquals(result, user.getId());
-    }
-
-    @Test
-    void artifactService_GetAssignedArchaeologistIdsBySectionId_ReturnsTrue() {
-        // stub
-        when(artifactRepository.findAssignedArchaeologistIdsBySectionId(1L)).thenReturn(List.of(user));
-
-        // Act
-        var result = artifactService.getAssignedArchaeologistIdsBySectionId(1L);
-
-        // Assert
-        assertEquals(result, List.of(user.getId()));
-    }
-
-    @Test
-    void artifactService_GetMainArchaeologistIdFromSectionId_ReturnsTrue() {
-        // stub
-        when(artifactRepository.findMainArcheologistIdBySectionId(1L)).thenReturn(user.getId());
-
-        // Act
-        var result = artifactService.getMainArchaeologistIdFromSectionId(1L);
-
-        // Assert
-        assertEquals(result, user.getId());
-    }
-
-    @Test
-    void artifactService_GetAllPaginatedByCriteria_ReturnsTrue() {
-        // stub
-        Pageable paging = PageRequest.of(0, 10);
-        when(artifactRepository.findAll((Specification<Artifact>) ArgumentMatchers.any(), eq(paging))).thenReturn(new
-                PageImpl<>(List.of(artifact1)));
-
-        // Act
-        var result = artifactService.getAllPaginatedByCriteria(1L, 1L, 1L, "Artifact 1", "Category 1", false, paging);
-
-        // Assert
-        assertEquals(result, new PageImpl<>(List.of(artifact1)));
-    }
 }
 

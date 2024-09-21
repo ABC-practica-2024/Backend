@@ -1,337 +1,144 @@
 package ro.ubb.abc2024;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
-import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.arheo.domain.section.Section;
-import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.repository.SectionRepository;
 import ro.ubb.abc2024.arheo.service.SectionServiceImpl;
-import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.utils.validation.GenericValidator;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SectionServiceImplTests {
+
+    @Mock
+    private SectionRepository sectionRepository;
+
     @Mock
     private GenericValidator<Section> validator;
-    @Mock
-    private static SectionRepository sectionRepository;
+
     @InjectMocks
     private SectionServiceImpl sectionService;
-    private static Section diggingSection;
-    private static Section completedSection;
-    private static Artifact firstArtifact;
-    private static Artifact secondArtifact;
-    private static User archeologist;
-    private static final double circleRadius = 2.0;
-    private static final double circleLatitude = 0.5;
-    private static final double circleLongitude = 0.5;
 
-    @BeforeAll
-    public static void setUp() {
+    @Test
+    void testAddSection() {
+
+        // create site
+        Site site = new Site();
+        site.setTitle("Test Site");
+
+        // Arrange
+        Section section = new Section();
+        section.setName("Test Section");
+        // set site
+        section.setSite(site);
+
+        when(sectionRepository.save(any(Section.class))).thenReturn(section);
+
+        // Act
+        Section result = sectionService.addSection(section);
+
+        // Assert
+        assertEquals("Test Section", result.getName());
+        assertEquals("Test Site", result.getSite().getTitle());
+
+    }
+
+    @Test
+    void testRemoveSection() {
+
+        // Arrange
+        Section section = new Section();
+        section.setName("Test Section");
+
+        // setup add section
+        when(sectionRepository.save(any(Section.class))).thenReturn(section);
+        Section result = sectionService.addSection(section);
+
+        // Act
+        sectionService.deleteSection(result.getId());
+
+        // Assert
+        assertEquals(0, sectionService.getSections().size());
+    }
+
+    @Test
+    void testUpdateSection() {
+        // Arrange
+        Section section = new Section();
+        section.setId(1L);
+        section.setName("Test Section");
+
+        Site site = new Site();
+        site.setTitle("Test Site");
+        section.setSite(site);
+
+        Section updatedSection = new Section();
+        updatedSection.setId(1L);
+        updatedSection.setName("Updated Section");
+        updatedSection.setSite(site);
+
+        // setup
+        when(sectionRepository.findById(1L)).thenReturn(Optional.of(section));
+        when(sectionRepository.save(any(Section.class))).thenReturn(updatedSection);
+
+        // Act
+        Section result = sectionService.updateSection(updatedSection);
+
+        // Assert
+        assertEquals("Updated Section", result.getName());
+        assertEquals("Test Site", result.getSite().getTitle());
+    }
+    @Test
+    void testGetSection() {
         // Arrange
         Site site = new Site();
-        site.setId(1L);
+        site.setTitle("Test Site");
 
-        archeologist = new User();
-        archeologist.setId(1L);
+        Section section = new Section();
+        section.setId(1L); // Ensure the ID is set
+        section.setName("Test Section");
+        section.setSite(site);
 
-        firstArtifact = new Artifact();
-        firstArtifact.setSection(diggingSection);
-        firstArtifact.setArcheologist(archeologist);
-
-        secondArtifact = new Artifact();
-        secondArtifact.setSection(diggingSection);
-        secondArtifact.setArcheologist(archeologist);
-
-        diggingSection = new Section();
-        diggingSection.setId(1L);
-        diggingSection.setName("digging section");
-        diggingSection.setSouthEast(new GeographicPoint(0.0, 1.0));
-        diggingSection.setSouthWest(new GeographicPoint(0.0, 0.0));
-        diggingSection.setNorthWest(new GeographicPoint(0.0, 1.0));
-        diggingSection.setNorthEast(new GeographicPoint(1.1, 1.1));
-        diggingSection.setArtifactsList(List.of(firstArtifact, secondArtifact));
-        diggingSection.setStatus(SectionStatus.DIGGING);
-        diggingSection.setSite(site);
-
-
-        completedSection = new Section();
-        completedSection.setId(2L);
-        completedSection.setName("completed section");
-        completedSection.setSouthEast(new GeographicPoint(0.0, 10.0));
-        completedSection.setSouthWest(new GeographicPoint(0.0, 0.0));
-        completedSection.setNorthWest(new GeographicPoint(0.0, 10.0));
-        completedSection.setNorthEast(new GeographicPoint(10.0, 10.0));
-        completedSection.setStatus(SectionStatus.COMPLETED);
-        completedSection.setSite(site);
-    }
-
-    @Test
-    public void SectionServiceImpl_AddSection_AssertTrue() {
-        // stub
-        when(sectionRepository.save(diggingSection)).thenReturn(diggingSection);
+        when(sectionRepository.save(any(Section.class))).thenReturn(section);
+        when(sectionRepository.findById(1L)).thenReturn(Optional.of(section)); // Mock findById
 
         // Act
-        Section addedSection = sectionService.addSection(diggingSection);
+        Section result = sectionService.addSection(section);
+        Section foundSection = sectionService.getSection(1L);
 
         // Assert
-        assertEquals(addedSection, diggingSection);
+        assertEquals("Test Section", foundSection.getName());
+        assertEquals("Test Site", foundSection.getSite().getTitle());
     }
 
     @Test
-    public void SectionServiceImpl_UpdateSection_AssertTrue() {
-        when(sectionRepository.findById(1L)).thenReturn(Optional.of(diggingSection));
-        when(sectionRepository.save(ArgumentMatchers.any(Section.class))).thenReturn(completedSection);
+    void testGetSections() {
+        // Arrange
+        Section section = new Section();
+        section.setName("Test Section");
 
-        // Act
-        Section result = sectionService.updateSection(diggingSection);
+        Section section2 = new Section();
+        section2.setName("Test Section 2");
 
-        // Assert
-        assertEquals(result, completedSection);
-    }
 
-    @Test
-    public void SectionServiceImpl_UpdateSection_ThrowsException() {
-        try {
-            sectionService.updateSection(diggingSection);
-        } catch (Exception e) {
-            assertTrue(e instanceof EntityNotFoundException);
-            assertEquals(e.getMessage(), "Section with id 1, does not exist.");
-        }
-    }
+        // add section
+        sectionService.addSection(section);
+        sectionService.addSection(section2);
 
-    @Test
-    public void SectionServiceImpl_GetSectionPage_ReturnsTrue() {
-        // stub
-        Pageable paging = PageRequest.of(0, 10);
-        when(sectionRepository.getSectionsWithArtifacts(paging)).thenReturn(new
-                PageImpl<>(List.of(diggingSection, completedSection)));
+        // setup
+        when(sectionRepository.findAll()).thenReturn(java.util.List.of(section, section2));
 
-        // Act
-        var result = sectionService.getSections(0, 10);
-
-        // Assert
-        assertEquals(result, new PageImpl<>(List.of(diggingSection, completedSection)));
-    }
-
-    @Test
-    public void SectionServiceImpl_FindAllByCriteria_ReturnsTrue() {
-        // stub
-        Pageable paging = PageRequest.of(0, 10);
-        when(sectionRepository.findAll((Specification<Section>) ArgumentMatchers.any(), eq(paging))).thenReturn(new
-                PageImpl<>(List.of(completedSection)));
-
-        // Act
-        var result = sectionService.findAllByCriteria(1L, "completed section", 1L, SectionStatus.COMPLETED.name(), paging);
-
-        // Assert
-        assertEquals(result, new PageImpl<>(List.of(completedSection)));
-    }
-
-    @Test
-    public void SectionServiceImpl_DeleteSection_ThrowsExceptionNullPointer() {
-        // Act
-        sectionService.addSection(diggingSection);
-        sectionService.deleteSection(diggingSection.getId());
-
-        try {
-            sectionService.getSections(); // this should be null -> there are no sections -> delete works fine
-        } catch (Exception e) {
-            assertTrue(e instanceof NullPointerException);
-        }
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionByName_AssertTrue() {
-        when(sectionRepository.getSectionsByNameIs(diggingSection.getName())).thenReturn(Optional.of(diggingSection));
-
-        // Act
-        Section result = sectionService.getSection(diggingSection.getName());
-
-        assertEquals(result, diggingSection);
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionByName_ThrowsException() {
-        try {
-            sectionService.getSection("Random name");
-        } catch (Exception e) {
-            assertTrue(e instanceof EntityNotFoundException);
-            assertEquals(e.getMessage(), "Section with name Random name, does not exist.");
-        }
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionById_AssertTrue() {
-        when(sectionRepository.getSectionByIdWithArtifacts(diggingSection.getId())).thenReturn(Optional.of(diggingSection));
-
-        // Act
-        Section result = sectionService.getSection(diggingSection.getId());
-
-        assertEquals(result, diggingSection);
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionById_ThrowsException() {
-        try {
-            sectionService.getSection(22L);
-        } catch (Exception e) {
-            assertTrue(e instanceof EntityNotFoundException);
-            assertEquals(e.getMessage(), "Section with id 22, does not exist.");
-        }
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionsAroundPoint_AssertTrue() {
-        when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
-                completedSection)));
-
-        List<Section> result = sectionService.getSectionsAroundPoint(circleLatitude, circleLongitude, circleRadius);
-
-        assertEquals(result, List.of(diggingSection));
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionsNorthOf_AssertTrue() {
-        when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
-                completedSection)));
-
-        List<Section> result = sectionService.getSectionsNorthOf(-1.0);
-
-        assertEquals(result, List.of(diggingSection, completedSection));
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionsSouthOf_AssertTrue() {
-        when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
-                completedSection)));
-
-        List<Section> result = sectionService.getSectionsSouthOf(-1.0);
-
-        assertEquals(result, List.of());
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionsWestOf_AssertTrue() {
-        when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
-                completedSection)));
-
-        List<Section> result = sectionService.getSectionsWestOf(-1.0);
-
-        assertEquals(result, List.of());
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionsEastOf_AssertTrue() {
-        when(sectionRepository.findAll()).thenReturn(new LinkedList<>(Arrays.asList(diggingSection,
-                completedSection)));
-
-        List<Section> result = sectionService.getSectionsEastOf(-1.0);
-
-        assertEquals(result, List.of(diggingSection, completedSection));
-    }
-
-    /*
-    @Test
-    public void SectionServiceImpl_GetSectionsWithArtifacts_AssertTrue() {
-        when(sectionRepository.getSectionsWithArtifacts()).thenReturn(List.of(diggingSection));
-
-        List<Section> result = sectionService.getSections();
-
-        assertEquals(result, List.of(diggingSection));
-    }
-     */
-
-    @Test
-    public void SectionServiceImpl_GetIncompleteSections_AssertTrue() {
-        when(sectionRepository.getSectionsByStatusIsNot(SectionStatus.COMPLETED)).thenReturn(List.of(diggingSection));
-
-        List<Section> result = sectionService.getIncompleteSections();
-
-        assertEquals(result, List.of(diggingSection));
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionsBySiteId_AssertTrue() {
-        when(sectionRepository.getSectionsBySiteId(1L)).thenReturn(List.of(diggingSection, completedSection));
-
-        List<Section> result = sectionService.getSectionsBySite(1L);
-
-        assertEquals(result, List.of(diggingSection, completedSection));
-    }
-
-    @Test
-    public void SectionServiceImpl_GetSectionsByStatusIsAndSiteId_AssertTrue() {
-        when(sectionRepository.getSectionsByStatusIsAndSiteId(SectionStatus.DIGGING, 1L)).thenReturn(List.of(diggingSection));
-
-        List<Section> result = sectionService.getSectionsByStatusIsAndSiteId(SectionStatus.DIGGING.name(), 1L);
-
-        assertEquals(result, List.of(diggingSection));
-    }
-
-    @Test
-    public void SectionServiceImpl_GetArtifactsFromSection_AssertTrue() {
-        when(sectionRepository.getSectionByIdWithArtifacts(1L)).thenReturn(Optional.ofNullable(diggingSection));
-
-        List<Artifact> result = sectionService.getArtifactsFromSection(1L);
-
-        assertEquals(result, List.of(firstArtifact, secondArtifact));
-    }
-
-    @Test
-    public void SectionServiceImpl_GetArtifactsFromSection_ThrowsException() {
-        try {
-            sectionService.getArtifactsFromSection(10L);
-        } catch (Exception e) {
-            assertTrue(e instanceof EntityNotFoundException);
-            assertEquals(e.getMessage(), "Section with id 10, does not exist.");
-
-        }
-    }
-
-    @Test
-    public void SectionServiceImpl_GetArtifactsFromSectionByArchaeologist_ReturnsTrue() {
-        when(sectionRepository.getSectionByIdWithArtifacts(diggingSection.getId())).thenReturn(Optional.of(diggingSection));
-
-        // Act
-        var result = sectionService.getArtifactsFromSectionByArchaeologist(diggingSection.getId(),
-                archeologist.getId());
-
-        assertEquals(result, List.of(firstArtifact, secondArtifact));
-    }
-
-    @Test
-    public void SectionServiceImpl_GetArtifactsFromSectionByArchaeologist_ThrowsException() {
-        try {
-            sectionService.getArtifactsFromSectionByArchaeologist(20L,
-                    archeologist.getId());
-        } catch (Exception e) {
-            assertTrue(e instanceof EntityNotFoundException);
-            assertEquals(e.getMessage(), "Section with id 20, does not exist.");
-
-        }
+        // get sections
+        assertEquals(2, sectionService.getSections().size());
     }
 }

@@ -1,7 +1,7 @@
 package ro.ubb.abc2024.arheo.service;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
+import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
+import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
-import ro.ubb.abc2024.arheo.domain.site.CreateArchaeologicalSiteRequest;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.repository.SiteRepository;
@@ -27,92 +27,77 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
-public class SiteServiceImpl implements SiteService {
+public class SiteServiceImpl implements SiteService{
     @Autowired
     private SectionService sectionService;
+
+    @Autowired
+    private ArtifactService artifactService;
 
     private final SiteRepository siteRepository;
 
     @Autowired
-    private final SiteRequestRepository siteRequestRepository;
+    SiteRequestRepository siteRequestRepository;
 
     @Autowired
-    private final UserRepository userRepository;
-
-    @PostConstruct
-    public void init() {
-        try{
-            UserRepository userRepository = this.userRepository;
-            User newUser = new User();
-            newUser.setUsername("newUser");
-            newUser.setPassword("@newPassword123");
-            newUser.setEmail("newUser@gmail.com");
-            newUser.setFirstName("newUser");
-            newUser.setLastName("newUser");
-            userRepository.save(newUser);
-
-            Random random = new Random();
-            Site site = new Site();
-            site.setStatus(SiteStatus.DIGGING);
-            site.setDescription("da");
-            site.setTitle(String.valueOf(random.nextInt(10000)));
-            site.setMainArchaeologist(userRepository.findByUsername("newUser").orElseThrow());
-            site.setCenterCoordinates(new GeographicPoint(0.1, 0.1));
-            site.setSections(new ArrayList<>());
-            siteRepository.save(site);
-        }
-        catch(Exception e){}
-    }
+    UserRepository userRepository;
 
     @Transactional
-    public List<Site> getAll() {
+    public List<Site> getAll(){
         return siteRepository.getSitesWithSectionsAndArchaeologists();
     }
 
-    public Page<Site> getAllPaginatedByCriteria(String status, Pageable pageable) {
+    public Page<Site> getAllPaginatedByCriteria(String status, Long archaeologistId, Pageable pageable) {
         return siteRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             root.fetch("sections", JoinType.LEFT);
 
             if (status != null) {
-                if (status.equals("INCOMPLETE")) {
+                if(status.equals("INCOMPLETE")){
                     predicates.add(criteriaBuilder.notEqual(root.get("status"), SectionStatus.COMPLETED));
                 } else {
                     predicates.add(criteriaBuilder.equal(root.get("status"), SectionStatus.valueOf(status)));
                 }
             }
 
+            if(archaeologistId != null && archaeologistId > 0){
+                Join<Site, User> archaeologistsJoin = root.join("archaeologists", JoinType.LEFT);
+
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.equal(archaeologistsJoin.get("id"), archaeologistId),
+                        criteriaBuilder.equal(root.get("mainArchaeologist").get("id"), archaeologistId)));
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
     }
 
-    public List<Site> getAllByStatus(SiteStatus status) {
+    public List<Site> getAllByStatus(SiteStatus status){
         return siteRepository.getSitesByStatus(status);
     }
 
-    public Site getSiteByTitle(String title) {
+    public Site getSiteByTitle(String title){
         return siteRepository.getSiteByTitle(title);
     }
 
-    public Site addSite(Site site) {
+    public Site addSite(Site site){
         return siteRepository.save(site);
     }
 
-    public void deleteSite(Long id) {
+    public void deleteSite(Long id){
         siteRepository.deleteById(id);
     }
 
-    public Site getSite(Long id) {
+    public Site getSite(Long id){
         return siteRepository.getSiteById(id);
     }
 
     @Transactional
-    public Site updateSite(long siteId, SiteDTO newSite) {
+    public Site updateSite(long siteId, SiteDTO newSite){
 
         var updateSite = this.siteRepository.findById(siteId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId)
@@ -124,25 +109,23 @@ public class SiteServiceImpl implements SiteService {
         return this.siteRepository.save(updateSite);
     }
 
-    public Page<Section> getPaginatedSectionsByCriteria(Long siteId, String status, Pageable pageable){
-        return sectionService.findAllByCriteria(null, null, siteId, status, pageable);
+    public Page<Artifact> getPaginatedArtifactsByCriteria(Long siteId, Long archaeologistId, Pageable pageable){
+        return artifactService.getAllPaginatedByCriteria(siteId, null, archaeologistId, null, null, null, pageable);
     }
 
     public List<Section> getSectionsBySiteId(Long siteId){
         return siteRepository.getSiteById(siteId).getSections();
     }
 
-    public List<Section> getSectionsBySiteId(Long siteId, SectionStatus status){
+    public List<Section> getSectionsBySiteIdAndStatus(Long siteId, SectionStatus status){
         return sectionService.getSectionsByStatusIsAndSiteId(status.name(), siteId);
     }
 
-    public CreateArchaeologicalSiteRequest getCreateArchaeologicalSiteRequest(Long id) {
-        return this.siteRequestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Create Archaeological Site Request with id %d, not found", id)));
-
-
+    public CreateArchaeologicalSiteRequest getCreateArchaeologicalSiteRequest(Long id){
+        return this.siteRequestRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(String.format("Create Archaeological Site Request with id %d, not found",id)));
     }
 
-    public void deleteCreateArchaeologicalSiteRequest(Long id) {
+    public void deleteCreateArchaeologicalSiteRequest(Long id){
         this.siteRequestRepository.deleteById(id);
     }
 
@@ -192,4 +175,99 @@ public class SiteServiceImpl implements SiteService {
         return request;
     }
 
+    public void addArchaeologistToSite(Long siteId, String mainArchaeologistUsername, Long archaeologistId) throws Exception{
+        User archaeologist = userRepository.findById(archaeologistId).orElseThrow();
+
+        User mainArchaeologist = userRepository.findByUsername(mainArchaeologistUsername).orElse(null);
+        if(mainArchaeologist == null) {
+            throw new EntityNotFoundException(String.format("User with name %s not found", mainArchaeologistUsername));
+        }
+
+        if(mainArchaeologist.getId().equals(archaeologistId)){
+            throw new Exception("User is assigned as main archaeologist to the site, no need to add it as archaeologist too.");
+        }
+
+        Long mainArchaeologistId = mainArchaeologist.getId();
+
+        Site site = siteRepository.getSiteById(siteId);
+
+        if(site == null)
+            throw new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId));
+
+        if(site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
+            List<User> archaeologists = site.getArchaeologists();
+
+            if(archaeologists.stream().anyMatch(user -> user.getId().equals(archaeologistId))){
+                throw new Exception("The wanted archaeologist is already assigned to the current site.");
+            }
+
+            archaeologists.add(archaeologist);
+            site.setArchaeologists(archaeologists);
+            siteRepository.save(site);
+            return;
+        }
+
+        throw new Exception("The user is not main archaeologist on the selected site!");
+    }
+
+    public void deleteArchaeologistFromSite(Long siteId, String mainArchaeologistUsername, Long archaeologistId) throws Exception{
+        User archaeologist = userRepository.findById(archaeologistId).orElseThrow();
+
+        User mainArchaeologist = userRepository.findByUsername(mainArchaeologistUsername).orElse(null);
+        if(mainArchaeologist == null) {
+            throw new EntityNotFoundException(String.format("User with name %s not found", mainArchaeologistUsername));
+        }
+
+        if(mainArchaeologist.getId().equals(archaeologistId)){
+            throw new Exception("User is assigned as main archaeologist to the site, cannot remove it from it.");
+        }
+
+        Long mainArchaeologistId = mainArchaeologist.getId();
+
+        Site site = siteRepository.getSiteById(siteId);
+
+        if(site == null)
+            throw new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId));
+
+        if(site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
+            List<User> archaeologists = site.getArchaeologists();
+
+            if(archaeologists.stream().noneMatch(user -> user.getId().equals(archaeologistId))){
+                throw new Exception("The wanted archaeologist not assigned to the current site.");
+            }
+
+            archaeologists.remove(archaeologist);
+            site.setArchaeologists(archaeologists);
+            siteRepository.save(site);
+            return;
+        }
+
+        throw new Exception("The user is not main archaeologist on the selected site!");
+    }
+
+    public void changeSiteStatus(Long siteId, String username, SiteStatus newStatus) throws Exception{
+        User mainArchaeologist = userRepository.findByUsername(username).orElse(null);
+        if(mainArchaeologist == null) {
+            throw new EntityNotFoundException(String.format("User with name %s not found", username));
+        }
+
+        Long mainArchaeologistId = mainArchaeologist.getId();
+
+        Site site = siteRepository.getSiteById(siteId);
+
+        if(site == null)
+            throw new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId));
+
+        if(site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
+            if(site.getStatus() == newStatus){
+                throw new Exception("Site is already in this state.");
+            }
+
+            site.setStatus(newStatus);
+            siteRepository.save(site);
+            return;
+        }
+
+        throw new Exception("The user is not main archaeologist on the selected site!");
+    }
 }
