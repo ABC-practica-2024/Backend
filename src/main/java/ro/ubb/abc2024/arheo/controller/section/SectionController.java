@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.controller.utils.HelperMethods;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
@@ -39,6 +40,14 @@ public class SectionController {
     private final SectionDtoConverter sectionDtoConverter;
     private final ArtifactDtoConverter artifactDtoConverter;
     private final UserService userService;
+
+
+    private boolean checkIfCurrentUserIsMainArchaeologist(Section section) {
+        var userId = userService.getUser(SecurityContextHolder.getContext().getAuthentication().getName()).getId();
+        var mainArchaeologistId = sectionService.getSection(section.getSite().getMainArchaeologist().getId())
+                .getSite().getMainArchaeologist().getId();
+        return Objects.equals(userId, mainArchaeologistId);
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
@@ -85,6 +94,7 @@ public class SectionController {
         var section = sectionService.getSection(sectionId);
         if(!HelperMethods.isMainArchaeologistBySectionId(userService, sectionService, sectionId))
             return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can delete sections", null);
+
         sectionService.deleteSection(sectionId);
         return new Result<>(true, HttpStatus.OK.value(), "Deleted section", sectionDtoConverter.createFromEntity(section));
     }
@@ -96,6 +106,7 @@ public class SectionController {
     // only the main archaeologist of the site can update sections
     public Result<SectionDto> updateSection(@RequestBody SectionDto sectionDto) {
         var section = sectionService.getSection(sectionDto.id());
+      
         if (!HelperMethods.isMainArchaeologistBySectionId(userService, sectionService, section.getId()))
             return new Result<>(false, HttpStatus.FORBIDDEN.value(), "Only the main archaeologist of the site can update sections", null);
 

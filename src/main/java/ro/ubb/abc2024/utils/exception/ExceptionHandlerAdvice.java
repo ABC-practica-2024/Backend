@@ -118,6 +118,6 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     Result handleOtherException(Exception ex) {
-        return new Result(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        return new Result(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), "");
     }
 }

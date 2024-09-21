@@ -8,14 +8,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
+import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
+import ro.ubb.abc2024.arheo.utils.converter.ArtifactDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SectionDtoConverter;
 import ro.ubb.abc2024.arheo.utils.converter.SiteConverterDto;
+import ro.ubb.abc2024.arheo.utils.dto.ArtifactDto;
 import ro.ubb.abc2024.arheo.utils.dto.SectionDto;
 import ro.ubb.abc2024.arheo.utils.dto.SiteDTO;
 import ro.ubb.abc2024.arheo.domain.site.Site;
 import ro.ubb.abc2024.arheo.service.SiteServiceImpl;
+import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.utils.dto.Result;
 
 import java.util.HashMap;
@@ -33,14 +41,16 @@ public class SiteController {
     private final SiteServiceImpl siteService;
     private final SiteConverterDto siteConverterDto;
     private final SectionDtoConverter sectionDtoConverter;
+    private final ArtifactDtoConverter artifactDtoConverter;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO', 'SCOPE_LABWORKER')")
     public Result<Map<String,Object>> getSites(@RequestParam(required = false) String status,
+                                                   @RequestParam(required = false) Long archaeologistId,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Site> sitePage = siteService.getAllPaginatedByCriteria(status, pageable);
+        Page<Site> sitePage = siteService.getAllPaginatedByCriteria(status, archaeologistId, pageable);
         List<SiteDTO> siteDtoList = sitePage.getContent().stream().map(siteConverterDto::createFromEntity)
                 .collect(Collectors.toList());
         Map<String, Object> response = new HashMap<>();
@@ -98,16 +108,73 @@ public class SiteController {
         );
     }
 
-    //todo: complete endpoint when done artifacts
-    /*@GetMapping("artifacts/{id}")
-    public Result<List<ArtifactDto>> getArtifactsBySiteId(@PathVariable long id){
+    @GetMapping("/artifacts")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
+    public Result<Map<String, Object>> getArtifactsBySite(@RequestParam Long siteId,
+                                                         @RequestParam(required = false) Long archaeologistId,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Artifact> artifactPage = siteService.getPaginatedArtifactsByCriteria(siteId, archaeologistId, pageable);
+        List<ArtifactDto> siteDtoList = artifactPage.getContent().stream().map(artifactDtoConverter::createFromEntity)
+                .collect(Collectors.toList());
+        Map<String, Object> response = new HashMap<>();
+        response.put("artifacts", siteDtoList);
+        response.put("currentPage", artifactPage.getNumber());
+        response.put("totalItems", artifactPage.getTotalElements());
+        response.put("totalPages", artifactPage.getTotalPages());
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all artifacts", response);
+    }
 
-    }*/
+    @PostMapping("/add_archaeologist")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
+    public Result<?> addArchaeologistToSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    //todo: complete endpoint when done artifacts
-    /*@GetMapping("artifacts")
-    public Result<List<SectionDto>> getArtifactsBySiteIdAndArchaeologist(@RequestBody Long siteId,
-                                                                         @RequestBody Long archaeologistId){
+        try {
+            if(authentication.getPrincipal() instanceof Jwt jwt){
+                String username = jwt.getSubject();
+                siteService.addArchaeologistToSite(siteId, username, archaeologistId);
+            }
+        }
+        catch (Exception e){
+            return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+        }
+        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist added to site successfully.", null);
+    }
 
-    }*/
+    @PostMapping("/delete_archaeologist")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
+    public Result<?> deleteArchaeologistFromSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        try {
+            if(authentication.getPrincipal() instanceof Jwt jwt){
+                String username = jwt.getSubject();
+                siteService.deleteArchaeologistFromSite(siteId, username, archaeologistId);
+            }
+        }
+        catch (Exception e){
+            return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+        }
+        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist deleted from site successfully.", null);
+    }
+
+    @PostMapping("/change_status")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
+    public Result<?> changeSiteStatus(@RequestParam Long siteId, @RequestParam SiteStatus newStatus){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        try {
+            if(authentication.getPrincipal() instanceof Jwt jwt){
+                String username = jwt.getSubject();
+                siteService.changeSiteStatus(siteId, username, newStatus);
+            }
+        }
+        catch (Exception e){
+            return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+        }
+
+        return new Result<>(true, HttpStatus.OK.value(), "Site status changed successfully.", null);
+    }
 }
