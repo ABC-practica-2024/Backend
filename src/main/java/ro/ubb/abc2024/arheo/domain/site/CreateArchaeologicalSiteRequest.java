@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import ro.ubb.abc2024.arheo.domain.auxiliary.GeographicPoint;
 import ro.ubb.abc2024.user.User;
 import ro.ubb.abc2024.user.userRoleRequest.RequestStatus;
@@ -36,6 +38,8 @@ public class CreateArchaeologicalSiteRequest {
     GeographicPoint centerCoordinates;
 
     @ElementCollection
+    @Fetch(FetchMode.JOIN)
+    @CollectionTable(name = "site_creation_requests_coordinates")
     List<SiteCoordinate> perimeterCoordinates;
 
     @NotNull(message = "Status cannot be null")

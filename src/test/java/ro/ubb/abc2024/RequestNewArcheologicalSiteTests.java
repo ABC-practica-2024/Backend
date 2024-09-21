@@ -60,7 +60,7 @@ public class RequestNewArcheologicalSiteTests {
         userArheo.setEmail("arheo@gmail.com");
         userArheo.setFirstName("firstName");
         userArheo.setLastName("lastName");
-        userArheo.setRole(Role.ARH);
+        userArheo.setRole(Role.ARHEO);
         userArheo.setEnabled(true);
         userRepository.save(userArheo);
 
@@ -213,7 +213,7 @@ public class RequestNewArcheologicalSiteTests {
         CreateArchaeologicalSiteRequest savedRequest = siteService.requestCreateArchaeologicalSite(request);
 
         // Act
-        CreateArchaeologicalSiteRequest solvedRequest = siteService.solveCreateSiteRequest(savedRequest.getId());
+        CreateArchaeologicalSiteRequest solvedRequest = siteService.solveCreateSiteRequest(savedRequest.getId(), RequestStatus.ACCEPTED);
 
         // Assert
         assertEquals(RequestStatus.ACCEPTED, solvedRequest.getStatus(), "The request status should be ACCEPTED");

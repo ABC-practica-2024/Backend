@@ -4,10 +4,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
 import ro.ubb.abc2024.arheo.domain.section.Section;
-import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
-
 import java.util.List;
 
 public interface SectionService {
@@ -23,11 +22,15 @@ public interface SectionService {
     List<Section> getSectionsWestOf(double longitude);
     List<Section> getSectionsEastOf(double longitude);
 
+    List<Section> getSectionsDeeperThan(double depth);
+
+    List<Section> getSectionsShallowerThan(double depth);
+
     List<Section> getSections();
 
     Page<Section> getSections(int page, int pageSize);
 
-    Page<Section> findAllByCriteria(Long sectionId, String sectionName, Long siteId, String status, Pageable pageable);
+    Page<Section> findAllByCriteria(Long sectionId, String sectionName, Long siteId, String status, Double minDepth, Double maxDepth, Pageable pageable);
 
     List<Section> getIncompleteSections();
     List<Section> getSectionsBySite(long siteId);
@@ -35,4 +38,9 @@ public interface SectionService {
     @Query(value = "SELECT a FROM Artifact a WHERE a.section.id = ?1")
     List<Artifact> getArtifactsFromSection(long sectionId);
     List<Artifact> getArtifactsFromSectionByArchaeologist(long sectionId, long archaeologistId);
+
+    @Query(value = "SELECT s.site.mainArchaeologist.id FROM Section s WHERE s.id = ?1")
+    Long getMainArchaeologistIdFromSectionId(long sectionId);
+
+    void updateSectionDepth(long sectionId, double depth);
 }

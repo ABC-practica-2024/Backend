@@ -43,6 +43,9 @@ spring:
             enable: true
           trust:
             host: smtp.gmail.com
+          ssl:
+            trust: smtp.gmail.com
+
 
 
 
