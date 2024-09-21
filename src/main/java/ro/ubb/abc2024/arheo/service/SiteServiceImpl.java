@@ -110,7 +110,7 @@ public class SiteServiceImpl implements SiteService{
     }
 
     public Page<Artifact> getPaginatedArtifactsByCriteria(Long siteId, Long archaeologistId, Pageable pageable){
-        return artifactService.getAllPaginatedByCriteria(siteId, null, archaeologistId, null, null, null, pageable);
+        return artifactService.getAllPaginatedByCriteria(null, siteId, null, archaeologistId, null, null, null, pageable);
     }
 
     public List<Section> getSectionsBySiteId(Long siteId){
@@ -221,6 +221,9 @@ public class SiteServiceImpl implements SiteService{
             throw new EntityNotFoundException(String.format("User with name %s not found", mainArchaeologistUsername));
         }
 
+        // TODO: should be refactored
+        // mainArchaeo passed as argument may not be the actual main archaeo!
+        // applies everywhere this check is present
         if(mainArchaeologist.getId().equals(archaeologistId)){
             throw new Exception("User is assigned as main archaeologist to the site, cannot remove it from it.");
         }

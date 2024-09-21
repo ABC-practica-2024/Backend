@@ -109,7 +109,7 @@ public class SiteController {
     }
 
     @GetMapping("/artifacts")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
     public Result<Map<String, Object>> getArtifactsBySite(@RequestParam Long siteId,
                                                          @RequestParam(required = false) Long archaeologistId,
                                                          @RequestParam(defaultValue = "0") int page,
@@ -127,13 +127,9 @@ public class SiteController {
     }
 
     @PostMapping("/add_archaeologist")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<User> addArchaeologistToSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
+    public Result<?> addArchaeologistToSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if(authentication == null){
-            return new Result<>(false, HttpStatus.UNAUTHORIZED.value(), "User is not authenticated.", null);
-        }
 
         try {
             if(authentication.getPrincipal() instanceof Jwt jwt){
@@ -144,17 +140,13 @@ public class SiteController {
         catch (Exception e){
             return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
         }
-        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist added to site successfully.", new User());
+        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist added to site successfully.", null);
     }
 
     @PostMapping("/delete_archaeologist")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<User> deleteArchaeologistFromSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
+    public Result<?> deleteArchaeologistFromSite(@RequestParam Long siteId, @RequestParam Long archaeologistId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if(authentication == null){
-            return new Result<>(false, HttpStatus.UNAUTHORIZED.value(), "User is not authenticated.", null);
-        }
 
         try {
             if(authentication.getPrincipal() instanceof Jwt jwt){
@@ -165,17 +157,13 @@ public class SiteController {
         catch (Exception e){
             return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
         }
-        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist deleted from site successfully.", new User());
+        return new Result<>(true, HttpStatus.OK.value(), "Archaeologist deleted from site successfully.", null);
     }
 
     @PostMapping("/change_status")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARH', 'SCOPE_ADMIN')")
-    public Result<User> changeSiteStatus(@RequestParam Long siteId, @RequestParam SiteStatus newStatus){
+    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
+    public Result<?> changeSiteStatus(@RequestParam Long siteId, @RequestParam SiteStatus newStatus){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if(authentication == null){
-            return new Result<>(false, HttpStatus.UNAUTHORIZED.value(), "User is not authenticated.", null);
-        }
 
         try {
             if(authentication.getPrincipal() instanceof Jwt jwt){
@@ -186,6 +174,7 @@ public class SiteController {
         catch (Exception e){
             return new Result<>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
         }
-        return new Result<>(true, HttpStatus.OK.value(), "Site status changed successfully.", new User());
+
+        return new Result<>(true, HttpStatus.OK.value(), "Site status changed successfully.", null);
     }
 }
