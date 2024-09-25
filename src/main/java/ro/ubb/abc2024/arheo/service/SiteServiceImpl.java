@@ -109,16 +109,12 @@ public class SiteServiceImpl implements SiteService{
         return this.siteRepository.save(updateSite);
     }
 
+    public Page<Section> getPaginatedSectionsByCriteria(Long siteId, String status, Pageable pageable){
+        return sectionService.findAllByCriteria(null, null, siteId, status, null, null, pageable);
+    }
+
     public Page<Artifact> getPaginatedArtifactsByCriteria(Long siteId, Long archaeologistId, Pageable pageable){
         return artifactService.getAllPaginatedByCriteria(null, siteId, null, archaeologistId, null, null, null, pageable);
-    }
-
-    public List<Section> getSectionsBySiteId(Long siteId){
-        return siteRepository.getSiteById(siteId).getSections();
-    }
-
-    public List<Section> getSectionsBySiteIdAndStatus(Long siteId, SectionStatus status){
-        return sectionService.getSectionsByStatusIsAndSiteId(status.name(), siteId);
     }
 
     public CreateArchaeologicalSiteRequest getCreateArchaeologicalSiteRequest(Long id){
@@ -186,10 +182,6 @@ public class SiteServiceImpl implements SiteService{
             throw new EntityNotFoundException(String.format("User with name %s not found", mainArchaeologistUsername));
         }
 
-        if(mainArchaeologist.getId().equals(archaeologistId)){
-            throw new Exception("User is assigned as main archaeologist to the site, no need to add it as archaeologist too.");
-        }
-
         Long mainArchaeologistId = mainArchaeologist.getId();
 
         Site site = siteRepository.getSiteById(siteId);
@@ -197,20 +189,24 @@ public class SiteServiceImpl implements SiteService{
         if(site == null)
             throw new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId));
 
-        if(site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
-            List<User> archaeologists = site.getArchaeologists();
-
-            if(archaeologists.stream().anyMatch(user -> user.getId().equals(archaeologistId))){
-                throw new Exception("The wanted archaeologist is already assigned to the current site.");
-            }
-
-            archaeologists.add(archaeologist);
-            site.setArchaeologists(archaeologists);
-            siteRepository.save(site);
-            return;
+        if(!site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
+            throw new Exception("The user is not main archaeologist on the selected site!");
         }
 
-        throw new Exception("The user is not main archaeologist on the selected site!");
+
+        List<User> archaeologists = site.getArchaeologists();
+
+        if(archaeologistId.equals(mainArchaeologistId)){
+            throw new Exception("The added user is assigned as main archaeologist to the site.");
+        }
+
+        if(archaeologists.stream().anyMatch(user -> user.getId().equals(archaeologistId))){
+            throw new Exception("The wanted archaeologist is already assigned to the current site.");
+        }
+
+        archaeologists.add(archaeologist);
+        site.setArchaeologists(archaeologists);
+        siteRepository.save(site);
     }
 
     public void deleteArchaeologistFromSite(Long siteId, String mainArchaeologistUsername, Long archaeologistId) throws Exception{
@@ -221,13 +217,6 @@ public class SiteServiceImpl implements SiteService{
             throw new EntityNotFoundException(String.format("User with name %s not found", mainArchaeologistUsername));
         }
 
-        // TODO: should be refactored
-        // mainArchaeo passed as argument may not be the actual main archaeo!
-        // applies everywhere this check is present
-        if(mainArchaeologist.getId().equals(archaeologistId)){
-            throw new Exception("User is assigned as main archaeologist to the site, cannot remove it from it.");
-        }
-
         Long mainArchaeologistId = mainArchaeologist.getId();
 
         Site site = siteRepository.getSiteById(siteId);
@@ -235,20 +224,24 @@ public class SiteServiceImpl implements SiteService{
         if(site == null)
             throw new EntityNotFoundException(String.format("Site with id %d, does not exist.", siteId));
 
-        if(site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
-            List<User> archaeologists = site.getArchaeologists();
-
-            if(archaeologists.stream().noneMatch(user -> user.getId().equals(archaeologistId))){
-                throw new Exception("The wanted archaeologist not assigned to the current site.");
-            }
-
-            archaeologists.remove(archaeologist);
-            site.setArchaeologists(archaeologists);
-            siteRepository.save(site);
-            return;
+        if(!site.getMainArchaeologist().getId().equals(mainArchaeologistId)){
+            throw new Exception("The user is not main archaeologist on the selected site!");
         }
 
-        throw new Exception("The user is not main archaeologist on the selected site!");
+
+        List<User> archaeologists = site.getArchaeologists();
+
+        if(archaeologistId.equals(mainArchaeologistId)){
+            throw new Exception("The deleted user is assigned as main archaeologist to the site.");
+        }
+
+        if(archaeologists.stream().noneMatch(user -> user.getId().equals(archaeologistId))){
+            throw new Exception("The wanted archaeologist is not assigned to the current site.");
+        }
+
+        archaeologists.remove(archaeologist);
+        site.setArchaeologists(archaeologists);
+        siteRepository.save(site);
     }
 
     public void changeSiteStatus(Long siteId, String username, SiteStatus newStatus) throws Exception{
