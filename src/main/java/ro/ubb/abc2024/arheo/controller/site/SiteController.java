@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import ro.ubb.abc2024.arheo.domain.artifact.Artifact;
+import ro.ubb.abc2024.arheo.domain.section.Section;
 import ro.ubb.abc2024.arheo.domain.section.SectionStatus;
 import ro.ubb.abc2024.arheo.domain.site.SiteStatus;
 import ro.ubb.abc2024.arheo.utils.converter.ArtifactDtoConverter;
@@ -68,7 +69,7 @@ public class SiteController {
     }
 
     @PostMapping()
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_ARHEO')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
     public Result<SiteDTO> createSite(@RequestBody SiteDTO siteDTO){
         Site newSite=siteConverterDto.createFromDto(siteDTO);
         siteService.addSite(newSite);
@@ -89,23 +90,22 @@ public class SiteController {
         return new Result<>(true, HttpStatus.OK.value(), "Site deleted successfully.", Boolean.TRUE);
     }
 
-    @GetMapping("/sections/{id}")
+    @GetMapping("/sections")
     @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
-    public Result<List<SectionDto>> getSectionsById(@PathVariable long id){
-        return new Result<>(true, HttpStatus.OK.value(), "Returned all sections.", siteService.getSectionsBySiteId(id).stream().map(sectionDtoConverter::createFromEntity).toList());
-    }
-
-    @GetMapping("sections_incomplete/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ARHEO', 'SCOPE_ADMIN')")
-    public Result<List<SectionDto>> getIncompleteSectionsBySiteId(@PathVariable long id){
-        return new Result<>(true,
-                HttpStatus.OK.value(),
-                "Returned incomplete sections.",
-                Stream.concat(
-                        siteService.getSectionsBySiteIdAndStatus(id, SectionStatus.DIGGING).stream().map(sectionDtoConverter::createFromEntity),
-                        siteService.getSectionsBySiteIdAndStatus(id, SectionStatus.ANALYSIS).stream().map(sectionDtoConverter::createFromEntity))
-                        .toList()
-        );
+    public Result<Map<String, Object>> getSectionsBySite(@RequestParam Long siteId,
+                                                         @RequestParam(required = false) String sectionStatus,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Section> sectionPage = siteService.getPaginatedSectionsByCriteria(siteId, sectionStatus, pageable);
+        List<SectionDto> siteDtoList = sectionPage.getContent().stream().map(sectionDtoConverter::createFromEntity)
+                .collect(Collectors.toList());
+        Map<String, Object> response = new HashMap<>();
+        response.put("sites", siteDtoList);
+        response.put("currentPage", sectionPage.getNumber());
+        response.put("totalItems", sectionPage.getTotalElements());
+        response.put("totalPages", sectionPage.getTotalPages());
+        return new Result<>(true, HttpStatus.OK.value(), "Retrieved all sections", response);
     }
 
     @GetMapping("/artifacts")
